@@ -1,0 +1,29 @@
+{
+  "name": "voice-gpt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon ./src/index.js",
+    "dev": "nodemon ./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jus1d/voice-gpt.git"
+  },
+  "author": "jus1d",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jus1d/voice-gpt/issues"
+  },
+  "homepage": "https://github.com/jus1d/voice-gpt#readme",
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "nodemon": "^2.0.22"
+  },
+  "dependencies": {
+    "config": "^3.3.9",
+    "telegraf": "^4.12.2"
+  }
+}
