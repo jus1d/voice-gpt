@@ -1,5 +1,5 @@
 import { Telegraf, Markup, session } from "telegraf";
-import { vocieToText } from './voiceToText.js';
+import { vocieToText } from './voice.js';
 import { message } from 'telegraf/filters';
 import { whitelist } from './whitelist.js';
 import { openAI } from './openai.js';
