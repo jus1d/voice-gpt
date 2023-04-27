@@ -73,12 +73,12 @@ bot.on(message('text'), async (ctx) => {
     try {
         const message = await ctx.reply('Already processing your request, wait a bit');
         await ctx.telegram.sendChatAction(ctx.chat.id, 'typing');
-
+        
         ctx.session.messages.push({ role: 'user', content: ctx.message.text });
         const gptResponse = await openAI.chat(ctx.session.messages);
         ctx.session.messages.push({ role: 'assistant', content: gptResponse.content });
         ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
-        
+
         ctx.reply(gptResponse.content);
     } catch (error) {
         console.log(error);
