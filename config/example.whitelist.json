@@ -1,0 +1,10 @@
+{
+    "whitelist": [
+        {
+            "userId": "",
+            "username": "",
+            "role": "admin",
+            "balance": 0
+        }
+    ]
+}
