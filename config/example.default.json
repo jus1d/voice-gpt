@@ -1,12 +1,4 @@
 {
     "telegram_token": "paste your token here",
-    "openai_token": "paste your open ai token here",
-    "white_list": [
-        {
-            "userId": "user_id",
-            "username": "username",
-            "role": "admin/user/or other",
-            "balance": 0
-        }
-    ]
+    "openai_token": "paste your open ai token here"
 }
