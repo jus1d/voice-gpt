@@ -6,15 +6,8 @@ import { vocieToText } from './voiceToText.js';
 import { openAI } from './openai.js';
 import { whitelist } from './whitelist.js';
 
-const INITIAL_SESSION = {
-    messages: [],
-};
-
 const bot = new Telegraf(config.get('telegram_token'));
-// const whiteList = config.get('white_list').map(user => user.userId);
-// const whiteList = whitelist.get();
-// console.log(whiteList)
-
+const INITIAL_SESSION = { messages: [] };
 bot.use(session());
 
 bot.command('start', async (ctx) => {
