@@ -38,7 +38,7 @@ bot.on(message('voice'), async (ctx) => {
         ]));
     }
 
-    log.info(`User ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)} request created from voice message. User not whitelisted.`);
+    log.info(`User ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)} request created from voice message`);
 
     ctx.session ??= INITIAL_SESSION;
     try {
