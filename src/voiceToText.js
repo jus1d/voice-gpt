@@ -28,16 +28,21 @@ class VoiceToText {
     }
 
     async createMp3File(fileName) {
-        ffmpeg()
-            .input(`./voices/${fileName}.ogg`)
-            .output(`./voices/${fileName}.mp3`)
-            .on('end', () => {
-                removeFile(`./voices/${fileName}.ogg`);
-                console.log(`${fileName}.ogg converted to ${fileName}.mp3`);
-            })
-            .on('error', (error) => {
-                console.log(`Error with converting ${fileName}.ogg file to MP3 format: ${error.message}`);
-            }).run();
+        return new Promise((resolve, reject) => {
+            ffmpeg()
+                .input(`./voices/${fileName}.ogg`)
+                .output(`./voices/${fileName}.mp3`)
+                .on('end', () => {
+                    removeFile(`./voices/${fileName}.ogg`);
+                    resolve(fileName);
+                })
+                .on('error', (error) => {
+                    console.log(`Error with converting ${fileName}.ogg file to MP3 format: ${error.message}`);
+                    reject(error);
+                }).run();
+        });
+
+
     }
 
     convertMp3ToText(fileName) {

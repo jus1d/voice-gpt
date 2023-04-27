@@ -28,6 +28,7 @@
     "config": "^3.3.9",
     "crc32": "^0.2.2",
     "fluent-ffmpeg": "^2.1.2",
+    "openai": "^3.2.1",
     "telegraf": "^4.12.2"
   }
 }

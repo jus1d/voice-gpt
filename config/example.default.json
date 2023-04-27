@@ -1,3 +1,4 @@
 {
-    "TELEGRAM_TOKEN": "paste your token here"
+    "TELEGRAM_TOKEN": "paste your token here",
+    "OPENAI_TOKEN": "paste your open ai token here"
 }

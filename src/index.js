@@ -3,6 +3,7 @@ import { Telegraf } from "telegraf";
 import config from 'config';
 import { vocieToText } from './voiceToText.js';
 import crc32 from 'crc32';
+import { openAI } from './openai.js';
 
 const bot = new Telegraf(config.get('TELEGRAM_TOKEN'));
 
@@ -17,7 +18,10 @@ bot.on(message('voice'), async (ctx) => {
         await vocieToText.createOggFile(link.href, fileName);
         await vocieToText.createMp3File(fileName);
 
-        const prompt = await vocieToText.convertMp3ToText(fileName);
+        const prompt = await openAI.transcript(fileName);
+        // const gptResponse = await openAI.chat(prompt);
+
+        ctx.reply(`response: ${prompt}`);
     } catch (error) {
         console.log(error);
     }
