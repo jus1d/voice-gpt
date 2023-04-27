@@ -17,7 +17,7 @@ bot.use(session());
 
 bot.command('start', async (ctx) => {
     ctx.session = INITIAL_SESSION;
-    await ctx.reply('Hi! You can send me text or voice messages, and I will reply to them!');
+    await ctx.reply('Hi! You can send me your questions, and I will reply to them!\n\nbtw: Voice messages supports too');
 });
 
 bot.command('new', async (ctx) => {
@@ -31,7 +31,7 @@ bot.command('id', async (ctx) => {
 
 bot.on(message('voice'), async (ctx) => {
     if (!whiteList.includes(ctx.message.from.id)) {
-        return ctx.reply('You are not whitelisted yet. Sorry!', Markup.inlineKeyboard([
+        return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins 👇', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_whitelist_slot")
         ]));
     }
@@ -65,7 +65,7 @@ bot.on(message('voice'), async (ctx) => {
 
 bot.on(message('text'), async (ctx) => {
     if (!whiteList.includes(ctx.message.from.id)) {
-        return ctx.reply('You are not whitelisted yet. Sorry!', Markup.inlineKeyboard([
+        return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins 👇', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_whitelist_slot")
         ]));
     }
@@ -83,9 +83,9 @@ bot.on(message('text'), async (ctx) => {
 });
 
 bot.action('request_whitelist_slot', async (ctx) => {
-    ctx.editMessageText('A request to be added to the whitelist has been sent to admins');
+    ctx.editMessageText('Request to be added to the whitelist has been sent to admins. Please wait a little whle');
 
-    ctx.telegram.sendMessage(797712297, `${ctx.from.username} [${ctx.from.id}] requested a whitelist slot`, Markup.inlineKeyboard([
+    ctx.telegram.sendMessage(797712297, `@${ctx.from.username} [${ctx.from.id}] requested a whitelist slot`, Markup.inlineKeyboard([
         Markup.button.callback("✅ Allow", "allow"),
         Markup.button.callback("❌ Reject", "reject")
     ]));
@@ -93,7 +93,7 @@ bot.action('request_whitelist_slot', async (ctx) => {
 
 bot.action('allow', async (ctx) => {
     const userId = Number(ctx.update.callback_query.message.text.split(' ')[1].replace('[', '').replace(']', ''));
-    const username = ctx.update.callback_query.message.text.split(' ')[0];
+    const username = ctx.update.callback_query.message.text.split(' ')[0].replace('@', '');
 
     const user = {
         userId: userId,
@@ -105,19 +105,19 @@ bot.action('allow', async (ctx) => {
     const res = whitelist.addUser(user);
 
     if (res) {
-        ctx.telegram.sendMessage(userId, 'Your request to be added to the whitelist has been approved by the admins.\nYou are added to the whitelist and can use the bot');
-        ctx.editMessageText(`✅ Access for ${username} was granted`);
+        ctx.telegram.sendMessage(userId, '🥳 Your request to be added to the whitelist has been approved by the admins.\n\nYou are whitelisted and can use the bot! Just send text message or record voice');
+        ctx.editMessageText(`✅ Access for @${username} was granted`);
     } else {
-        ctx.editMessageText(`❌ Something went wrong while granting access to ${username}`);
+        ctx.editMessageText(`❌ Something went wrong while granting access to @${username}`);
     }
 
 });
 
 bot.action('reject', async (ctx) => {
     const userId = Number(ctx.update.callback_query.message.text.split(' ')[1].replace('[', '').replace(']', ''));
-    const username = ctx.update.callback_query.message.text.split(' ')[0];
+    const username = ctx.update.callback_query.message.text.split(' ')[0].replace('@', '');
 
-    ctx.editMessageText(`❌ Access for ${username} was rejected`);
+    ctx.editMessageText(`❌ Access for @${username} was rejected`);
     ctx.telegram.sendMessage(userId, '❌ Your request to be added to the whitelist was rejected by the admins');
 });
 
