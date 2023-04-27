@@ -18,9 +18,7 @@ class OpenAI {
                 fs.createReadStream(`./voices/${mp3FileName}.mp3`),
                 'whisper-1'
             );
-
-            console.log(response);
-
+            
             return response.data.text;
         } catch (error) {
             console.log('Error with transcripting prompt from MP3 file' + error.message)
