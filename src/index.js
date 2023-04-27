@@ -9,18 +9,22 @@ const INITIAL_SESSION = {
     messages: [],
 }
 
-const bot = new Telegraf(config.get('TELEGRAM_TOKEN'));
+const bot = new Telegraf(config.get('telegram_token'));
 
 bot.use(session());
+
+bot.command('start', async (ctx) => {
+    ctx.session = INITIAL_SESSION
+    await ctx.reply('Hi! You can send me text or voice messages, and I will reply to them!');
+});
 
 bot.command('new', async (ctx) => {
     ctx.session = INITIAL_SESSION
     await ctx.reply('New chat created!');
 });
 
-bot.command('start', async (ctx) => {
-    ctx.session = INITIAL_SESSION
-    await ctx.reply('Hi! You can send me text or voice messages, and I will reply to them!');
+bot.command('id', async (ctx) => {
+    ctx.reply(String(ctx.message.from.id));
 });
 
 bot.on(message('voice'), async (ctx) => {

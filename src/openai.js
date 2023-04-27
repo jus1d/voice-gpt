@@ -38,4 +38,4 @@ class OpenAI {
     }
 }
 
-export const openAI = new OpenAI(config.get("OPENAI_TOKEN"));
+export const openAI = new OpenAI(config.get("openai_token"));
