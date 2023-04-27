@@ -1,8 +1,8 @@
 import { message } from 'telegraf/filters';
 import { Telegraf } from "telegraf";
+import crc32 from 'crc32';
 import config from 'config';
 import { vocieToText } from './voiceToText.js';
-import crc32 from 'crc32';
 import { openAI } from './openai.js';
 
 const bot = new Telegraf(config.get('TELEGRAM_TOKEN'));
