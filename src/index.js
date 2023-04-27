@@ -11,7 +11,9 @@ const INITIAL_SESSION = {
 };
 
 const bot = new Telegraf(config.get('telegram_token'));
-const whiteList = config.get('white_list').map(user => user.userId);
+// const whiteList = config.get('white_list').map(user => user.userId);
+// const whiteList = whitelist.get();
+// console.log(whiteList)
 
 bot.use(session());
 
@@ -30,7 +32,8 @@ bot.command('id', async (ctx) => {
 });
 
 bot.on(message('voice'), async (ctx) => {
-    if (!whiteList.includes(ctx.message.from.id)) {
+    const white_list = whitelist.get();
+    if (!white_list.includes(ctx.message.from.id)) {
         return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins 👇', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_whitelist_slot")
         ]));
@@ -63,7 +66,8 @@ bot.on(message('voice'), async (ctx) => {
 });
 
 bot.on(message('text'), async (ctx) => {
-    if (!whiteList.includes(ctx.message.from.id)) {
+    const white_list = whitelist.get();
+    if (!white_list.includes(ctx.message.from.id)) {
         return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins 👇', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_whitelist_slot")
         ]));
@@ -89,7 +93,7 @@ bot.action('request_whitelist_slot', async (ctx) => {
     ctx.editMessageText('Request to be added to the whitelist has been sent to admins. Please wait a little whle');
 
     ctx.telegram.sendMessage(797712297, `@${ctx.from.username} [${ctx.from.id}] requested a whitelist slot`, Markup.inlineKeyboard([
-        Markup.button.callback("✅ Allow", "allow"),
+        Markup.button.callback("✅ Approve", "allow"),
         Markup.button.callback("❌ Reject", "reject")
     ]));
 });
@@ -111,7 +115,7 @@ bot.action('allow', async (ctx) => {
         ctx.telegram.sendMessage(userId, '🥳 Your request to be added to the whitelist has been approved by the admins.\n\nYou are whitelisted and can use the bot! Just send text message or record voice');
         ctx.editMessageText(`✅ Access for @${username} was granted`);
     } else {
-        ctx.editMessageText(`❌ Something went wrong while granting access to @${username}`);
+        ctx.editMessageText(`❌ Something went wrong while approving access to @${username}`);
     }
 
 });
