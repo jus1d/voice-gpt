@@ -1,7 +1,7 @@
 import { Configuration, OpenAIApi } from "openai";
+import { removeFile } from './utils.js';
 import config from 'config';
 import fs from 'fs';
-import { removeFile } from './utils.js';
 
 class OpenAI {
     constructor(apiKey) {

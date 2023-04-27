@@ -1,7 +1,7 @@
-import axios from "axios";
 import installer from '@ffmpeg-installer/ffmpeg';
 import { removeFile } from './utils.js';
 import ffmpeg from 'fluent-ffmpeg';
+import axios from "axios";
 import fs from 'fs';
 
 class VoiceToText {

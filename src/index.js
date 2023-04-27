@@ -1,10 +1,10 @@
-import { message } from 'telegraf/filters';
 import { Telegraf, Markup, session } from "telegraf";
+import { vocieToText } from './voiceToText.js';
+import { message } from 'telegraf/filters';
+import { whitelist } from './whitelist.js';
+import { openAI } from './openai.js';
 import crc32 from 'crc32';
 import config from 'config';
-import { vocieToText } from './voiceToText.js';
-import { openAI } from './openai.js';
-import { whitelist } from './whitelist.js';
 
 const bot = new Telegraf(config.get('telegram_token'));
 const INITIAL_SESSION = { messages: [] };
