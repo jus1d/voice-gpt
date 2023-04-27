@@ -1,13 +1,13 @@
 import axios from "axios";
 import installer from '@ffmpeg-installer/ffmpeg';
+import { removeFile } from './utils.js';
 import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs';
-import { removeFile } from './utils.js';
 
 class VoiceToText {
 
     constructor() {
-        ffmpeg.setFfmpegPath(installer.path)
+        ffmpeg.setFfmpegPath(installer.path);
     }
 
     async createOggFile(url, fileName) {
@@ -42,10 +42,6 @@ class VoiceToText {
                 }).run();
         });
 
-
-    }
-
-    convertMp3ToText(fileName) {
 
     }
 

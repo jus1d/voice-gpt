@@ -8,7 +8,7 @@ import { whitelist } from './whitelist.js';
 
 const INITIAL_SESSION = {
     messages: [],
-}
+};
 
 const bot = new Telegraf(config.get('telegram_token'));
 const whiteList = config.get('white_list').map(user => user.userId);
@@ -16,12 +16,12 @@ const whiteList = config.get('white_list').map(user => user.userId);
 bot.use(session());
 
 bot.command('start', async (ctx) => {
-    ctx.session = INITIAL_SESSION
+    ctx.session = INITIAL_SESSION;
     await ctx.reply('Hi! You can send me text or voice messages, and I will reply to them!');
 });
 
 bot.command('new', async (ctx) => {
-    ctx.session = INITIAL_SESSION
+    ctx.session = INITIAL_SESSION;
     await ctx.reply('New chat created!');
 });
 
@@ -45,7 +45,7 @@ bot.on(message('voice'), async (ctx) => {
         const unixTime = String(Math.floor(Date.now() / 1000));
         const hash = crc32(`${unixTime}${ctx.message.id}`).toString(16);
 
-        const fileName = `${userId}_${hash}`
+        const fileName = `${userId}_${hash}`;
         await vocieToText.createOggFile(link.href, fileName);
         await vocieToText.createMp3File(fileName);
 
@@ -87,7 +87,7 @@ bot.action('request_whitelist_slot', async (ctx) => {
 
     ctx.telegram.sendMessage(797712297, `${ctx.from.username} [${ctx.from.id}] requested a whitelist slot`, Markup.inlineKeyboard([
         Markup.button.callback("✅ Allow", "allow"),
-        Markup.button.callback("❌ Reject", "reject"),
+        Markup.button.callback("❌ Reject", "reject")
     ]));
 });
 
@@ -117,7 +117,7 @@ bot.action('reject', async (ctx) => {
     const userId = Number(ctx.update.callback_query.message.text.split(' ')[1].replace('[', '').replace(']', ''));
     const username = ctx.update.callback_query.message.text.split(' ')[0];
 
-    ctx.editMessageText(`❌ Access for ${username} was rejected`)
+    ctx.editMessageText(`❌ Access for ${username} was rejected`);
     ctx.telegram.sendMessage(userId, '❌ Your request to be added to the whitelist was rejected by the admins');
 });
 

@@ -33,7 +33,7 @@ class OpenAI {
             removeFile(`./voices/${mp3FileName}.mp3`);
             return response.data.text;
         } catch (error) {
-            console.log('Error with transcripting prompt from MP3 file' + error.message)
+            console.log('Error with transcripting prompt from MP3 file' + error.message);
         }
     }
 }
