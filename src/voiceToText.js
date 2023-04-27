@@ -2,6 +2,7 @@ import installer from '@ffmpeg-installer/ffmpeg';
 import ffmpeg from 'fluent-ffmpeg';
 import axios from "axios";
 import fs from 'fs';
+import { removeFile } from './utils.js';
 
 class VoiceToText {
 
@@ -31,6 +32,7 @@ class VoiceToText {
             .input(`./voices/${fileName}.ogg`)
             .output(`./voices/${fileName}.mp3`)
             .on('end', () => {
+                removeFile(`./voices/${fileName}.ogg`);
                 console.log(`${fileName}.ogg converted to ${fileName}.mp3`);
             })
             .on('error', (error) => {
@@ -38,8 +40,8 @@ class VoiceToText {
             }).run();
     }
 
-    convertMp3ToText(mp3FilePath) {
-        
+    convertMp3ToText(fileName) {
+
     }
 
 }

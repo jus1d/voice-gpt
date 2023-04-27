@@ -11,13 +11,13 @@ bot.on(message('voice'), async (ctx) => {
         const link = await ctx.telegram.getFileLink(ctx.message.voice.file_id);
         const userId = String(ctx.message.from.id);
         const unixTime = String(Math.floor(Date.now() / 1000));
-        const hash = crc32(unixTime).toString(16);
+        const hash = crc32(`${unixTime}${ctx.message.id}`).toString(16);
 
         const fileName = `${userId}_${hash}`
         await vocieToText.createOggFile(link.href, fileName);
-
         await vocieToText.createMp3File(fileName);
 
+        const prompt = await vocieToText.convertMp3ToText(fileName);
     } catch (error) {
         console.log(error);
     }
