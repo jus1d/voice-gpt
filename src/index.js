@@ -21,7 +21,7 @@ bot.on(message('voice'), async (ctx) => {
         const prompt = await openAI.transcript(fileName);
         // const gptResponse = await openAI.chat(prompt);
 
-        ctx.reply(`response: ${prompt}`);
+        ctx.reply(`${prompt}`);
     } catch (error) {
         console.log(error);
     }

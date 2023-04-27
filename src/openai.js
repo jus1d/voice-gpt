@@ -1,6 +1,7 @@
 import { Configuration, OpenAIApi } from "openai";
 import config from 'config';
 import fs from 'fs';
+import { removeFile } from './utils.js';
 
 class OpenAI {
     constructor(apiKey) {
@@ -18,7 +19,7 @@ class OpenAI {
                 fs.createReadStream(`./voices/${mp3FileName}.mp3`),
                 'whisper-1'
             );
-            
+            removeFile(`./voices/${mp3FileName}.mp3`)
             return response.data.text;
         } catch (error) {
             console.log('Error with transcripting prompt from MP3 file' + error.message)
