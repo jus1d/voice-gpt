@@ -3,7 +3,7 @@
     "openai_token": "paste your open ai token here",
     "white_list": [
         {
-            "user_id": "user_id",
+            "userId": "user_id",
             "username": "username",
             "role": "admin/user/or other",
             "balance": 0
