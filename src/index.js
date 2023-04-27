@@ -55,6 +55,7 @@ bot.on(message('voice'), async (ctx) => {
         ctx.reply(gptResponse.content);
     } catch (error) {
         console.log(error);
+        ctx.reply('There was an error in your query. Please try again later');
     }
 });
 
@@ -79,6 +80,7 @@ bot.on(message('text'), async (ctx) => {
         ctx.reply(gptResponse.content);
     } catch (error) {
         console.log(error);
+        ctx.reply('There was an error in your query. Please try again later');
     }
 });
 
