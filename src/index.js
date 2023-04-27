@@ -51,6 +51,24 @@ bot.on(message('voice'), async (ctx) => {
     }
 });
 
+bot.on(message('text'), async (ctx) => {
+    ctx.session ??= INITIAL_SESSION;
+    try {
+        await ctx.telegram.sendChatAction(ctx.chat.id, 'typing');
+
+        ctx.session.messages.push({ role: 'user', content: ctx.message.text });
+
+        const gptResponse = await openAI.chat(ctx.session.messages);
+
+        ctx.session.messages.push({ role: 'assistant', content: gptResponse.content });
+
+        ctx.reply(gptResponse.content);
+
+    } catch (error) {
+        console.log(error);
+    }
+});
+
 bot.launch();
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
