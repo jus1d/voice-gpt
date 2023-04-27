@@ -29,6 +29,10 @@ class Logger {
         setConsoleStamp('info');
         console.log(message);
     }
+
+    usernameFormat(username) {
+        return `\x1b[36m\x1b[4m${username}\x1b[0m`;
+    }
 }
 
 export const logger = new Logger();
