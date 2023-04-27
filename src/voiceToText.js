@@ -26,7 +26,7 @@ class VoiceToText {
         })
     }
 
-    createMp3File(fileName) {
+    async createMp3File(fileName) {
         ffmpeg()
             .input(`./voices/${fileName}.ogg`)
             .output(`./voices/${fileName}.mp3`)
@@ -39,7 +39,7 @@ class VoiceToText {
     }
 
     convertMp3ToText(mp3FilePath) {
-
+        
     }
 
 }

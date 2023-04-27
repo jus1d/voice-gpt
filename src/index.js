@@ -16,7 +16,7 @@ bot.on(message('voice'), async (ctx) => {
         const fileName = `${userId}_${hash}`
         await vocieToText.createOggFile(link.href, fileName);
 
-        vocieToText.createMp3File(fileName);
+        await vocieToText.createMp3File(fileName);
 
     } catch (error) {
         console.log(error);
