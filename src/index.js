@@ -141,7 +141,7 @@ bot.action('reject', async (ctx) => {
 
 bot.launch();
 
-log.info(`VoiceGPT just started!`);
+log.info(`${log.versionFormat(config.get('type'))} just started!`);
 
 process.once('SIGINT', () => {
     bot.stop('SIGINT');
