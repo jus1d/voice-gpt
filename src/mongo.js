@@ -12,21 +12,14 @@ class MongoDB {
     }
 
     async getUser(telegramId) {
-        return await UserModel.findOne({
-            telegramId: telegramId
-        });
+        return await UserModel.findOne({ telegramId });
     }
 
     async updateUserList(telegramId, list) {
-        let user = await UserModel.findOne({
-            telegramId,
-        });
-
+        let user = await UserModel.findOne({ telegramId });
         user.list = list;
 
-        return await UserModel.updateOne({
-            telegramId,
-        }, user);
+        return await UserModel.updateOne({ telegramId }, user);
     }
 
     async initConversation(telegramId) {
@@ -42,14 +35,13 @@ class MongoDB {
 
     async updateConversation(messages, telegramId) {
         let conversation = await ConversationModel.findOne({ telegramId });
-
         conversation.messages = messages;
 
         return await ConversationModel.updateOne({ telegramId }, conversation);
     }
 
     async getConversation(telegramId) {
-        return await ConversationModel.findOne({ telegramId: telegramId });
+        return await ConversationModel.findOne({ telegramId });
     }
 }
 
