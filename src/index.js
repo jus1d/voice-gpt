@@ -18,7 +18,7 @@ bot.command('start', async (ctx) => {
     const user = await mongo.getUser(String(ctx.message.from.id));
 
     if (!user) {
-        mongo.saveUser(ctx.message.from.id, ctx.message.from.username, ctx.message.from.first_name);
+        await mongo.saveUser(ctx.message.from.id, ctx.message.from.username, ctx.message.from.first_name);
     }
 
     log.info(`User ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)} started the bot`);
@@ -28,13 +28,13 @@ bot.command('start', async (ctx) => {
         ctx.session = conversation;
     } else {
         ctx.session = INITIAL_SESSION;
-        mongo.saveConversation(ctx.session.messages, String(ctx.message.from.id));
+        await mongo.saveConversation(ctx.session.messages, String(ctx.message.from.id));
     }
     await ctx.reply('Hi! You can send me your questions, and I will reply to them!\n\nbtw: Voice messages supports too');
 });
 
 bot.command('new', async (ctx) => {
-    mongo.initConversation(String(ctx.message.from.id));
+    await mongo.initConversation(String(ctx.message.from.id));
     await ctx.reply('New chat created!');
     log.info(`User ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)} created new chat context`);
 });
@@ -83,11 +83,16 @@ bot.on(message('voice'), async (ctx) => {
         const prompt = await openAI.transcript(fileName);
         ctx.session.messages.push({ role: 'user', content: prompt });
         const gptResponse = await openAI.chat(ctx.session.messages);
-        ctx.session.messages.push({ role: 'assistant', content: gptResponse.content });
-        mongo.updateConversation(ctx.session.messages, String(ctx.message.from.id));
+        if (gptResponse) {
+            ctx.session.messages.push({ role: 'assistant', content: gptResponse.content });
+            await mongo.updateConversation(ctx.session.messages, String(ctx.message.from.id));
+            ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
+            await mongo.addRequestCounter(String(ctx.message.from.id));
 
-        ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
-        ctx.reply(gptResponse.content);
+            ctx.reply(gptResponse.content);
+        } else {
+            ctx.reply('No response from ChatGPT');
+        }
     } catch (error) {
         log.error(`Error with creating request. User: ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)}\nError: ${error.message}`);
         ctx.reply('There was an error in your query. Please try again later');
@@ -126,8 +131,9 @@ bot.on(message('text'), async (ctx) => {
         const gptResponse = await openAI.chat(ctx.session.messages);
         if (gptResponse) {
             ctx.session.messages.push({ role: 'assistant', content: gptResponse.content });
-            mongo.updateConversation(ctx.session.messages, String(ctx.message.from.id));
+            await mongo.updateConversation(ctx.session.messages, String(ctx.message.from.id));
             ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
+            await mongo.addRequestCounter(String(ctx.message.from.id));
     
             ctx.reply(gptResponse.content);
         } else {

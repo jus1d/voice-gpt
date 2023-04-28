@@ -15,6 +15,13 @@ class MongoDB {
         return await UserModel.findOne({ telegramId });
     }
 
+    async addRequestCounter(telegramId) {
+        let user = await UserModel.findOne({ telegramId });
+        user.requests = user.requests + 1;
+
+        return await UserModel.updateOne({ telegramId }, user);
+    }
+
     async updateUserList(telegramId, list) {
         let user = await UserModel.findOne({ telegramId });
         user.list = list;
