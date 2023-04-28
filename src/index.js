@@ -101,12 +101,12 @@ bot.action('request_whitelist_slot', async (ctx) => {
     log.info(`User ${log.usernameFormat(`@${ctx.from.username}:${ctx.from.id}`)} requested a whitelist slot`);
 
     ctx.telegram.sendMessage(797712297, `@${ctx.from.username} [${ctx.from.id}] requested a whitelist slot`, Markup.inlineKeyboard([
-        Markup.button.callback("✅ Approve", "allow"),
+        Markup.button.callback("✅ Approve", "approve"),
         Markup.button.callback("❌ Reject", "reject")
     ]));
 });
 
-bot.action('allow', async (ctx) => {
+bot.action('approve', async (ctx) => {
     const userId = Number(ctx.update.callback_query.message.text.split(' ')[1].replace('[', '').replace(']', ''));
     const username = ctx.update.callback_query.message.text.split(' ')[0].replace('@', '');
 
@@ -122,10 +122,10 @@ bot.action('allow', async (ctx) => {
     if (res) {
         ctx.telegram.sendMessage(userId, '🥳 Your request to be added to the whitelist has been approved by the admins.\n\nYou are whitelisted and can use the bot! Just send text message or record voice');
         ctx.editMessageText(`✅ Access for @${username} was granted`);
-        log.success(`User ${log.usernameFormat(`@${ctx.from.username}:${ctx.from.id}`)} was added to whitelist`);
+        log.success(`User ${log.usernameFormat(`@${username}:${userId}`)} was added to whitelist`);
     } else {
         ctx.editMessageText(`❌ Something went wrong while approving access to @${username}`);
-        log.error(`There are an error while adding user ${log.usernameFormat(`@${ctx.from.username}:${ctx.from.id}`)} to whitelist`);
+        log.error(`There are an error while adding user ${log.usernameFormat(`@${username}:${userId}`)} to whitelist`);
     }
 
 });
@@ -135,7 +135,7 @@ bot.action('reject', async (ctx) => {
     const username = ctx.update.callback_query.message.text.split(' ')[0].replace('@', '');
 
     ctx.editMessageText(`❌ Access for @${username} was rejected`);
-    log.success(`Reject access for user ${log.usernameFormat(`@${ctx.from.username}:${ctx.from.id}`)}`);
+    log.success(`Reject access for user ${log.usernameFormat(`@${username}:${userId}`)}`);
     ctx.telegram.sendMessage(userId, '❌ Your request to be added to the whitelist was rejected by the admins');
 });
 
