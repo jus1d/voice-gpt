@@ -118,7 +118,6 @@ bot.on(message('text'), async (ctx) => {
 
     log.info(`User ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)} request created from text message`);
 
-
     try {
         const message = await ctx.reply('Already processing your request, wait a bit');
         await ctx.telegram.sendChatAction(ctx.chat.id, 'typing');
