@@ -45,16 +45,20 @@ bot.command('id', async (ctx) => {
 
 bot.on(message('voice'), async (ctx) => {
     const user = await mongo.getUser(ctx.message.from.id);
-    const conversation = (await mongo.getConversation(String(ctx.message.from.id))).messages;
+    const conversation = await mongo.getConversation(String(ctx.message.from.id));
 
     if (conversation) {
-        ctx.session = { messages: conversation };
+        ctx.session = { messages: conversation.messages };
     } else {
         ctx.session = INITIAL_SESSION;
         await mongo.saveConversation(ctx.session.messages, String(ctx.message.from.id));
     }
 
-    if (user && user.list !== 'white') {
+    if (!user) {
+        return await ctx.reply('Please use /start command to start the bot');
+    }
+
+    if (user.list !== 'white') {
         log.info(`User ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)} request rejected. User not whitelisted`);
         return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins 👇', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_whitelist_slot")
@@ -92,16 +96,20 @@ bot.on(message('voice'), async (ctx) => {
 
 bot.on(message('text'), async (ctx) => {
     const user = await mongo.getUser(ctx.message.from.id);
-    const conversation = (await mongo.getConversation(String(ctx.message.from.id))).messages;
+    const conversation = await mongo.getConversation(String(ctx.message.from.id));
 
     if (conversation) {
-        ctx.session = { messages: conversation };
+        ctx.session = { messages: conversation.messages };
     } else {
         ctx.session = INITIAL_SESSION;
         await mongo.saveConversation(ctx.session.messages, String(ctx.message.from.id));
     }
 
-    if (user && user.list !== 'white') {
+    if (!user) {
+        return await ctx.reply('Please use /start command to start the bot');
+    }
+
+    if (user.list !== 'white') {
         log.info(`User ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)} request rejected. User not whitelisted`);
         return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins 👇', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_whitelist_slot")
