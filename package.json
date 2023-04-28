@@ -29,6 +29,7 @@
     "console-stamp": "^3.1.1",
     "crc32": "^0.2.2",
     "fluent-ffmpeg": "^2.1.2",
+    "mongoose": "^7.1.0",
     "openai": "^3.2.1",
     "telegraf": "^4.12.2"
   }

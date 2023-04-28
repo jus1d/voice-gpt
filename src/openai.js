@@ -1,4 +1,5 @@
 import { Configuration, OpenAIApi } from "openai";
+import { logger as log } from "./logger.js";
 import { removeFile } from './utils.js';
 import config from 'config';
 import fs from 'fs';
@@ -20,7 +21,7 @@ class OpenAI {
 
             return response.data.choices[0].message;
         } catch (error) {
-            console.log('Error with getting response from ChatGPT');
+            log.error(`Error with getting response from ChatGPT\n${error}`);
         }
     }
 
@@ -33,7 +34,7 @@ class OpenAI {
             removeFile(`./voices/${mp3FileName}.mp3`);
             return response.data.text;
         } catch (error) {
-            console.log('Error with transcripting prompt from MP3 file' + error.message);
+            log.error('Error with transcripting prompt from MP3 file' + error.message);
         }
     }
 }
