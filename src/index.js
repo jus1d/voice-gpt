@@ -4,6 +4,7 @@ import { message } from 'telegraf/filters';
 import { whitelist } from './whitelist.js';
 import { openAI } from './openai.js';
 import { logger as log } from "./logger.js";
+import mongoose from 'mongoose';
 import crc32 from 'crc32';
 import config from 'config';
 
@@ -27,6 +28,19 @@ bot.command('new', async (ctx) => {
 
 bot.command('id', async (ctx) => {
     ctx.reply(String(ctx.message.from.id));
+});
+
+bot.command('whitelist', async (ctx) => {
+    ctx.reply(ctx.message.text);
+});
+
+bot.command('approve', async (ctx) => {
+    let username = ctx.message.text.replace('/approve', '');
+    ctx.reply(username);
+});
+
+bot.command('reject', async (ctx) => {
+    ctx.reply(ctx.message.text);
 });
 
 bot.on(message('voice'), async (ctx) => {
@@ -139,15 +153,28 @@ bot.action('reject', async (ctx) => {
     ctx.telegram.sendMessage(userId, '❌ Your request to be added to the whitelist was rejected by the admins');
 });
 
-bot.launch();
-
-log.info(`${log.versionFormat(config.get('type'))} just started!`);
-
-process.once('SIGINT', () => {
-    bot.stop('SIGINT');
-    log.error('Bot stopped: SIGINT');
-});
-process.once('SIGTERM', () => {
-    bot.stop('SIGTERM');
-    log.error('Bot stopped: SIGTERM');
-});
+(async () => {
+    try {
+        bot.launch();
+        
+        log.info(`${log.versionFormat(config.get('type'))} just started!`);
+        
+        await mongoose.connect(config.get('mongo_uri'), {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        
+        log.info(`Database: OK`);
+        
+        process.once('SIGINT', () => {
+            bot.stop('SIGINT');
+            log.error('Bot stopped: SIGINT');
+        });
+        process.once('SIGTERM', () => {
+            bot.stop('SIGTERM');
+            log.error('Bot stopped: SIGTERM');
+        });
+    } catch (error) {
+        log.error(error.message);
+    }
+})()
