@@ -1,5 +1,5 @@
 {
-    "type": "dev",
+    "type": "prod",
     "telegram_token":"paste your telegram token here",
     "openai_token":"paste your openai token here",
     "mongo_uri": "paste mongo connect uri here"
