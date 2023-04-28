@@ -164,7 +164,6 @@ bot.action('approve', async (ctx) => {
         ctx.editMessageText(`❌ Something went wrong while approving access to @${username}`);
         log.error(`There are an error while adding user ${log.usernameFormat(`@${username}:${userId}`)} to whitelist`);
     }
-
 });
 
 bot.action('reject', async (ctx) => {
