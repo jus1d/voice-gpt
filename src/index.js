@@ -1,6 +1,7 @@
 import { Telegraf, Markup, session } from "telegraf";
 import { vocieToText } from './voice.js';
 import { message } from 'telegraf/filters';
+import { isAdmin } from "./utils.js";
 import { code, bold } from 'telegraf/format';
 import { logger as log } from "./logger.js";
 import { openAI } from './openai.js';
@@ -46,6 +47,8 @@ bot.command('id', async (ctx) => {
 });
 
 bot.command('whitelist', async (ctx) => {
+    if (!(await isAdmin(ctx.message.from.id))) return;
+
     const whitelist = await mongo.getWhitelistedUsers();
     let whitelistString = '';
     let whiteCounterUsers = 0;
@@ -176,6 +179,8 @@ bot.action('request_whitelist_slot', async (ctx) => {
 });
 
 bot.action('approve', async (ctx) => {
+    if (!(await isAdmin(ctx.message.from.id))) return;
+
     const userId = Number(ctx.update.callback_query.message.text.split(' ')[1].replace('[', '').replace(']', ''));
     const username = ctx.update.callback_query.message.text.split(' ')[0].replace('@', '');
 
@@ -192,6 +197,8 @@ bot.action('approve', async (ctx) => {
 });
 
 bot.action('reject', async (ctx) => {
+    if (!(await isAdmin(ctx.message.from.id))) return;
+
     const userId = Number(ctx.update.callback_query.message.text.split(' ')[1].replace('[', '').replace(']', ''));
     const username = ctx.update.callback_query.message.text.split(' ')[0].replace('@', '');
 
