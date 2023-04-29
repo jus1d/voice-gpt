@@ -3,14 +3,26 @@ import { UserModel } from './models/user.model.js';
 import { ConversationModel } from './models/conversation.model.js';
 
 class MongoDB {
-    async saveUser(telegramId, username, fullname, role = 'user') {
+    roles = {
+        ADMIN: 'admin',
+        USER: 'user'
+    }
+
+    list = {
+        WHITE: 'white',
+        BLACK: 'black',
+        LIMITED: 'limited',
+        NONE: 'none'
+    }
+
+    async saveUser(telegramId, username, fullname, role = this.roles.USER) {
         try {
             return await new UserModel({
                 telegramId: telegramId,
                 username: username,
                 fullname: fullname,
                 role: role,
-                list: 'none'
+                list: this.list.NONE
             }).save();
         } catch (error) {
             log.error(`Error while creating new user in database: ${error.message}`);
@@ -89,8 +101,8 @@ class MongoDB {
     async getWhitelistedUsers() {
         try {
             const users = [];
-            const whitelistedUsers =  await UserModel.find({ list: "white" });
-            const limitedUsers =  await UserModel.find({ list: "limited" });
+            const whitelistedUsers =  await UserModel.find({ list: this.list.WHITE });
+            const limitedUsers =  await UserModel.find({ list: this.list.LIMITED });
     
             for(let i = 0; i < whitelistedUsers.length; i++) {
                 users.push({ 

@@ -56,7 +56,7 @@ bot.command('whitelist', async (ctx) => {
 
     for(let i = 0; i < whitelist.length; i++) {
         whitelistString += `@${whitelist[i].username}: ${whitelist[i].list}\n`
-        if (whitelist[i].list === 'white') {
+        if (whitelist[i].list === mongo.list.WHITE) {
             whiteCounterUsers++;
         } else {
             limitedCounterUsers++;
@@ -137,7 +137,7 @@ bot.on(message('text'), async (ctx) => {
         return await ctx.reply('Please use /start command to start the bot');
     }
 
-    if (user.list !== 'white') {
+    if (user.list !== mongo.list.WHITE) {
         log.info(`User ${highlight(`@${ctx.message.from.username}:${ctx.message.from.id}`)} request rejected. User not whitelisted`);
         return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins 👇', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_whitelist_slot")
@@ -150,10 +150,10 @@ bot.on(message('text'), async (ctx) => {
         const message = await ctx.reply(code('Already processing your request, wait a bit'));
         await ctx.telegram.sendChatAction(ctx.chat.id, 'typing');
         
-        ctx.session.messages.push({ role: 'user', content: ctx.message.text });
+        ctx.session.messages.push({ role: openAI.roles.USER, content: ctx.message.text });
         const gptResponse = await openAI.chat(ctx.session.messages);
         if (gptResponse) {
-            ctx.session.messages.push({ role: 'assistant', content: gptResponse.content });
+            ctx.session.messages.push({ role: openAI.roles.ASSISTANT, content: gptResponse.content });
             await mongo.updateConversation(ctx.session.messages, String(ctx.message.from.id));
             ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
             await mongo.addRequestCounter(String(ctx.message.from.id));
@@ -185,7 +185,7 @@ bot.action('approve', async (ctx) => {
     const userId = Number(ctx.update.callback_query.message.text.split(' ')[1].replace('[', '').replace(']', ''));
     const username = ctx.update.callback_query.message.text.split(' ')[0].replace('@', '');
 
-    const res = await mongo.updateUserList(userId, 'white');
+    const res = await mongo.updateUserList(userId, mongo.list.WHITE);
 
     if (res) {
         ctx.telegram.sendMessage(userId, '🥳 Your request to be added to the whitelist has been approved by the admins.\n\nYou are whitelisted and can use the bot! Just send text message or record voice');

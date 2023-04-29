@@ -5,6 +5,12 @@ import config from 'config';
 import fs from 'fs';
 
 class OpenAI {
+    roles = {
+        USER: 'user',
+        ASSISTANT: 'assistant',
+        SYSTEM: 'system'
+    }
+    
     constructor(apiKey) {
         const configuration = new Configuration({
             apiKey,
