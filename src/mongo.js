@@ -50,6 +50,30 @@ class MongoDB {
     async getConversation(telegramId) {
         return await ConversationModel.findOne({ telegramId });
     }
+
+    async getWhitelistedUsers() {
+        const users = [];
+        const whitelistedUsers =  await UserModel.find({ list: "white" });
+        const limitedUsers =  await UserModel.find({ list: "limited" });
+
+        for(let i = 0; i < whitelistedUsers.length; i++) {
+            users.push({ 
+                telegramId: whitelistedUsers[i].telegramId,
+                username: whitelistedUsers[i].username,
+                list: whitelistedUsers[i].list
+             });
+        }
+
+        for(let i = 0; i < limitedUsers.length; i++) {
+            users.push({ 
+                telegramId: limitedUsers[i].telegramId,
+                username: limitedUsers[i].username,
+                list: limitedUsers[i].list
+             });
+        }
+
+        return users;
+    }
 }
 
 export const mongo = new MongoDB();
