@@ -18,7 +18,7 @@ class MongoDB {
     async saveUser(telegramId, username, fullname, role = this.roles.USER) {
         try {
             return await new UserModel({
-                telegramId: telegramId,
+                telegramId: String(telegramId),
                 username: username,
                 fullname: fullname,
                 role: role,
@@ -31,7 +31,7 @@ class MongoDB {
 
     async getUser(telegramId) {
         try {
-            return await UserModel.findOne({ telegramId });
+            return await UserModel.findOne({ telegramId: String(telegramId) });
         } catch (error) {
             log.error(`Error with getting user: ${error.message}`);
         }
@@ -39,10 +39,10 @@ class MongoDB {
 
     async addRequestCounter(telegramId) {
         try {
-            let user = await UserModel.findOne({ telegramId });
+            let user = await UserModel.findOne({ telegramId: String(telegramId) });
             user.requests = user.requests + 1;
     
-            return await UserModel.updateOne({ telegramId }, user);
+            return await UserModel.updateOne({ telegramId: String(telegramId) }, user);
         } catch (error) {
             log.error(`Error while updating request counter: ${error.message}`);
         }
@@ -50,10 +50,10 @@ class MongoDB {
 
     async updateUserList(telegramId, list) {
         try {
-            let user = await UserModel.findOne({ telegramId });
+            let user = await UserModel.findOne({ telegramId: String(telegramId) });
             user.list = list;
     
-            return await UserModel.updateOne({ telegramId }, user);
+            return await UserModel.updateOne({ telegramId: String(telegramId) }, user);
         } catch (error) {
             log.error(`Error while updating user's list: ${error.message}`);
         }
@@ -81,10 +81,10 @@ class MongoDB {
 
     async updateConversation(messages, telegramId) {
         try {
-            let conversation = await ConversationModel.findOne({ telegramId });
+            let conversation = await ConversationModel.findOne({ telegramId: String(telegramId) });
             conversation.messages = messages;
     
-            return await ConversationModel.updateOne({ telegramId }, conversation);
+            return await ConversationModel.updateOne({ telegramId: String(telegramId) }, conversation);
         } catch (error) {
             log.error(`Error while updating conversation: ${error.message}`);
         }
@@ -92,7 +92,7 @@ class MongoDB {
 
     async getConversation(telegramId) {
         try {
-            return await ConversationModel.findOne({ telegramId });
+            return await ConversationModel.findOne({ telegramId: String(telegramId) });
         } catch (error) {
             log.error(`Error while getting conversation: ${error.message}`);
         }

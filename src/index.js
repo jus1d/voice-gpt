@@ -18,7 +18,7 @@ const ADMIN_TG_ID = config.get('admin_tg_id');
 bot.use(session());
 
 bot.command('start', async (ctx) => {
-    const user = await mongo.getUser(String(ctx.message.from.id));
+    const user = await mongo.getUser(ctx.message.from.id);
 
     if (!user) {
         await mongo.saveUser(ctx.message.from.id, ctx.message.from.username, ctx.message.from.first_name);
@@ -26,7 +26,7 @@ bot.command('start', async (ctx) => {
 
     log.info(`User ${highlight(`@${ctx.message.from.username}:${ctx.message.from.id}`)} started the bot`);
 
-    const conversation = await mongo.getConversation(String(ctx.message.from.id));
+    const conversation = await mongo.getConversation(ctx.message.from.id);
     if (conversation) {
         ctx.session = conversation;
     } else {
@@ -37,7 +37,7 @@ bot.command('start', async (ctx) => {
 });
 
 bot.command('new', async (ctx) => {
-    await mongo.initConversation(String(ctx.message.from.id));
+    await mongo.initConversation(ctx.message.from.id);
     await ctx.reply('New chat created!');
     log.info(`User ${highlight(`@${ctx.message.from.username}:${ctx.message.from.id}`)} created new chat context`);
 });
@@ -108,9 +108,9 @@ bot.on(message('voice'), async (ctx) => {
         const gptResponse = await openAI.chat(ctx.session.messages);
         if (gptResponse) {
             ctx.session.messages.push({ role: 'assistant', content: gptResponse.content });
-            await mongo.updateConversation(ctx.session.messages, String(ctx.message.from.id));
+            await mongo.updateConversation(ctx.session.messages, ctx.message.from.id);
             ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
-            await mongo.addRequestCounter(String(ctx.message.from.id));
+            await mongo.addRequestCounter(ctx.message.from.id);
 
             ctx.reply(gptResponse.content);
         } else {
@@ -124,7 +124,7 @@ bot.on(message('voice'), async (ctx) => {
 
 bot.on(message('text'), async (ctx) => {
     const user = await mongo.getUser(ctx.message.from.id);
-    const conversation = await mongo.getConversation(String(ctx.message.from.id));
+    const conversation = await mongo.getConversation(ctx.message.from.id);
 
     if (conversation) {
         ctx.session = { messages: conversation.messages };
@@ -154,9 +154,9 @@ bot.on(message('text'), async (ctx) => {
         const gptResponse = await openAI.chat(ctx.session.messages);
         if (gptResponse) {
             ctx.session.messages.push({ role: openAI.roles.ASSISTANT, content: gptResponse.content });
-            await mongo.updateConversation(ctx.session.messages, String(ctx.message.from.id));
+            await mongo.updateConversation(ctx.session.messages, ctx.message.from.id);
             ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
-            await mongo.addRequestCounter(String(ctx.message.from.id));
+            await mongo.addRequestCounter(ctx.message.from.id);
     
             ctx.reply(gptResponse.content);
         } else {
