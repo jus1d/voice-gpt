@@ -53,7 +53,7 @@ bot.command('whitelist', async (ctx) => {
     let whiteCounterUsers = 0;
     let limitedCounterUsers = 0;
     const whitelist = await mongo.getWhitelistedUsers();
-    
+
     for(let i = 0; i < whitelist.length; i++) {
         whitelistString += `@${whitelist[i].username}: ${whitelist[i].list}\n`
         if (whitelist[i].list === 'white') {
