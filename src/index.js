@@ -156,7 +156,7 @@ bot.on(message('text'), async (ctx) => {
     
             ctx.reply(gptResponse.content);
         } else {
-            ctx.reply('No response from ChatGPT');
+            ctx.reply(code('No response from ChatGPT'));
         }
     } catch (error) {
         log.error(`Error with creating request. User: ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)}\nError: ${error}`);
