@@ -47,36 +47,41 @@ bot.command('id', async (ctx) => {
 });
 
 bot.command('whitelist', async (ctx) => {
-    if (!(await isAdmin(ctx.message.from.id))) return;
-
-    let whiteCounterUsers = 0;
-    let limitedCounterUsers = 0;
-    let whitelistedUsers = '';
-    let limitedUsers = '';
-    let whitelistStr = '';
-    const whitelist = await mongo.getWhitelistedUsers();
-
-    for(let i = 0; i < whitelist.length; i++) {
-        if (whitelist[i].list === mongo.list.WHITE) {
-            whitelistedUsers += `@${whitelist[i].username}, for reject: /reject@${whitelist[i].telegramId}\n`;
-            whiteCounterUsers++;
-        } else if (whitelist[i].list === mongo.list.LIMITED) {
-            limitedUsers += `@${whitelist[i].username}, for reject: /reject@${whitelist[i].telegramId}\n`;
-            limitedCounterUsers++;
+    try {
+        if (!(await isAdmin(ctx.message.from.id))) return;
+    
+        let whiteCounterUsers = 0;
+        let limitedCounterUsers = 0;
+        let whitelistedUsers = '';
+        let limitedUsers = '';
+        let whitelistStr = '';
+        const whitelist = await mongo.getWhitelistedUsers();
+    
+        for(let i = 0; i < whitelist.length; i++) {
+            if (whitelist[i].list === mongo.list.WHITE) {
+                whitelistedUsers += `@${whitelist[i].username}, for reject: /reject@${whitelist[i].telegramId}\n`;
+                whiteCounterUsers++;
+            } else if (whitelist[i].list === mongo.list.LIMITED) {
+                limitedUsers += `@${whitelist[i].username}, for reject: /reject@${whitelist[i].telegramId}\n`;
+                limitedCounterUsers++;
+            }
         }
+    
+        if (whiteCounterUsers !== 0) {
+            whitelistStr += `Whitelisted users: ${whiteCounterUsers}\n\n${whitelistedUsers}\n`;
+        }
+        if (limitedCounterUsers !== 0) {
+            whitelistStr += `Limited users: ${whiteCounterUsers}\n\n${limitedUsers}`;
+        }
+        if (whiteCounterUsers === 0 && limitedCounterUsers === 0) {
+            whitelistStr = 'No whitelisted users yet'
+        }
+    
+        await ctx.reply(whitelistStr);
+    } catch (error) {
+        await ctx.reply(code('Error while getting whitelisted users'));
+        log.error(`Error while getting whitelisted users: ${error.message}`);
     }
-
-    if (whiteCounterUsers !== 0) {
-        whitelistStr += `Whitelisted users: ${whiteCounterUsers}\n\n${whitelistedUsers}\n`;
-    }
-    if (limitedCounterUsers !== 0) {
-        whitelistStr += `Limited users: ${whiteCounterUsers}\n\n${limitedUsers}`;
-    }
-    if (whiteCounterUsers === 0 && limitedCounterUsers === 0) {
-        whitelistStr = 'No whitelisted users yet'
-    }
-
-    await ctx.reply(whitelistStr);
 });
 
 bot.hears(/\/reject@(\d+)/, async (ctx) => {
