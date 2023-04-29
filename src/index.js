@@ -12,6 +12,7 @@ console.clear();
 
 const bot = new Telegraf(config.get('telegram_token'));
 const INITIAL_SESSION = { messages: [] };
+const ADMIN_TG_ID = config.get('admin_tg_id');
 bot.use(session());
 
 bot.command('start', async (ctx) => {
@@ -150,7 +151,7 @@ bot.action('request_whitelist_slot', async (ctx) => {
 
     log.info(`User ${log.usernameFormat(`@${ctx.from.username}:${ctx.from.id}`)} requested a whitelist slot`);
 
-    ctx.telegram.sendMessage(797712297, `@${ctx.from.username} [${ctx.from.id}] requested a whitelist slot`, Markup.inlineKeyboard([
+    ctx.telegram.sendMessage(ADMIN_TG_ID, `@${ctx.from.username} [${ctx.from.id}] requested a whitelist slot`, Markup.inlineKeyboard([
         Markup.button.callback("✅ Approve", "approve"),
         Markup.button.callback("❌ Reject", "reject")
     ]));

@@ -2,5 +2,6 @@
     "type": "prod",
     "telegram_token":"paste your telegram token here",
     "openai_token":"paste your openai token here",
-    "mongo_uri": "paste mongo connect uri here"
+    "mongo_uri": "paste mongo connect uri here",
+    "admin_tg_id": "paste your tg id here"
 }
