@@ -1,7 +1,7 @@
 import { Telegraf, Markup, session } from "telegraf";
 import { vocieToText } from './voice.js';
 import { message } from 'telegraf/filters';
-import { isAdmin } from "./utils.js";
+import { isAdmin, highlight } from "./utils.js";
 import { code, bold } from 'telegraf/format';
 import { logger as log } from "./logger.js";
 import { openAI } from './openai.js';
@@ -24,7 +24,7 @@ bot.command('start', async (ctx) => {
         await mongo.saveUser(ctx.message.from.id, ctx.message.from.username, ctx.message.from.first_name);
     }
 
-    log.info(`User ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)} started the bot`);
+    log.info(`User ${highlight(`@${ctx.message.from.username}:${ctx.message.from.id}`)} started the bot`);
 
     const conversation = await mongo.getConversation(String(ctx.message.from.id));
     if (conversation) {
@@ -39,7 +39,7 @@ bot.command('start', async (ctx) => {
 bot.command('new', async (ctx) => {
     await mongo.initConversation(String(ctx.message.from.id));
     await ctx.reply('New chat created!');
-    log.info(`User ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)} created new chat context`);
+    log.info(`User ${highlight(`@${ctx.message.from.username}:${ctx.message.from.id}`)} created new chat context`);
 });
 
 bot.command('id', async (ctx) => {
@@ -49,10 +49,11 @@ bot.command('id', async (ctx) => {
 bot.command('whitelist', async (ctx) => {
     if (!(await isAdmin(ctx.message.from.id))) return;
 
-    const whitelist = await mongo.getWhitelistedUsers();
     let whitelistString = '';
     let whiteCounterUsers = 0;
     let limitedCounterUsers = 0;
+    const whitelist = await mongo.getWhitelistedUsers();
+    
     for(let i = 0; i < whitelist.length; i++) {
         whitelistString += `@${whitelist[i].username}: ${whitelist[i].list}\n`
         if (whitelist[i].list === 'white') {
@@ -81,13 +82,13 @@ bot.on(message('voice'), async (ctx) => {
     }
 
     if (user.list !== 'white') {
-        log.info(`User ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)} request rejected. User not whitelisted`);
+        log.info(`User ${highlight(`@${ctx.message.from.username}:${ctx.message.from.id}`)} request rejected. User not whitelisted`);
         return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins 👇', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_whitelist_slot")
         ]));
     }
 
-    log.info(`User ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)} request created from voice message`);
+    log.info(`User ${highlight(`@${ctx.message.from.username}:${ctx.message.from.id}`)} request created from voice message`);
 
     try {
         const message = await ctx.reply(code('Already processing your request, wait a bit'));
@@ -137,13 +138,13 @@ bot.on(message('text'), async (ctx) => {
     }
 
     if (user.list !== 'white') {
-        log.info(`User ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)} request rejected. User not whitelisted`);
+        log.info(`User ${highlight(`@${ctx.message.from.username}:${ctx.message.from.id}`)} request rejected. User not whitelisted`);
         return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins 👇', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_whitelist_slot")
         ]));
     }
 
-    log.info(`User ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)} request created from text message`);
+    log.info(`User ${highlight(`@${ctx.message.from.username}:${ctx.message.from.id}`)} request created from text message`);
 
     try {
         const message = await ctx.reply(code('Already processing your request, wait a bit'));
@@ -162,7 +163,7 @@ bot.on(message('text'), async (ctx) => {
             ctx.reply(code('No response from ChatGPT'));
         }
     } catch (error) {
-        log.error(`Error with creating request. User: ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)}\nError: ${error}`);
+        log.error(`Error with creating request. User: ${highlight(`@${ctx.message.from.username}:${ctx.message.from.id}`)}\nError: ${error}`);
         ctx.reply('There was an error in your query. Please try again later');
     }
 });
@@ -170,7 +171,7 @@ bot.on(message('text'), async (ctx) => {
 bot.action('request_whitelist_slot', async (ctx) => {
     ctx.editMessageText('Request to be added to the whitelist has been sent to admins. Please wait a little whle');
 
-    log.info(`User ${log.usernameFormat(`@${ctx.from.username}:${ctx.from.id}`)} requested a whitelist slot`);
+    log.info(`User ${highlight(`@${ctx.from.username}:${ctx.from.id}`)} requested a whitelist slot`);
 
     ctx.telegram.sendMessage(ADMIN_TG_ID, `@${ctx.from.username} [${ctx.from.id}] requested a whitelist slot`, Markup.inlineKeyboard([
         Markup.button.callback("✅ Approve", "approve"),
@@ -189,10 +190,10 @@ bot.action('approve', async (ctx) => {
     if (res) {
         ctx.telegram.sendMessage(userId, '🥳 Your request to be added to the whitelist has been approved by the admins.\n\nYou are whitelisted and can use the bot! Just send text message or record voice');
         ctx.editMessageText(`✅ Access for @${username} was granted`);
-        log.success(`User ${log.usernameFormat(`@${username}:${userId}`)} was added to whitelist`);
+        log.success(`User ${highlight(`@${username}:${userId}`)} was added to whitelist`);
     } else {
         ctx.editMessageText(`❌ Something went wrong while approving access to @${username}`);
-        log.error(`There are an error while adding user ${log.usernameFormat(`@${username}:${userId}`)} to whitelist`);
+        log.error(`There are an error while adding user ${highlight(`@${username}:${userId}`)} to whitelist`);
     }
 });
 
@@ -203,7 +204,7 @@ bot.action('reject', async (ctx) => {
     const username = ctx.update.callback_query.message.text.split(' ')[0].replace('@', '');
 
     ctx.editMessageText(`❌ Access for @${username} was rejected`);
-    log.success(`Reject access for user ${log.usernameFormat(`@${username}:${userId}`)}`);
+    log.success(`Reject access for user ${highlight(`@${username}:${userId}`)}`);
     ctx.telegram.sendMessage(userId, '❌ Your request to be added to the whitelist was rejected by the admins');
 });
 
