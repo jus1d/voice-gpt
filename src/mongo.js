@@ -2,11 +2,12 @@ import { UserModel } from './models/user.model.js';
 import { ConversationModel } from './models/conversation.model.js';
 
 class MongoDB {
-    async saveUser(telegramId, username, fullname) {
+    async saveUser(telegramId, username, fullname, role = 'user') {
         return await new UserModel({
             telegramId: telegramId,
             username: username,
             fullname: fullname,
+            role: role,
             list: 'none'
         }).save();
     }
