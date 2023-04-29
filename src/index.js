@@ -49,21 +49,46 @@ bot.command('id', async (ctx) => {
 bot.command('whitelist', async (ctx) => {
     if (!(await isAdmin(ctx.message.from.id))) return;
 
-    let whitelistString = '';
     let whiteCounterUsers = 0;
     let limitedCounterUsers = 0;
+    let whitelistedUsers = '';
+    let limitedUsers = '';
+    let whitelistStr = '';
     const whitelist = await mongo.getWhitelistedUsers();
 
     for(let i = 0; i < whitelist.length; i++) {
-        whitelistString += `@${whitelist[i].username}: ${whitelist[i].list}\n`
         if (whitelist[i].list === mongo.list.WHITE) {
+            whitelistedUsers += `@${whitelist[i].username}, for reject: /reject@${whitelist[i].telegramId}\n`;
             whiteCounterUsers++;
-        } else {
+        } else if (whitelist[i].list === mongo.list.LIMITED) {
+            limitedUsers += `@${whitelist[i].username}, for reject: /reject@${whitelist[i].telegramId}\n`;
             limitedCounterUsers++;
         }
     }
-    whitelistString = `Total whitelisted users: ${whiteCounterUsers + limitedCounterUsers}\nWhitelisted users: ${whiteCounterUsers}\nUsers with limited access: ${limitedCounterUsers}\n\n` + whitelistString;
-    ctx.reply(whitelistString);
+
+    if (whiteCounterUsers !== 0) {
+        whitelistStr += `Whitelisted users: ${whiteCounterUsers}\n\n${whitelistedUsers}\n`;
+    }
+    if (limitedCounterUsers !== 0) {
+        whitelistStr += `Limited users: ${whiteCounterUsers}\n\n${limitedUsers}`;
+    }
+    if (whiteCounterUsers === 0 && limitedCounterUsers === 0) {
+        whitelistStr = 'No whitelisted users yet'
+    }
+
+    await ctx.reply(whitelistStr);
+});
+
+bot.hears(/\/reject@(\d+)/, async (ctx) => {
+    try {
+        const telegramId = ctx.message.text.replace('/reject@', '');
+        await mongo.updateUserList(telegramId, mongo.list.NONE);
+        const user = await mongo.getUser(telegramId);
+        await ctx.reply(`Access for @${user.username} [${user.telegramId}] was rejected`);
+    } catch (error) {
+        await ctx.reply(`Error while rejecting @${user.username} [${user.telegramId}]`);
+        log.error(`Error while rejecting user @${user.username}:${user.telegramId}: ${error.message}`);
+    }
 });
 
 bot.on(message('voice'), async (ctx) => {
