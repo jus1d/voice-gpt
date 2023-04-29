@@ -12,7 +12,7 @@ export async function removeFile(path) {
 
 export async function isAdmin(telegramId) {
     const user = await mongo.getUser(String(telegramId));
-    return user.role === 'admin';
+    return user.role === mongo.roles.ADMIN;
 }
 
 export function highlight(text) {

@@ -11,7 +11,7 @@ class VoiceToText {
     }
 
     async createOggFile(url, fileName) {
-        const response = await axios.get(url, {responseType: 'stream'});
+        const response = await axios.get(url, { responseType: 'stream' });
         const path = `./voices/${fileName}.ogg`;
 
         response.data.pipe(fs.createWriteStream(path));
