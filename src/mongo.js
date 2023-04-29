@@ -34,10 +34,11 @@ class MongoDB {
         await this.updateConversation([], telegramId);
     }
 
-    async saveConversation(messages, telegramId) {
+    async saveConversation(messages, user) {
         return await new ConversationModel({
             messages, 
-            telegramId,
+            telegramId: String(user.id), 
+            username: user.username
         }).save();
     }
 

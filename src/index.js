@@ -31,7 +31,7 @@ bot.command('start', async (ctx) => {
         ctx.session = conversation;
     } else {
         ctx.session = INITIAL_SESSION;
-        await mongo.saveConversation(ctx.session.messages, String(ctx.message.from.id));
+        await mongo.saveConversation(ctx.session.messages, ctx.message.from);
     }
     await ctx.reply('Hi! You can send me your questions, and I will reply to them!\n\nbtw: Voice messages supports too');
 });
@@ -74,7 +74,7 @@ bot.on(message('voice'), async (ctx) => {
         ctx.session = { messages: conversation.messages };
     } else {
         ctx.session = INITIAL_SESSION;
-        await mongo.saveConversation(ctx.session.messages, String(ctx.message.from.id));
+        await mongo.saveConversation(ctx.session.messages, ctx.message.from);
     }
 
     if (!user) {
@@ -130,7 +130,7 @@ bot.on(message('text'), async (ctx) => {
         ctx.session = { messages: conversation.messages };
     } else {
         ctx.session = INITIAL_SESSION;
-        await mongo.saveConversation(ctx.session.messages, String(ctx.message.from.id));
+        await mongo.saveConversation(ctx.session.messages, ctx.message.from);
     }
 
     if (!user) {
@@ -180,7 +180,7 @@ bot.action('request_whitelist_slot', async (ctx) => {
 });
 
 bot.action('approve', async (ctx) => {
-    if (!(await isAdmin(ctx.message.from.id))) return;
+    if (!(await isAdmin(ctx.from.id))) return;
 
     const userId = Number(ctx.update.callback_query.message.text.split(' ')[1].replace('[', '').replace(']', ''));
     const username = ctx.update.callback_query.message.text.split(' ')[0].replace('@', '');
@@ -198,7 +198,7 @@ bot.action('approve', async (ctx) => {
 });
 
 bot.action('reject', async (ctx) => {
-    if (!(await isAdmin(ctx.message.from.id))) return;
+    if (!(await isAdmin(ctx.from.id))) return;
 
     const userId = Number(ctx.update.callback_query.message.text.split(' ')[1].replace('[', '').replace(']', ''));
     const username = ctx.update.callback_query.message.text.split(' ')[0].replace('@', '');
