@@ -2,11 +2,12 @@ import { UserModel } from './models/user.model.js';
 import { ConversationModel } from './models/conversation.model.js';
 
 class MongoDB {
-    async saveUser(telegramId, username, fullname) {
+    async saveUser(telegramId, username, fullname, role = 'user') {
         return await new UserModel({
             telegramId: telegramId,
             username: username,
             fullname: fullname,
+            role: role,
             list: 'none'
         }).save();
     }
@@ -49,6 +50,30 @@ class MongoDB {
 
     async getConversation(telegramId) {
         return await ConversationModel.findOne({ telegramId });
+    }
+
+    async getWhitelistedUsers() {
+        const users = [];
+        const whitelistedUsers =  await UserModel.find({ list: "white" });
+        const limitedUsers =  await UserModel.find({ list: "limited" });
+
+        for(let i = 0; i < whitelistedUsers.length; i++) {
+            users.push({ 
+                telegramId: whitelistedUsers[i].telegramId,
+                username: whitelistedUsers[i].username,
+                list: whitelistedUsers[i].list
+             });
+        }
+
+        for(let i = 0; i < limitedUsers.length; i++) {
+            users.push({ 
+                telegramId: limitedUsers[i].telegramId,
+                username: limitedUsers[i].username,
+                list: limitedUsers[i].list
+             });
+        }
+
+        return users;
     }
 }
 

@@ -1,6 +1,7 @@
 import { Telegraf, Markup, session } from "telegraf";
 import { vocieToText } from './voice.js';
 import { message } from 'telegraf/filters';
+import { code, bold } from 'telegraf/format';
 import { logger as log } from "./logger.js";
 import { openAI } from './openai.js';
 import { mongo } from './mongo.js';
@@ -12,6 +13,7 @@ console.clear();
 
 const bot = new Telegraf(config.get('telegram_token'));
 const INITIAL_SESSION = { messages: [] };
+const ADMIN_TG_ID = config.get('admin_tg_id');
 bot.use(session());
 
 bot.command('start', async (ctx) => {
@@ -43,6 +45,23 @@ bot.command('id', async (ctx) => {
     ctx.reply(String(ctx.message.from.id));
 });
 
+bot.command('whitelist', async (ctx) => {
+    const whitelist = await mongo.getWhitelistedUsers();
+    let whitelistString = '';
+    let whiteCounterUsers = 0;
+    let limitedCounterUsers = 0;
+    for(let i = 0; i < whitelist.length; i++) {
+        whitelistString += `@${whitelist[i].username}: ${whitelist[i].list}\n`
+        if (whitelist[i].list === 'white') {
+            whiteCounterUsers++;
+        } else {
+            limitedCounterUsers++;
+        }
+    }
+    whitelistString = `Total whitelisted users: ${whiteCounterUsers + limitedCounterUsers}\nWhitelisted users: ${whiteCounterUsers}\nUsers with limited access: ${limitedCounterUsers}\n\n` + whitelistString;
+    ctx.reply(whitelistString);
+});
+
 bot.on(message('voice'), async (ctx) => {
     const user = await mongo.getUser(ctx.message.from.id);
     const conversation = await mongo.getConversation(String(ctx.message.from.id));
@@ -68,7 +87,7 @@ bot.on(message('voice'), async (ctx) => {
     log.info(`User ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)} request created from voice message`);
 
     try {
-        const message = await ctx.reply('Already processing your request, wait a bit');
+        const message = await ctx.reply(code('Already processing your request, wait a bit'));
         await ctx.telegram.sendChatAction(ctx.chat.id, 'typing');
 
         const link = await ctx.telegram.getFileLink(ctx.message.voice.file_id);
@@ -91,7 +110,7 @@ bot.on(message('voice'), async (ctx) => {
 
             ctx.reply(gptResponse.content);
         } else {
-            ctx.reply('No response from ChatGPT');
+            ctx.reply(code('No response from ChatGPT'));
         }
     } catch (error) {
         log.error(`Error with creating request. User: ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)}\nError: ${error.message}`);
@@ -124,7 +143,7 @@ bot.on(message('text'), async (ctx) => {
     log.info(`User ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)} request created from text message`);
 
     try {
-        const message = await ctx.reply('Already processing your request, wait a bit');
+        const message = await ctx.reply(code('Already processing your request, wait a bit'));
         await ctx.telegram.sendChatAction(ctx.chat.id, 'typing');
         
         ctx.session.messages.push({ role: 'user', content: ctx.message.text });
@@ -137,7 +156,7 @@ bot.on(message('text'), async (ctx) => {
     
             ctx.reply(gptResponse.content);
         } else {
-            ctx.reply('No response from ChatGPT');
+            ctx.reply(code('No response from ChatGPT'));
         }
     } catch (error) {
         log.error(`Error with creating request. User: ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)}\nError: ${error}`);
@@ -150,7 +169,7 @@ bot.action('request_whitelist_slot', async (ctx) => {
 
     log.info(`User ${log.usernameFormat(`@${ctx.from.username}:${ctx.from.id}`)} requested a whitelist slot`);
 
-    ctx.telegram.sendMessage(797712297, `@${ctx.from.username} [${ctx.from.id}] requested a whitelist slot`, Markup.inlineKeyboard([
+    ctx.telegram.sendMessage(ADMIN_TG_ID, `@${ctx.from.username} [${ctx.from.id}] requested a whitelist slot`, Markup.inlineKeyboard([
         Markup.button.callback("✅ Approve", "approve"),
         Markup.button.callback("❌ Reject", "reject")
     ]));
