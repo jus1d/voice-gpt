@@ -79,7 +79,7 @@ bot.command('whitelist', async (ctx) => {
     
         await ctx.reply(whitelistStr);
     } catch (error) {
-        await ctx.reply(code('Error while getting whitelisted users'));
+        await ctx.reply('Error while getting whitelisted users');
         log.error(`Error while getting whitelisted users: ${error.message}`);
     }
 });
@@ -139,11 +139,12 @@ bot.on(message('voice'), async (ctx) => {
         if (gptResponse) {
             ctx.session.messages.push({ role: 'assistant', content: gptResponse.content });
             await mongo.updateConversation(ctx.session.messages, ctx.message.from.id);
-            ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
             await mongo.addRequestCounter(ctx.message.from.id);
-
+            
+            ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
             ctx.reply(gptResponse.content);
         } else {
+            ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
             ctx.reply(code('No response from ChatGPT'));
         }
     } catch (error) {
@@ -185,11 +186,12 @@ bot.on(message('text'), async (ctx) => {
         if (gptResponse) {
             ctx.session.messages.push({ role: openAI.roles.ASSISTANT, content: gptResponse.content });
             await mongo.updateConversation(ctx.session.messages, ctx.message.from.id);
-            ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
             await mongo.addRequestCounter(ctx.message.from.id);
-    
+            
+            ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
             ctx.reply(gptResponse.content);
         } else {
+            ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
             ctx.reply(code('No response from ChatGPT'));
         }
     } catch (error) {
