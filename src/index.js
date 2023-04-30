@@ -262,6 +262,6 @@ bot.action('reject', async (ctx) => {
             log.error('Bot stopped: SIGTERM');
         });
     } catch (error) {
-        log.error(error.message);
+        log.error(`An error handled: ${error.message}`);
     }
 })()
