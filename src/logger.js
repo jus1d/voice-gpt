@@ -40,12 +40,12 @@ class Logger {
     }
 
     error(message) {
-        console.log(`${dim}❯${reset} ${magenta}[${this.getFullDate()}]${reset} ${red}[  ERROR  ]${reset} ${message}`);
+        console.log(`${red}❯${reset} ${magenta}[${this.getFullDate()}]${reset} ${red}[  ERROR  ]${reset} ${message}`);
         this.file(message, 'error');
     }
 
     success(message) {
-        console.log(`${dim}❯${reset} ${magenta}[${this.getFullDate()}]${reset} ${green}[ SUCCESS ]${reset} ${message}`);
+        console.log(`${green}❯${reset} ${magenta}[${this.getFullDate()}]${reset} ${green}[ SUCCESS ]${reset} ${message}`);
         this.file(message, 'success');
     }
 

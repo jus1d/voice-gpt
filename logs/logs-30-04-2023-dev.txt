@@ -3,3 +3,6 @@
 [30.04 21:00:40] [  INFO   ] User @w1tchblxde:5394873169 requested a whitelist slot
 [30.04 21:00:44] [ SUCCESS ] User @w1tchblxde:5394873169 was added to whitelist
 [30.04 21:00:48] [  INFO   ] User @w1tchblxde:5394873169 request created from text message
+[30.04 21:02:43] [  NONE   ] VoiceGPT:development started
+[30.04 21:02:45] [  INFO   ] Connection to the database is set
+[30.04 21:02:57] [  NONE   ] VoiceGPT:development started
