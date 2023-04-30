@@ -90,6 +90,7 @@ bot.hears(/\/reject@(\d+)/, async (ctx) => {
         await mongo.updateUserList(telegramId, mongo.list.NONE);
         const user = await mongo.getUser(telegramId);
         await ctx.reply(`Access for @${user.username} [${user.telegramId}] was rejected`);
+        log.success(`Access for @${user.username}:${user.telegramId} was rejected`);
     } catch (error) {
         await ctx.reply(`Error while rejecting @${user.username} [${user.telegramId}]`);
         log.error(`Error while rejecting user @${user.username}:${user.telegramId}: ${error.message}`);
