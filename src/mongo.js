@@ -108,7 +108,8 @@ class MongoDB {
                 users.push({ 
                     telegramId: whitelistedUsers[i].telegramId,
                     username: whitelistedUsers[i].username,
-                    list: whitelistedUsers[i].list
+                    list: whitelistedUsers[i].list,
+                    requests: whitelistedUsers[i].requests
                  });
             }
     
@@ -116,7 +117,8 @@ class MongoDB {
                 users.push({ 
                     telegramId: limitedUsers[i].telegramId,
                     username: limitedUsers[i].username,
-                    list: limitedUsers[i].list
+                    list: limitedUsers[i].list,
+                    requests: limitedUsers[i].requests
                  });
             }
             return users;

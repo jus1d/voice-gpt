@@ -6,4 +6,4 @@ services:
     ports: 
       - 3000:3000
     volumes:
-      - ./logs:./logs
+      - ./logs:/root/code/voice-gpt/logs

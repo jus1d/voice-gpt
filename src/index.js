@@ -59,10 +59,10 @@ bot.command('whitelist', async (ctx) => {
     
         for(let i = 0; i < whitelist.length; i++) {
             if (whitelist[i].list === mongo.list.WHITE) {
-                whitelistedUsers += `@${whitelist[i].username}, for reject: /reject@${whitelist[i].telegramId}\n`;
+                whitelistedUsers += `@${whitelist[i].username} - ${whitelist[i].requests} requests, for reject: /reject@${whitelist[i].telegramId}\n`;
                 whiteCounterUsers++;
             } else if (whitelist[i].list === mongo.list.LIMITED) {
-                limitedUsers += `@${whitelist[i].username}, for reject: /reject@${whitelist[i].telegramId}\n`;
+                limitedUsers += `@${whitelist[i].username} - ${whitelist[i].requests} requests, for reject: /reject@${whitelist[i].telegramId}\n`;
                 limitedCounterUsers++;
             }
         }
