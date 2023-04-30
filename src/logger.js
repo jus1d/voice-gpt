@@ -29,6 +29,8 @@ class Logger {
             type = ' SUCCESS ';
         } else if (logType === 'info') {
             type = '  INFO   ';
+        } else if (logType === 'warn') {
+            type = '  WARN   ';
         } else {
             type = '  NONE   ';
         }
@@ -52,6 +54,11 @@ class Logger {
     info(message) {
         console.log(`${dim}❯${reset} ${magenta}[${this.getFullDate()}]${reset} ${cyan}[  INFO   ]${reset} ${message}`);
         this.file(message, 'info');
+    }
+
+    warn(message) {
+        console.log(`${dim}❯${reset} ${magenta}[${this.getFullDate()}]${reset} ${yellow}[  WARN   ]${reset} ${message}`);
+        this.file(message, 'warn');
     }
 
     start(type) {
