@@ -1,4 +1,6 @@
 import consoleStamp from 'console-stamp';
+import fs from 'fs';
+import { getDate, getTime } from './utils.js';
 
 const setConsoleStamp = (type) => {
     if (type === 'info') {
