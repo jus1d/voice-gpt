@@ -1,6 +1,7 @@
 import { unlink } from 'fs/promises';
 import config from 'config';
 import { mongo } from './mongo.js';
+import dateFormat from 'dateformat';
 
 export async function removeFile(path) {
     try {
@@ -15,6 +16,12 @@ export async function isAdmin(telegramId) {
     return user.role === mongo.roles.ADMIN;
 }
 
-export function highlight(text) {
-    return `\x1b[36m\x1b[4m${text}\x1b[0m`;
+export function getDate() {
+    let date = new Date();
+    return dateFormat(date, 'dd.mm.yyyy');
+}
+
+export function getTime() {
+    let date = new Date();
+    return dateFormat(date, 'HH:MM:ss');
 }
