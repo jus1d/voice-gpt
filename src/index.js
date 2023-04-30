@@ -145,7 +145,7 @@ bot.on(message('voice'), async (ctx) => {
             ctx.reply(gptResponse.content);
         } else {
             ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
-            ctx.reply(code('No response from ChatGPT'));
+            ctx.reply('No response from ChatGPT. Try again later or use /new to create new conversation.');
         }
     } catch (error) {
         log.error(`Error with creating request. User: ${log.usernameFormat(`@${ctx.message.from.username}:${ctx.message.from.id}`)}\nError: ${error.message}`);
@@ -192,7 +192,7 @@ bot.on(message('text'), async (ctx) => {
             ctx.reply(gptResponse.content);
         } else {
             ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
-            ctx.reply(code('No response from ChatGPT'));
+            ctx.reply('No response from ChatGPT. Try again later or use /new to create new conversation.');
         }
     } catch (error) {
         log.error(`Error with creating request. User: ${highlight(`@${ctx.message.from.username}:${ctx.message.from.id}`)}\nError: ${error}`);
