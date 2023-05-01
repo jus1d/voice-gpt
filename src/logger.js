@@ -30,7 +30,6 @@ class Logger {
     }
 
     file(message, logType) {
-        const date = dateFormat(new Date(), 'dd-mm-yyyy');
         let type = '';
         if (logType === 'error') {
             type = '  ERROR  ';
@@ -43,7 +42,7 @@ class Logger {
         } else {
             type = '  NONE   ';
         }
-        fs.appendFile(`logs/logs-${date}-${config.get('type')}.txt`, `[${this.getFullDate()}] [${type}] ${message}\n`, (error) => {
+        fs.appendFile(`logs/logs-${dateFormat(new Date(), 'dd-mm-yyyy')}-${config.get('type')}.txt`, `[${this.getFullDate()}] [${type}] ${message}\n`, (error) => {
             if (error) {
                 console.log(error);
             }

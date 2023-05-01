@@ -1,8 +1,9 @@
 # Dependencies files
 node_modules/
 
-# Build files
+# Build & TS files
 build/
+typescript/
 
 # Ignore logs and temporary voice messages
 voices/
