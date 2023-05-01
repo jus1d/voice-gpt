@@ -7,3 +7,9 @@ config/production.json
 config/whitelist.json
 *.ogg
 *.mp3
+
+# ts:
+tsconfig.json
+.eslintrc.json
+typescript/
+dist/

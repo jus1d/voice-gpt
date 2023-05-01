@@ -20,7 +20,7 @@ class Logger {
                 this.success('./logs directory created');
             }
         } catch (error) {
-            log.error('Error while creating ./logs directory');
+            this.error('Error while creating ./logs directory');
         }
     }
 

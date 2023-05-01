@@ -3,10 +3,10 @@
   "version": "1.4.1",
   "description": "VoiceGPT - telegram-based interface to interact with ChatGPT. You can communicate with GPT via text and voice messages",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "start": "cross-env NODE_ENV=production node ./src/index.js",
-    "dev": "cross-env NODE_ENV=development nodemon ./src/index.js"
+    "dev": "cross-env NODE_ENV=development nodemon ./src/index.js",
+    "dev-ts": "tsc && node ./dist/app.js"
   },
   "repository": {
     "type": "git",
@@ -19,8 +19,12 @@
   },
   "homepage": "https://github.com/jus1d/voice-gpt#readme",
   "devDependencies": {
+    "@types/config": "^3.3.0",
+    "@types/dateformat": "^5.0.0",
     "cross-env": "^7.0.3",
-    "nodemon": "^2.0.22"
+    "eslint": "^8.39.0",
+    "nodemon": "^2.0.22",
+    "typescript": "^5.0.4"
   },
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
