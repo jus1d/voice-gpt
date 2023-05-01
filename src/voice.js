@@ -1,5 +1,6 @@
 import installer from '@ffmpeg-installer/ffmpeg';
 import { removeFile } from './utils.js';
+import { logger as log } from './logger.js';
 import ffmpeg from 'fluent-ffmpeg';
 import axios from "axios";
 import fs from 'fs';
@@ -8,6 +9,14 @@ class VoiceToText {
 
     constructor() {
         ffmpeg.setFfmpegPath(installer.path);
+        try{
+            if (!fs.existsSync('./voices')) {
+                fs.mkdirSync('./voices', );
+                log.success('./voices directory created');
+            }
+        } catch (error) {
+            log.error('Error while creating ./voices directory');
+        }
     }
 
     async createOggFile(url, fileName) {
