@@ -4,7 +4,7 @@ node_modules/
 # Build & TS files
 build/
 typescript/
-
+s
 # Ignore logs and temporary voice messages
 voices/
 logs/
