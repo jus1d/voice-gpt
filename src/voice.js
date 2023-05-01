@@ -9,7 +9,7 @@ class VoiceToText {
 
     constructor() {
         ffmpeg.setFfmpegPath(installer.path);
-        try{
+        try {
             if (!fs.existsSync('./voices')) {
                 fs.mkdirSync('./voices', );
                 log.success('./voices directory created');
