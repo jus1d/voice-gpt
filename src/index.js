@@ -1,16 +1,10 @@
-import { Telegraf, Markup, session } from "telegraf";
+import { Telegraf, session } from "telegraf";
 import { message } from 'telegraf/filters';
 import { eventHandler } from "./events.js";
 import { command } from "./commands.js";
 import { logger as log } from "./logger.js";
 import mongoose from 'mongoose';
 import config from 'config';
-import { vocieToText } from './voice.js';
-import { isAdmin } from "./utils.js";
-import { code, bold } from 'telegraf/format';
-import { openAI } from './openai.js';
-import { mongo } from './mongo.js';
-import crc32 from 'crc32';
 
 console.clear();
 

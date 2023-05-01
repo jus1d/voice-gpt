@@ -8,7 +8,6 @@ const cyan = "\x1b[36m";
 const green = "\x1b[32m";
 const dim = "\x1b[2m";
 const red = "\x1b[31m";
-const blue = "\x1b[34m";
 const yellow = "\x1b[33m";
 const magenta = "\x1b[35m";
 

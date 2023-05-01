@@ -1,5 +1,4 @@
 import { unlink } from 'fs/promises';
-import config from 'config';
 import { mongo } from './mongo.js';
 import dateFormat from 'dateformat';
 

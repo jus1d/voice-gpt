@@ -3,10 +3,17 @@ on:
   push:
     branches: [develop]
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Lint JS files
+        run: eslint ./src/
   build:
     strategy:
       matrix:
-        version: [14, 16, 18]
+        version: [16, 18]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
