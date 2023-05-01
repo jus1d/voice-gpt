@@ -1,15 +1,10 @@
+# Dependencies files
 node_modules/
+
+# Ignore logs and temporary voice messages
 voices/
 logs/
-dist.
+
+# Config files for production and development versions
 config/default.json
 config/production.json
-config/whitelist.json
-*.ogg
-*.mp3
-
-# ts:
-tsconfig.json
-.eslintrc.json
-typescript/
-dist/
