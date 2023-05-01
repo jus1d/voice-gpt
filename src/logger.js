@@ -13,7 +13,16 @@ const yellow = "\x1b[33m";
 const magenta = "\x1b[35m";
 
 class Logger {
-    constructor() {}
+    constructor() {
+        try {
+            if (!fs.existsSync('./logs')) {
+                fs.mkdirSync('./logs', );
+                this.success('./logs directory created');
+            }
+        } catch (error) {
+            log.error('Error while creating ./logs directory');
+        }
+    }
 
     getFullDate() {
         const date = new Date();
