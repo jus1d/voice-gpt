@@ -1,7 +1,9 @@
 node_modules/
+voices/
+logs/
+dist.
 config/default.json
 config/production.json
 config/whitelist.json
-logs/*.txt
 *.ogg
 *.mp3
