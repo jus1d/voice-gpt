@@ -1,4 +1,4 @@
-name: Build VoiceGPT
+name: Deploy VoiceGPT
 on:
   push:
     branches: [master]
