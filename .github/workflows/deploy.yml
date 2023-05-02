@@ -26,7 +26,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Build and run
         run: |
-          sudo chmod -R 777 /root/code/voice-gpt;
+          sudo chmod -R 777 /root;
           cd ${{ secrets.PROJECT_DIR }};
           git pull;
           docker rm voice-gpt-voice-gpt-1 -f;
