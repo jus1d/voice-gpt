@@ -1,6 +1,10 @@
 # Dependencies files
 node_modules/
 
+# Ignore TS files, build
+build/
+src-js/
+
 # Ignore logs and temporary voice messages
 voices/
 logs/

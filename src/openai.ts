@@ -1,28 +1,31 @@
+import { IMessage } from "./database/models/conversation.model";
 import { Configuration, OpenAIApi } from "openai";
-import { logger as log } from "./logger.js";
-import { removeFile } from './utils.js';
+import { log } from "./logger/logger";
+import { removeFile } from "./voice";
 import config from 'config';
 import fs from 'fs';
 
 class OpenAI {
+    openai: any;
+
     roles = {
-        USER: 'user',
-        ASSISTANT: 'assistant',
-        SYSTEM: 'system'
+        user: 'user',
+        assistant: 'assistant',
+        system: 'system'
     }
     
-    constructor(apiKey) {
+    constructor(apiKey: string) {
         const configuration = new Configuration({
             apiKey,
         });
         this.openai = new OpenAIApi(configuration);
     }
 
-    async chat(messages) {
+    async chat(messages: Array<IMessage>) {
         try {
             const response = await this.openai.createChatCompletion({
                 model: 'gpt-3.5-turbo',
-                messages
+                messages: messages,
             });
 
             return response.data.choices[0].message;
@@ -31,7 +34,7 @@ class OpenAI {
         }
     }
 
-    async transcript(mp3FileName) {
+    async transcript(mp3FileName: string) {
         try{
             const response = await this.openai.createTranscription(
                 fs.createReadStream(`./voices/${mp3FileName}.mp3`),
@@ -40,7 +43,7 @@ class OpenAI {
             removeFile(`./voices/${mp3FileName}.mp3`);
             return response.data.text;
         } catch (error) {
-            log.error('Error with transcripting prompt from MP3 file' + error.message);
+            log.error(`Error with transcripting prompt from MP3 file\n${error}`);
         }
     }
 }
