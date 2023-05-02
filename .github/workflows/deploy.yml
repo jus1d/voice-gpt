@@ -26,7 +26,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Build and run
         run: |
-          cd ~/code/voice-gpt;
+          cd ${{ secrets.PROJECT_DIR }};
           git pull;
           docker rm voice-gpt-voice-gpt-1 -f;
           make;
