@@ -10,6 +10,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Install ESlint
-        run: npm install eslint --global
+        run: |
+          npm install eslint --global;
+          npm install @typescript-eslint/eslint-plugin@latest --save-dev
       - name: Lint TS files
         run: eslint ./src/
