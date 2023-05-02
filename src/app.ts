@@ -121,7 +121,11 @@ bot.on(message('voice'), async (ctx) => {
 
     if (!conversation) return;
 
-    if (user.list !== mongo.list.white) {
+    if (user.list === mongo.list.limited) {
+        if (user.requests >= 10) return ctx.reply('Your free requests are over\n\nClick below to send whitelist request to admins 👇', Markup.inlineKeyboard([
+            Markup.button.callback("Request", "request_whitelist_slot")
+        ]));
+    } else if (user.list !== mongo.list.white) {
         log.info(`User @${ctx.message.from.username}:${ctx.message.from.id} request rejected. User not whitelisted`);
         return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins 👇', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_whitelist_slot")
