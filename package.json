@@ -1,12 +1,11 @@
 {
   "name": "voice-gpt",
-  "version": "1.4.3",
+  "version": "2.0.1",
   "description": "VoiceGPT - telegram-based interface to interact with ChatGPT. You can communicate with GPT via text and voice messages",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node ./src/index.js",
-    "dev": "cross-env NODE_ENV=development nodemon ./src/index.js",
-    "dev-ts": "tsc && cross-env NODE_ENV=development node ./build/app.js"
+    "start": "tsc && cross-env NODE_ENV=production node ./build/app.js",
+    "dev": "tsc && cross-env NODE_ENV=development node ./build/app.js"
   },
   "repository": {
     "type": "git",
