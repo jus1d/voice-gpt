@@ -4,7 +4,6 @@ on:
     branches: [develop]
 jobs:
   deploy:
-    needs: lint
     name: Deploy
     runs-on: ubuntu-latest
     steps:
