@@ -17,4 +17,5 @@ jobs:
             cd ${{ secrets.PROJECT_DIR }};
             git pull;
             docker rm voice-gpt-voice-gpt-1 -f;
-            make;
+            make build;
+            make run;
