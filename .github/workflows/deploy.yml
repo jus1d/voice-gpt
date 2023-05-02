@@ -24,5 +24,9 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-      - name: Run
-        run: docker ps
+      - name: Build and run
+        run: |
+          cd ~/code/voice-gpt/
+          git pull
+          docker rm voice-gpt-voice-gpt-1 -f
+          make
