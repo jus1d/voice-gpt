@@ -18,15 +18,15 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Connect to remote server
+      - name: Build and run on remote server
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-      - name: Build and run
-        run: |
-          cd ~/code/voice-gpt/
-          git pull
-          docker rm voice-gpt-voice-gpt-1 -f
-          make
+          script: |
+            cd ${{ secrets.PROJECT_DIR }};
+            git pull;
+            docker rm voice-gpt-voice-gpt-1 -f;
+            make build;
+            make run;
