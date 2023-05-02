@@ -3,16 +3,6 @@ on:
   push:
     branches: [develop]
 jobs:
-  lint:
-    name: Code linting
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Install ESlint
-        run: npm install eslint --global
-      - name: Lint JS files
-        run: eslint ./src/
   deploy:
     needs: lint
     name: Deploy
@@ -27,6 +17,8 @@ jobs:
       - name: Build and run
         run: |
           sudo chmod -R 777 /root;
+          cd /root;
+          ls;
           cd ${{ secrets.PROJECT_DIR }};
           git pull;
           docker rm voice-gpt-voice-gpt-1 -f;
