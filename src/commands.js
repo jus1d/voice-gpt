@@ -53,10 +53,10 @@ class Commands {
     }
 
     async onRejectCommand(ctx) {
+        const telegramId = ctx.message.text.replace('/reject@', '');
+        const user = await mongo.getUser(telegramId);
         try {
-            const telegramId = ctx.message.text.replace('/reject@', '');
             await mongo.updateUserList(telegramId, mongo.list.NONE);
-            const user = await mongo.getUser(telegramId);
             await ctx.reply(`Access for @${user.username} [${user.telegramId}] was rejected`);
             log.success(`Access for @${user.username}:${user.telegramId} was rejected`);
         } catch (error) {
