@@ -1,7 +1,7 @@
 name: Build VoiceGPT
 on:
   push:
-    branches: [master]
+    branches: [develop]
 jobs:
   lint:
     name: Code linting
@@ -26,7 +26,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Build and run
         run: |
-          cd ~/code/voice-gpt/
+          cd code/voice-gpt/
           git pull
           docker rm voice-gpt-voice-gpt-1 -f
           make
