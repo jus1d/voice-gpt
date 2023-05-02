@@ -8,7 +8,6 @@ const cyan = "\x1b[36m";
 const green = "\x1b[32m";
 const dim = "\x1b[2m";
 const red = "\x1b[31m";
-const blue = "\x1b[34m";
 const yellow = "\x1b[33m";
 const magenta = "\x1b[35m";
 
@@ -30,7 +29,6 @@ class Logger {
     }
 
     file(message, logType) {
-        const date = dateFormat(new Date(), 'dd-mm-yyyy');
         let type = '';
         if (logType === 'error') {
             type = '  ERROR  ';
@@ -43,7 +41,7 @@ class Logger {
         } else {
             type = '  NONE   ';
         }
-        fs.appendFile(`logs/logs-${date}-${config.get('type')}.txt`, `[${this.getFullDate()}] [${type}] ${message}\n`, (error) => {
+        fs.appendFile(`logs/logs-${dateFormat(new Date(), 'dd-mm-yyyy')}-${config.get('type')}.txt`, `[${this.getFullDate()}] [${type}] ${message}\n`, (error) => {
             if (error) {
                 console.log(error);
             }
