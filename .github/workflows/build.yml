@@ -1,13 +1,24 @@
 name: Build VoiceGPT
 on:
   push:
-    branches: [develop]
+    branches: [master]
 jobs:
+  lint:
+    name: Code linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install ESlint
+        run: npm install eslint --global
+      - name: Lint JS files
+        run: eslint ./src/
   deploy:
+    needs: lint
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-      - name: executing remote ssh commands using password
+      - name: Connect to remote server
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.SSH_HOST }}
