@@ -1,7 +1,7 @@
 # Dependencies files
 node_modules/
 
-# Ignore TS files, build
+# Ignore JS files, build
 build/
 src-js/
 
