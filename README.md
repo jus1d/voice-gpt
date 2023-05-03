@@ -28,7 +28,7 @@ or `yarn`:
 yarn install
 ```
 
-Set up config files, `whitelist.json` and start the bot:
+Create `default.json` for development and `production.json` for production. Use `example.default.json` and `example.production.json` for example. And run bot:
 
 ```bash
 npm start
