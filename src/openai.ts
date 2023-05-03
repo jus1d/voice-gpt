@@ -21,7 +21,7 @@ class OpenAI {
         this.openai = new OpenAIApi(configuration);
     }
 
-    async chat(messages: Array<IMessage>): Promise<string> {
+    async chat(messages: Array<IMessage>) {
         try {
             const response = await this.openai.createChatCompletion({
                 model: 'gpt-3.5-turbo',
@@ -31,11 +31,10 @@ class OpenAI {
             return response.data.choices[0].message;
         } catch (error) {
             log.error(`Error with getting response from ChatGPT\n${error}`);
-            return '';
         }
     }
 
-    async transcript(mp3FileName: string): Promise<string> {
+    async transcript(mp3FileName: string) {
         try{
             const response = await this.openai.createTranscription(
                 fs.createReadStream(`./voices/${mp3FileName}.mp3`),
@@ -45,7 +44,6 @@ class OpenAI {
             return response.data.text;
         } catch (error) {
             log.error(`Error with transcripting prompt from MP3 file\n${error}`);
-            return '';
         }
     }
 }
