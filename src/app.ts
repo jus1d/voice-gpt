@@ -121,7 +121,11 @@ bot.on(message('voice'), async (ctx) => {
 
     if (!conversation) return;
 
-    if (user.list !== mongo.list.white) {
+    if (user.list === mongo.list.limited) {
+        if (user.requests >= 10) return ctx.reply('Your free requests are over\n\nClick below to send whitelist request to admins 👇', Markup.inlineKeyboard([
+            Markup.button.callback("Request", "request_whitelist_slot")
+        ]));
+    } else if (user.list !== mongo.list.white) {
         log.info(`User @${ctx.message.from.username}:${ctx.message.from.id} request rejected. User not whitelisted`);
         return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins 👇', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_whitelist_slot")
@@ -179,7 +183,11 @@ bot.on(message('text'), async (ctx) => {
 
     if (!conversation) return;
 
-    if (user.list !== mongo.list.white) {
+    if (user.list === mongo.list.limited) {
+        if (user.requests >= 10) return ctx.reply('Your free requests are over\n\nClick below to send whitelist request to admins 👇', Markup.inlineKeyboard([
+            Markup.button.callback("Request", "request_whitelist_slot")
+        ]));
+    } else if (user.list !== mongo.list.white) {
         log.info(`User @${ctx.message.from.username}:${ctx.message.from.id} request rejected. User not whitelisted`);
         return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins 👇', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_whitelist_slot")
@@ -220,6 +228,7 @@ bot.action('request_whitelist_slot', async (ctx) => {
 
     ctx.telegram.sendMessage(config.get('admin_tg_id'), `@${ctx.from.username} [${ctx.from.id}] requested a whitelist slot`, Markup.inlineKeyboard([
         Markup.button.callback("✅ Approve", "approve"),
+        Markup.button.callback("🔒 Limited", "limited"),
         Markup.button.callback("❌ Reject", "reject")
     ]));
 });
@@ -243,6 +252,28 @@ bot.action('approve', async (ctx) => {
     } else {
         ctx.editMessageText(`❌ Something went wrong while approving access to @${username}`);
         log.error(`There are an error while adding user @${username}:${userId} to whitelist`);
+    }
+});
+
+bot.action('limited', async (ctx) => {
+    if (!ctx.from) return;
+
+    const isAdmin = await mongo.isAdmin(ctx.from.id);
+    if (!isAdmin) return;
+    if (!ctx.update.callback_query.message) return;
+
+    const userId = Number((ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[1].replace('[', '').replace(']', ''));
+    const username = (ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[0].replace('@', '');
+
+    const res = await mongo.setUserList(userId, mongo.list.limited);
+
+    if (res) {
+        ctx.telegram.sendMessage(userId, '🥳 Your request to be added to the whitelist has been approved by the admins.\n\nYou are added to limited list, and have 10 requests');
+        ctx.editMessageText(`✅ Limited access for @${username} was granted`);
+        log.info(`User @${username}:${userId} was added to whitelist`);
+    } else {
+        ctx.editMessageText(`❌ Something went wrong while approving limited access to @${username}`);
+        log.error(`There are an error while adding user @${username}:${userId} to limited list`);
     }
 });
 

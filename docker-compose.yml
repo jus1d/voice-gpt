@@ -2,6 +2,7 @@ version: '3'
 services:
   voice-gpt:
     image: voice-gpt
+    container_name: voice-gpt
     restart: always
     ports: 
       - 3000:3000
