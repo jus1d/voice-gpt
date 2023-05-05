@@ -150,6 +150,16 @@ class MongoDB {
         }
     }
 
+    async getAllUsers(): Promise<Array<IUser>> {
+        try {
+            const users: Array<IUser> = await UserModel.find({});
+            return users;
+        } catch (error) {
+            log.error('Error while getting all users');
+            return [];
+        }
+    }
+
     async isAdmin(telegramId: number): Promise<boolean> {
         const user = await this.getUser(telegramId);
         if (!user) return false;
