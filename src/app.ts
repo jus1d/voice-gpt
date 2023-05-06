@@ -132,12 +132,12 @@ bot.on(message('voice'), async (ctx) => {
     if (!conversation) return;
 
     if (user.list === mongo.list.limited) {
-        if (user.requests >= 10) return ctx.reply('Your free requests are over\n\nClick below to send whitelist request to admins 👇', Markup.inlineKeyboard([
+        if (user.requests >= 10) return ctx.reply('Your free requests are over\n\nClick below to send whitelist request to admins', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_access")
         ]));
     } else if (user.list !== mongo.list.white) {
         log.info(`User @${ctx.message.from.username}:${ctx.message.from.id} request rejected. User not whitelisted`);
-        return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins 👇', Markup.inlineKeyboard([
+        return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_access")
         ]));
     }
@@ -194,12 +194,12 @@ bot.on(message('text'), async (ctx) => {
     if (!conversation) return;
 
     if (user.list === mongo.list.limited) {
-        if (user.requests >= 10) return ctx.reply('Your free requests are over\n\nClick below to send whitelist request to admins 👇', Markup.inlineKeyboard([
+        if (user.requests >= 10) return ctx.reply('Your free requests are over\n\nClick below to send whitelist request to admins', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_access")
         ]));
     } else if (user.list !== mongo.list.white) {
         log.info(`User @${ctx.message.from.username}:${ctx.message.from.id} request rejected. User not whitelisted`);
-        return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins 👇', Markup.inlineKeyboard([
+        return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_access")
         ]));
     }
@@ -247,9 +247,9 @@ bot.action('request_access', async (ctx) => {
         reply_markup: {
             inline_keyboard: [
                 [
-                    { text: '✅ Approve', callback_data: 'whitelist'},
-                    { text: '🔒 Limited', callback_data: 'limited'},
-                    { text: '❌ Reject', callback_data: 'reject'},
+                    { text: 'Approve', callback_data: 'whitelist'},
+                    { text: 'Limited', callback_data: 'limited'},
+                    { text: 'Reject', callback_data: 'reject'},
                 ]
             ]
         }
@@ -380,12 +380,13 @@ bot.action('blacklist', async (ctx) => {
         await mongoose.connect(config.get('mongo_uri'));
         log.info('Connection to MongoDB established');
 
-        if (TYPE === 'prod') bot.telegram.sendMessage(config.get('admin_tg_id'), `<code>VoiceGPT:${TYPE} just started!</code>`, { parse_mode: 'HTML' });
+        if (TYPE === 'prod') bot.telegram.sendMessage(config.get('admin_tg_id'), `<code>VoiceGPT:${TYPE} just started</code>`, { parse_mode: 'HTML' });
 
         process.once('SIGINT', () => {
             bot.stop('SIGINT');
             log.info('Bot stopped: SIGINT');
         });
+
         process.once('SIGTERM', () => {
             bot.stop('SIGTERM');
             log.info('Bot stopped: SIGTERM');
