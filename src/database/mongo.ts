@@ -61,7 +61,9 @@ class MongoDB {
             const user = await UserModel.findOne({ telegramId: String(telegramId) });
             if (!user) return false;
 
-            user.freeRequests = user.freeRequests - 1;
+            if (user.freeRequests !== 0) {
+                user.freeRequests = user.freeRequests - 1;
+            }
             await UserModel.updateOne({ telegramId: String(telegramId) }, user);
             return true;
         } catch (error) {

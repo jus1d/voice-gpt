@@ -212,7 +212,7 @@ bot.on(message('text'), async (ctx) => {
     if (!conversation) return;
 
     if (user.list === mongo.list.limited) {
-        if (user.requests >= 10) return ctx.reply('Your free requests are over\n\nClick below to send whitelist request to admins', Markup.inlineKeyboard([
+        if (user.freeRequests === 0) return ctx.reply('Your free requests are over\n\nClick below to send whitelist request to admins', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_access")
         ]));
     } else if (user.list !== mongo.list.white) {
