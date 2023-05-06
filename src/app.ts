@@ -99,14 +99,29 @@ bot.hears(/\/manage@(\d+)/, async (ctx) => {
         return;
     }
 
-    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n ` + 
+    let messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n ` + 
         `<b>Listed:</b> <code>${user.list}</code>\n ` + 
         `<b>Total requests:</b> <code>${user.requests}</code>`;
 
-    await ctx.replyWithHTML(messageTextWithHTML, Markup.inlineKeyboard([
-        [ Markup.button.callback("Whitelist", "whitelist"), Markup.button.callback("Limited", "limited") ],
-        [ Markup.button.callback("None", "none"), Markup.button.callback("Reject", "reject"), Markup.button.callback("Blacklist", "blacklist") ]
-    ]));
+    if (user.list === mongo.list.limited) {
+        messageTextWithHTML += `\n<b>Free requests: </b> <code>${user.freeRequests}</code>`;
+    }
+
+    let markup;
+
+    if (user.list === mongo.list.limited) {
+        markup = Markup.inlineKeyboard([
+            [ Markup.button.callback("Whitelist", "whitelist"), Markup.button.callback("Limited", "limited"), Markup.button.callback("Reset", "reset_free_requests") ],
+            [ Markup.button.callback("None", "none"), Markup.button.callback("Reject", "reject"), Markup.button.callback("Blacklist", "blacklist") ]
+        ]);
+    } else {
+        markup = Markup.inlineKeyboard([
+            [ Markup.button.callback("Whitelist", "whitelist"), Markup.button.callback("Limited", "limited") ],
+            [ Markup.button.callback("None", "none"), Markup.button.callback("Reject", "reject"), Markup.button.callback("Blacklist", "blacklist") ]
+        ]);
+    }
+
+    await ctx.replyWithHTML(messageTextWithHTML, markup);
 });
 
 bot.command('new', async (ctx) => {
@@ -134,7 +149,7 @@ bot.on(message('voice'), async (ctx) => {
     if (!conversation) return;
 
     if (user.list === mongo.list.limited) {
-        if (user.requests >= 10) return ctx.reply('Your free requests are over\n\nClick below to send whitelist request to admins', Markup.inlineKeyboard([
+        if (user.freeRequests === 0) return ctx.reply('Your free requests are over\n\nClick below to send whitelist request to admins', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_access")
         ]));
     } else if (user.list !== mongo.list.white) {
@@ -168,6 +183,7 @@ bot.on(message('voice'), async (ctx) => {
             conversation.messages.push({ role: 'assistant', content: gptResponse.content });
             await mongo.updateConversation(ctx.message.from.id, conversation.messages);
             await mongo.incrementRequestsCounter(ctx.message.from.id);
+            if (user.list === mongo.list.limited) await mongo.decreaseFreeRequests(ctx.message.from.id);
                 
             ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
             ctx.reply(gptResponse.content);
@@ -218,6 +234,7 @@ bot.on(message('text'), async (ctx) => {
             conversation.messages.push({ role: ChatCompletionRequestMessageRoleEnum.Assistant, content: gptResponse.content });
             await mongo.updateConversation(ctx.message.from.id, conversation.messages);
             await mongo.incrementRequestsCounter(ctx.message.from.id);
+            if (user.list === mongo.list.limited) await mongo.decreaseFreeRequests(ctx.message.from.id);
                 
             ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
             ctx.reply(gptResponse.content);
@@ -272,15 +289,16 @@ bot.action('whitelist', async (ctx) => {
 
     const user: IUser | null = await mongo.getUser(userId);
     if (!user) return;
-    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n ` + 
-        `<b>Listed:</b> <code>${user.list}</code>\n ` + 
+    let messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n` + 
+        `<b>Listed:</b> <code>${user.list}</code>\n` + 
         `<b>Total requests:</b> <code>${user.requests}</code>`;
+
     await ctx.editMessageText(messageTextWithHTML, {
         parse_mode: 'HTML', 
         reply_markup: {
             inline_keyboard: [
                 [
-                    { text: 'Whitelist', callback_data: 'whitelist'},
+                    // { text: 'Whitelist', callback_data: 'whitelist'},
                     { text: 'Limited', callback_data: 'limited'},
                 ],
                 [
@@ -313,16 +331,22 @@ bot.action('limited', async (ctx) => {
     
     const user: IUser | null = await mongo.getUser(userId);
     if (!user) return;
-    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n ` + 
-        `<b>Listed:</b> <code>${user.list}</code>\n ` + 
+    let messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n` + 
+        `<b>Listed:</b> <code>${user.list}</code>\n` + 
         `<b>Total requests:</b> <code>${user.requests}</code>`;
+    
+    if (user.list === mongo.list.limited) {
+        messageTextWithHTML += `\n<b>Free requests: </b> <code>${user.freeRequests}</code>`;
+    }
+
     await ctx.editMessageText(messageTextWithHTML, {
         parse_mode: 'HTML', 
         reply_markup: {
             inline_keyboard: [
                 [
                     { text: 'Whitelist', callback_data: 'whitelist'},
-                    { text: 'Limited', callback_data: 'limited'},
+                    // { text: 'Limited', callback_data: 'limited'},
+                    { text: 'Reset' , callback_data: 'reset_free_requests' }
                 ],
                 [
                     { text: 'None', callback_data: 'none'},
@@ -354,9 +378,10 @@ bot.action('reject', async (ctx) => {
     
     const user: IUser | null = await mongo.getUser(userId);
     if (!user) return;
-    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n ` + 
-        `<b>Listed:</b> <code>${user.list}</code>\n ` + 
+    let messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n` + 
+        `<b>Listed:</b> <code>${user.list}</code>\n` + 
         `<b>Total requests:</b> <code>${user.requests}</code>`;
+
     await ctx.editMessageText(messageTextWithHTML, {
         parse_mode: 'HTML', 
         reply_markup: {
@@ -367,7 +392,7 @@ bot.action('reject', async (ctx) => {
                 ],
                 [
                     { text: 'None', callback_data: 'none'},
-                    { text: 'Reject', callback_data: 'reject'},
+                    // { text: 'Reject', callback_data: 'reject'},
                     { text: 'Blacklist', callback_data: 'blacklist'},
                 ]
             ]
@@ -395,8 +420,8 @@ bot.action('none', async (ctx) => {
     
     const user: IUser | null = await mongo.getUser(userId);
     if (!user) return;
-    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n ` + 
-        `<b>Listed:</b> <code>${user.list}</code>\n ` + 
+    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n` + 
+        `<b>Listed:</b> <code>${user.list}</code>\n` + 
         `<b>Total requests:</b> <code>${user.requests}</code>`;
     await ctx.editMessageText(messageTextWithHTML, {
         parse_mode: 'HTML', 
@@ -407,7 +432,7 @@ bot.action('none', async (ctx) => {
                     { text: 'Limited', callback_data: 'limited'},
                 ],
                 [
-                    { text: 'None', callback_data: 'none'},
+                    // { text: 'None', callback_data: 'none'},
                     { text: 'Reject', callback_data: 'reject'},
                     { text: 'Blacklist', callback_data: 'blacklist'},
                 ]
@@ -436,8 +461,8 @@ bot.action('blacklist', async (ctx) => {
     
     const user: IUser | null = await mongo.getUser(userId);
     if (!user) return;
-    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n ` + 
-        `<b>Listed:</b> <code>${user.list}</code>\n ` + 
+    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n` + 
+        `<b>Listed:</b> <code>${user.list}</code>\n` + 
         `<b>Total requests:</b> <code>${user.requests}</code>`;
     await ctx.editMessageText(messageTextWithHTML, {
         parse_mode: 'HTML', 
@@ -450,7 +475,7 @@ bot.action('blacklist', async (ctx) => {
                 [
                     { text: 'None', callback_data: 'none'},
                     { text: 'Reject', callback_data: 'reject'},
-                    { text: 'Blacklist', callback_data: 'blacklist'},
+                    // { text: 'Blacklist', callback_data: 'blacklist'},
                 ]
             ]
         }
@@ -462,6 +487,53 @@ bot.action('blacklist', async (ctx) => {
         await mongo.setRequestedStatus(userId, false);
     }
     log.info(`User @${username} [${userId}] was blacklisted`);
+});
+
+bot.action('reset_free_requests', async (ctx) => {
+    if (!ctx.from) return;
+
+    const isAdmin = await mongo.isAdmin(ctx.from.id);
+    if (!isAdmin) return;
+
+    const userId = Number((ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[2].replace('[', '').replace(']', ''));
+    const username = (ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[1].replace('@', '');
+
+    await mongo.setFreeRequests(userId);
+
+    const user: IUser | null = await mongo.getUser(userId);
+    if (!user) return;
+
+    let messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n` + 
+        `<b>Listed:</b> <code>${user.list}</code>\n` + 
+        `<b>Total requests:</b> <code>${user.requests}</code>`;
+    
+    if (user.list === mongo.list.limited) {
+        messageTextWithHTML += `\n<b>Free requests: </b> <code>${user.freeRequests}</code>`;
+    }
+
+    await ctx.editMessageText(messageTextWithHTML, {
+        parse_mode: 'HTML', 
+        reply_markup: {
+            inline_keyboard: [
+                [
+                    { text: 'Whitelist', callback_data: 'whitelist'},
+                    { text: 'Reset' , callback_data: 'reset_free_requests' }
+                ],
+                [
+                    { text: 'None', callback_data: 'none'},
+                    { text: 'Reject', callback_data: 'reject'},
+                    { text: 'Blacklist', callback_data: 'blacklist'},
+                ]
+            ]
+        }
+    });
+    if (user.requested) {
+        await ctx.telegram.sendMessage(userId, 'You received 10 free requests', {
+            parse_mode: 'HTML'
+        });
+        await mongo.setRequestedStatus(userId, false);
+    }
+    log.info(`User @${username} [${userId}] was added to limited list`);
 });
 
 (async () => {

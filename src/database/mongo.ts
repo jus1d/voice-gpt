@@ -56,6 +56,34 @@ class MongoDB {
         }
     }
 
+    async decreaseFreeRequests(telegramId: number): Promise<boolean> {
+        try {
+            const user = await UserModel.findOne({ telegramId: String(telegramId) });
+            if (!user) return false;
+
+            user.freeRequests = user.freeRequests - 1;
+            await UserModel.updateOne({ telegramId: String(telegramId) }, user);
+            return true;
+        } catch (error) {
+            log.error('Error while decreasing free requests counter');
+            return false;
+        }
+    }
+
+    async setFreeRequests(telegramId: number, amount: number = 10): Promise<boolean> {
+        try {
+            const user = await UserModel.findOne({ telegramId: String(telegramId) });
+            if (!user) return false;
+
+            user.freeRequests = amount;
+            await UserModel.updateOne({ telegramId: String(telegramId) }, user);
+            return true;
+        } catch (error) {
+            log.error('Error while setting free requests');
+            return false;
+        }
+    }
+
     async setUserList(telegramId: number, list: string): Promise<boolean> {
         try {
             const user = await UserModel.findOne({ telegramId: String(telegramId) });
