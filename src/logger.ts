@@ -2,6 +2,8 @@ import dateFormat from 'dateformat';
 import config from 'config';
 import fs from 'fs';
 
+const start_symbol = '❯';
+
 const reset = "\x1b[0m";
 const underscore = "\x1b[4m";
 const dim = "\x1b[2m";
@@ -31,17 +33,17 @@ class Logger {
     }
 
     info(message: string, toFile = true) {
-        console.log(`${magenta}[${this.getFullDate()}] ${cyan}[  INFO   ]${reset} ${message}`);
+        console.log(`${dim}${start_symbol}${reset} ${magenta}[${this.getFullDate()}] ${cyan}[  INFO   ]${reset} ${message}`);
         if (toFile) this.toFile(`[${this.getFullDate()}] [  INFO   ] ${message}`);
     }
 
     warn(message: string, toFile = true) {
-        console.log(`${magenta}[${this.getFullDate()}] ${yellow}[  WARN   ]${reset} ${message}`);
+        console.log(`${dim}${start_symbol}${reset} ${magenta}[${this.getFullDate()}] ${yellow}[  WARN   ]${reset} ${message}`);
         if (toFile) this.toFile(`[${this.getFullDate()}] [  WARN   ] ${message}`);
     }
 
     error(message: string, toFile = true) {
-        console.log(`${magenta}[${this.getFullDate()}] ${red}[  ERROR  ]${reset} ${message}`);
+        console.log(`${red}${start_symbol}${reset} ${magenta}[${this.getFullDate()}] ${red}[  ERROR  ]${reset} ${message}`);
         if (toFile) this.toFile(`[${this.getFullDate()}] [  ERROR  ] ${message}`);
     }
 
