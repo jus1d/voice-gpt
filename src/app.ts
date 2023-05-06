@@ -79,7 +79,7 @@ bot.command('whitelist', async (ctx) => {
 
 bot.command('users', async (ctx) => {
     const users: Array<IUser> = await mongo.getAllUsers();
-    let messageTextWithHTML: string = `<b>Total users:</b> ${users.length}\n\n`;
+    let messageTextWithHTML = `<b>Total users:</b> ${users.length}\n\n`;
 
     for (let i = 0; i < users.length; i++) {
         messageTextWithHTML += `@${users[i].username} - ${users[i].requests} requests. /manage@${users[i].telegramId}\n`
@@ -96,7 +96,7 @@ bot.hears(/\/manage@(\d+)/, async (ctx) => {
         return;
     }
 
-    let messageTextWithHTML: string = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n ` + 
+    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n ` + 
         `<b>Listed:</b> <code>${user.list}</code>\n ` + 
         `<b>Total requests:</b> <code>${user.requests}</code>`;
 
