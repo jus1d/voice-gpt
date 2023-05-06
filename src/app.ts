@@ -250,7 +250,7 @@ bot.action('request_access', async (ctx) => {
                 [
                     { text: 'Approve', callback_data: 'whitelist'},
                     { text: 'Limited', callback_data: 'limited'},
-                    { text: 'Reject', callback_data: 'reject'},
+                    { text: 'Reject', callback_data: 'none'},
                 ]
             ]
         }
