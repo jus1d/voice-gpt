@@ -527,12 +527,9 @@ bot.action('reset_free_requests', async (ctx) => {
             ]
         }
     });
-    if (user.requested) {
-        await ctx.telegram.sendMessage(userId, 'You received 10 free requests', {
-            parse_mode: 'HTML'
-        });
-        await mongo.setRequestedStatus(userId, false);
-    }
+    await ctx.telegram.sendMessage(userId, 'You received 10 free requests', {
+        parse_mode: 'HTML'
+    });
     log.info(`User @${username} [${userId}] was added to limited list`);
 });
 
