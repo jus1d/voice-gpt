@@ -16,7 +16,6 @@ import fs from 'fs';
 
 const bot = new Telegraf(config.get('telegram_token'));
 const TYPE: string = config.get('type');
-const SEND_CHANGES = true;
 const packageFile = JSON.parse(fs.readFileSync('package.json').toString());
 
 bot.command('start', async (ctx) => {
