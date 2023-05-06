@@ -15,7 +15,7 @@ import config from 'config';
 
 const bot = new Telegraf(config.get('telegram_token'));
 const TYPE: string = config.get('type');
-const SEND_CHANGES: boolean = true;
+const SEND_CHANGES = true;
 
 bot.command('start', async (ctx) => {
     const user = await mongo.getUser(ctx.message.from.id);
