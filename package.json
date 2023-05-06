@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "tsc && cross-env NODE_ENV=production node ./build/app.js",
-    "dev": "tsc && cross-env NODE_ENV=development node ./build/app.js"
+    "dev": "cross-env NODE_ENV=development ts-node ./src/app.ts"
   },
   "repository": {
     "type": "git",

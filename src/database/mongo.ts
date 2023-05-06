@@ -12,6 +12,7 @@ class MongoDB {
         white: 'white',
         black: 'black',
         limited: 'limited',
+        rejected: 'rejected',
         none: 'none'
     }
 
