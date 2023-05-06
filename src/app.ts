@@ -289,7 +289,7 @@ bot.action('whitelist', async (ctx) => {
 
     const user: IUser | null = await mongo.getUser(userId);
     if (!user) return;
-    let messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n` + 
+    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n` + 
         `<b>Listed:</b> <code>${user.list}</code>\n` + 
         `<b>Total requests:</b> <code>${user.requests}</code>`;
 
@@ -378,7 +378,7 @@ bot.action('reject', async (ctx) => {
     
     const user: IUser | null = await mongo.getUser(userId);
     if (!user) return;
-    let messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n` + 
+    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n` + 
         `<b>Listed:</b> <code>${user.list}</code>\n` + 
         `<b>Total requests:</b> <code>${user.requests}</code>`;
 

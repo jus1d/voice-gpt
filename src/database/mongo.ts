@@ -72,7 +72,7 @@ class MongoDB {
         }
     }
 
-    async setFreeRequests(telegramId: number, amount: number = 10): Promise<boolean> {
+    async setFreeRequests(telegramId: number, amount = 10): Promise<boolean> {
         try {
             const user = await UserModel.findOne({ telegramId: String(telegramId) });
             if (!user) return false;
