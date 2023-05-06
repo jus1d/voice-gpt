@@ -4,7 +4,7 @@
   "description": "VoiceGPT - telegram-based interface to interact with ChatGPT. You can communicate with GPT via text and voice messages",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && cross-env NODE_ENV=production node ./build/app.js",
+    "start": "cross-env NODE_ENV=production ts-node ./src/app.ts",
     "dev": "cross-env NODE_ENV=development ts-node ./src/app.ts",
     "lint": "eslint src/"
   },

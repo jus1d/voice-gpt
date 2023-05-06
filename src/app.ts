@@ -5,15 +5,16 @@ import { Telegraf, Markup } from 'telegraf';
 import { message } from 'telegraf/filters';
 import { mongo } from './database/mongo';
 import { code } from 'telegraf/format';
-import { log } from './logger';
 import { voiceToText } from './voice';
 import { Message } from 'typegram';
 import { openAI } from './openai';
 import mongoose from 'mongoose';
+import { log } from './logger';
 import { Md5 } from 'ts-md5';
 import config from 'config';
 
 const bot = new Telegraf(config.get('telegram_token'));
+const TYPE: string = config.get('type');
 
 bot.command('start', async (ctx) => {
     const user = await mongo.getUser(ctx.message.from.id);
@@ -241,7 +242,7 @@ bot.action('request_access', async (ctx) => {
     
     log.info(`User @${ctx.from.username}:${ctx.from.id} requested a whitelist slot`);
 
-    ctx.telegram.sendMessage(config.get('admin_tg_id'), `<b>User @${ctx.from.username} [<code>${ctx.from.id}</code>] requested a whitelist slot</b>`,{
+    ctx.telegram.sendMessage(config.get('admin_tg_id'), `<b>User @${ctx.from.username} [<code>${ctx.from.id}</code>] requested a whitelist slot</b>`, {
         parse_mode: 'HTML',
         reply_markup: {
             inline_keyboard: [
@@ -374,10 +375,12 @@ bot.action('blacklist', async (ctx) => {
     try {
         
         bot.launch();
-        log.start(config.get('type'));
+        log.start(TYPE);
 
         await mongoose.connect(config.get('mongo_uri'));
         log.info('Connection to MongoDB established');
+
+        if (TYPE === 'prod') bot.telegram.sendMessage(config.get('admin_tg_id'), `<code>VoiceGPT:${TYPE} just started!</code>`, { parse_mode: 'HTML' });
 
         process.once('SIGINT', () => {
             bot.stop('SIGINT');
