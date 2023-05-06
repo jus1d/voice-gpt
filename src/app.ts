@@ -234,7 +234,10 @@ bot.action('request_access', async (ctx) => {
     if (!ctx.from) return;
 
     const userList = (await mongo.getUser(ctx.from.id))?.list;
-    if (userList === mongo.list.rejected) return;
+    if (userList === mongo.list.rejected) {
+        log.info(`User's @${ctx.from.username}:${ctx.from.id} request was auto-rejected`);
+        return;
+    }
     
     log.info(`User @${ctx.from.username}:${ctx.from.id} requested a whitelist slot`);
 
@@ -256,7 +259,7 @@ bot.action('whitelist', async (ctx) => {
     ctx.editMessageText('<code>Processing...</code>', {
         parse_mode: 'HTML'
     });
-    
+
     if (!ctx.from) return;
 
     const isAdmin = await mongo.isAdmin(ctx.from.id);
