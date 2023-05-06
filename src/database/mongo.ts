@@ -1,6 +1,6 @@
 import { ConversationModel, IConversation, IMessage } from "./models/conversation.model";
 import { UserModel, IUser } from "./models/user.model";
-import { log } from "../logger/logger";
+import { log } from "../logger";
 
 class MongoDB {
     roles = {

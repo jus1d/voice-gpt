@@ -5,7 +5,7 @@ import { Telegraf, Markup } from 'telegraf';
 import { message } from 'telegraf/filters';
 import { mongo } from './database/mongo';
 import { code } from 'telegraf/format';
-import { log } from './logger/logger';
+import { log } from './logger';
 import { voiceToText } from './voice';
 import { Message } from 'typegram';
 import { openAI } from './openai';
