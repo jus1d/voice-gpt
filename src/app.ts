@@ -15,6 +15,7 @@ import config from 'config';
 
 const bot = new Telegraf(config.get('telegram_token'));
 const TYPE: string = config.get('type');
+const SEND_CHANGES: boolean = true;
 
 bot.command('start', async (ctx) => {
     const user = await mongo.getUser(ctx.message.from.id);
@@ -257,10 +258,6 @@ bot.action('request_access', async (ctx) => {
 });
 
 bot.action('whitelist', async (ctx) => {
-    ctx.editMessageText('<code>Processing...</code>', {
-        parse_mode: 'HTML'
-    });
-
     if (!ctx.from) return;
 
     const isAdmin = await mongo.isAdmin(ctx.from.id);
@@ -270,20 +267,37 @@ bot.action('whitelist', async (ctx) => {
     const username = (ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[1].replace('@', '');
 
     await mongo.setUserList(userId, mongo.list.white);
-    await ctx.editMessageText(`<b>User @${username} [<code>${userId}</code>] was added to <code>white</code> list</b>`, {
-        parse_mode: 'HTML'
+
+    const user: IUser | null = await mongo.getUser(userId);
+    if (!user) return;
+    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n ` + 
+        `<b>Listed:</b> <code>${user.list}</code>\n ` + 
+        `<b>Total requests:</b> <code>${user.requests}</code>`;
+    await ctx.editMessageText(messageTextWithHTML, {
+        parse_mode: 'HTML', 
+        reply_markup: {
+            inline_keyboard: [
+                [
+                    { text: 'Whitelist', callback_data: 'whitelist'},
+                    { text: 'Limited', callback_data: 'limited'},
+                ],
+                [
+                    { text: 'None', callback_data: 'none'},
+                    { text: 'Reject', callback_data: 'reject'},
+                    { text: 'Blacklist', callback_data: 'blacklist'},
+                ]
+            ]
+        }
     });
-    await ctx.telegram.sendMessage(userId, 'You have been whitelisted', {
-        parse_mode: 'HTML'
-    });
+    if (SEND_CHANGES) {
+        await ctx.telegram.sendMessage(userId, 'You have been whitelisted', {
+            parse_mode: 'HTML'
+        });
+    }
     log.info(`User @${username} [${userId}] was whitelisted`);
 });
 
 bot.action('limited', async (ctx) => {
-    ctx.editMessageText('<code>Processing...</code>', {
-        parse_mode: 'HTML'
-    });
-
     if (!ctx.from) return;
 
     const isAdmin = await mongo.isAdmin(ctx.from.id);
@@ -293,20 +307,37 @@ bot.action('limited', async (ctx) => {
     const username = (ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[1].replace('@', '');
 
     await mongo.setUserList(userId, mongo.list.limited);
-    await ctx.editMessageText(`<b>User @${username} [<code>${userId}</code>] was added to <code>limited</code> list</b>`, {
-        parse_mode: 'HTML'
+    
+    const user: IUser | null = await mongo.getUser(userId);
+    if (!user) return;
+    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n ` + 
+        `<b>Listed:</b> <code>${user.list}</code>\n ` + 
+        `<b>Total requests:</b> <code>${user.requests}</code>`;
+    await ctx.editMessageText(messageTextWithHTML, {
+        parse_mode: 'HTML', 
+        reply_markup: {
+            inline_keyboard: [
+                [
+                    { text: 'Whitelist', callback_data: 'whitelist'},
+                    { text: 'Limited', callback_data: 'limited'},
+                ],
+                [
+                    { text: 'None', callback_data: 'none'},
+                    { text: 'Reject', callback_data: 'reject'},
+                    { text: 'Blacklist', callback_data: 'blacklist'},
+                ]
+            ]
+        }
     });
-    await ctx.telegram.sendMessage(userId, 'You have been added to limited list', {
-        parse_mode: 'HTML'
-    });
+    if (SEND_CHANGES) {
+        await ctx.telegram.sendMessage(userId, 'You have been added to limited list', {
+            parse_mode: 'HTML'
+        });
+    }
     log.info(`User @${username} [${userId}] was added to limited list`);
 });
 
 bot.action('reject', async (ctx) => {
-    ctx.editMessageText('<code>Processing...</code>', {
-        parse_mode: 'HTML'
-    });
-
     if (!ctx.from) return;
 
     const isAdmin = await mongo.isAdmin(ctx.from.id);
@@ -316,20 +347,37 @@ bot.action('reject', async (ctx) => {
     const username = (ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[1].replace('@', '');
 
     await mongo.setUserList(userId, mongo.list.rejected);
-    await ctx.editMessageText(`<b>User @${username} [<code>${userId}</code>] was added to <code>rejected</code> list</b>`, {
-        parse_mode: 'HTML'
+    
+    const user: IUser | null = await mongo.getUser(userId);
+    if (!user) return;
+    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n ` + 
+        `<b>Listed:</b> <code>${user.list}</code>\n ` + 
+        `<b>Total requests:</b> <code>${user.requests}</code>`;
+    await ctx.editMessageText(messageTextWithHTML, {
+        parse_mode: 'HTML', 
+        reply_markup: {
+            inline_keyboard: [
+                [
+                    { text: 'Whitelist', callback_data: 'whitelist'},
+                    { text: 'Limited', callback_data: 'limited'},
+                ],
+                [
+                    { text: 'None', callback_data: 'none'},
+                    { text: 'Reject', callback_data: 'reject'},
+                    { text: 'Blacklist', callback_data: 'blacklist'},
+                ]
+            ]
+        }
     });
-    await ctx.telegram.sendMessage(userId, 'You have been added to rejected list', {
-        parse_mode: 'HTML'
-    });
+    if (SEND_CHANGES) {
+        await ctx.telegram.sendMessage(userId, 'Your access to VoiceGPT was rejected', {
+            parse_mode: 'HTML'
+        });
+    }
     log.info(`User @${username} [${userId}] was added to rejected list`);
 });
 
 bot.action('none', async (ctx) => {
-    ctx.editMessageText('<code>Processing...</code>', {
-        parse_mode: 'HTML'
-    });
-
     if (!ctx.from) return;
 
     const isAdmin = await mongo.isAdmin(ctx.from.id);
@@ -339,20 +387,37 @@ bot.action('none', async (ctx) => {
     const username = (ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[1].replace('@', '');
 
     await mongo.setUserList(userId, mongo.list.none);
-    await ctx.editMessageText(`<b>User @${username} [<code>${userId}</code>] was added to <code>none</code> list</b>`, {
-        parse_mode: 'HTML'
+    
+    const user: IUser | null = await mongo.getUser(userId);
+    if (!user) return;
+    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n ` + 
+        `<b>Listed:</b> <code>${user.list}</code>\n ` + 
+        `<b>Total requests:</b> <code>${user.requests}</code>`;
+    await ctx.editMessageText(messageTextWithHTML, {
+        parse_mode: 'HTML', 
+        reply_markup: {
+            inline_keyboard: [
+                [
+                    { text: 'Whitelist', callback_data: 'whitelist'},
+                    { text: 'Limited', callback_data: 'limited'},
+                ],
+                [
+                    { text: 'None', callback_data: 'none'},
+                    { text: 'Reject', callback_data: 'reject'},
+                    { text: 'Blacklist', callback_data: 'blacklist'},
+                ]
+            ]
+        }
     });
-    await ctx.telegram.sendMessage(userId, 'You have been removed from any list', {
-        parse_mode: 'HTML'
-    });
+    if (SEND_CHANGES) {
+        await ctx.telegram.sendMessage(userId, 'You have been removed from any list', {
+            parse_mode: 'HTML'
+        });
+    }
     log.info(`User @${username} [${userId}] was removed from any list`);
 });
 
 bot.action('blacklist', async (ctx) => {
-    ctx.editMessageText('<code>Processing...</code>', {
-        parse_mode: 'HTML'
-    });
-
     if (!ctx.from) return;
 
     const isAdmin = await mongo.isAdmin(ctx.from.id);
@@ -362,12 +427,33 @@ bot.action('blacklist', async (ctx) => {
     const username = (ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[1].replace('@', '');
 
     await mongo.setUserList(userId, mongo.list.black);
-    await ctx.editMessageText(`<b>User @${username} [<code>${userId}</code>] was added to <code>black</code> list</b>`, {
-        parse_mode: 'HTML'
+    
+    const user: IUser | null = await mongo.getUser(userId);
+    if (!user) return;
+    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n ` + 
+        `<b>Listed:</b> <code>${user.list}</code>\n ` + 
+        `<b>Total requests:</b> <code>${user.requests}</code>`;
+    await ctx.editMessageText(messageTextWithHTML, {
+        parse_mode: 'HTML', 
+        reply_markup: {
+            inline_keyboard: [
+                [
+                    { text: 'Whitelist', callback_data: 'whitelist'},
+                    { text: 'Limited', callback_data: 'limited'},
+                ],
+                [
+                    { text: 'None', callback_data: 'none'},
+                    { text: 'Reject', callback_data: 'reject'},
+                    { text: 'Blacklist', callback_data: 'blacklist'},
+                ]
+            ]
+        }
     });
-    await ctx.telegram.sendMessage(userId, 'You have been blacklisted', {
-        parse_mode: 'HTML'
-    });
+    if (SEND_CHANGES) {
+        await ctx.telegram.sendMessage(userId, 'You have been blacklisted', {
+            parse_mode: 'HTML'
+        });
+    }
     log.info(`User @${username} [${userId}] was blacklisted`);
 });
 
