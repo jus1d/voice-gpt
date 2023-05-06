@@ -1,4 +1,4 @@
-# VoiceGPT
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&width=460&lines=VoiceGPT+-+communicate+with+GPT+easier!)](https://git.io/typing-svg)
 
 VoiceGPT - is a telegram-based interface to communicate with ChatGPT. You can communicate with ChatGPT via text and voice messages.
 

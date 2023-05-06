@@ -2,6 +2,15 @@ import dateFormat from 'dateformat';
 import config from 'config';
 import fs from 'fs';
 
+const start_symbol = '❯';
+
+const reset = "\x1b[0m";
+const dim = "\x1b[2m";
+const red = "\x1b[31m";
+const cyan = "\x1b[36m";
+const yellow = "\x1b[33m";
+const magenta = "\x1b[35m";
+
 class Logger {
     constructor() {
         try {
@@ -20,24 +29,18 @@ class Logger {
     }
 
     info(message: string, toFile = true) {
-        message = `[${this.getFullDate()}] [  INFO   ] ${message}`;
-
-        console.log(message);
-        if (toFile) this.toFile(message);
+        console.log(`${dim}${start_symbol}${reset} ${magenta}[${this.getFullDate()}] ${cyan}[  INFO   ]${reset} ${message}`);
+        if (toFile) this.toFile(`[${this.getFullDate()}] [  INFO   ] ${message}`);
     }
 
     warn(message: string, toFile = true) {
-        message = `[${this.getFullDate()}] [  WARN   ] ${message}`;
-
-        console.log(message);
-        if (toFile) this.toFile(message);
+        console.log(`${dim}${start_symbol}${reset} ${magenta}[${this.getFullDate()}] ${yellow}[  WARN   ]${reset} ${message}`);
+        if (toFile) this.toFile(`[${this.getFullDate()}] [  WARN   ] ${message}`);
     }
 
     error(message: string, toFile = true) {
-        message = `[${this.getFullDate()}] [  ERROR  ] ${message}`;
-
-        console.log(message);
-        if (toFile) this.toFile(message);
+        console.log(`${red}${start_symbol}${reset} ${magenta}[${this.getFullDate()}] ${red}[  ERROR  ]${reset} ${message}`);
+        if (toFile) this.toFile(`[${this.getFullDate()}] [  ERROR  ] ${message}`);
     }
 
     start(type: string) {

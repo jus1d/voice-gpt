@@ -1,6 +1,6 @@
 import { ConversationModel, IConversation, IMessage } from "./models/conversation.model";
 import { UserModel, IUser } from "./models/user.model";
-import { log } from "../logger/logger";
+import { log } from "../logger";
 
 class MongoDB {
     roles = {
@@ -12,6 +12,7 @@ class MongoDB {
         white: 'white',
         black: 'black',
         limited: 'limited',
+        rejected: 'rejected',
         none: 'none'
     }
 
@@ -147,6 +148,16 @@ class MongoDB {
             return users;
         } catch (error) {
             log.error(`Error while getting whitelist`);
+        }
+    }
+
+    async getAllUsers(): Promise<Array<IUser>> {
+        try {
+            const users: Array<IUser> = await UserModel.find({});
+            return users;
+        } catch (error) {
+            log.error('Error while getting all users');
+            return [];
         }
     }
 
