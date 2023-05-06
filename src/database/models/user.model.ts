@@ -6,7 +6,9 @@ export interface IUser {
     fullname: string,
     role: string,
     list: string,
-    requests: number
+    requests: number,
+    freeRequests: number,
+    requested: boolean
 }
 
 const userSchema = new Schema<IUser>({
@@ -16,6 +18,8 @@ const userSchema = new Schema<IUser>({
     role: { type: String, default: 'user' },
     list: { type: String, default: 'none' },
     requests: { type: Number, default: 0 },
+    freeRequests: { type: Number, default: 0 },
+    requested: { type: Boolean, default: false }
 });
 
 export const UserModel = model<IUser>('User', userSchema);

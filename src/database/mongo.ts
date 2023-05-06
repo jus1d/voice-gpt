@@ -56,6 +56,36 @@ class MongoDB {
         }
     }
 
+    async decreaseFreeRequests(telegramId: number): Promise<boolean> {
+        try {
+            const user = await UserModel.findOne({ telegramId: String(telegramId) });
+            if (!user) return false;
+
+            if (user.freeRequests !== 0) {
+                user.freeRequests = user.freeRequests - 1;
+            }
+            await UserModel.updateOne({ telegramId: String(telegramId) }, user);
+            return true;
+        } catch (error) {
+            log.error('Error while decreasing free requests counter');
+            return false;
+        }
+    }
+
+    async setFreeRequests(telegramId: number, amount = 10): Promise<boolean> {
+        try {
+            const user = await UserModel.findOne({ telegramId: String(telegramId) });
+            if (!user) return false;
+
+            user.freeRequests = amount;
+            await UserModel.updateOne({ telegramId: String(telegramId) }, user);
+            return true;
+        } catch (error) {
+            log.error('Error while setting free requests');
+            return false;
+        }
+    }
+
     async setUserList(telegramId: number, list: string): Promise<boolean> {
         try {
             const user = await UserModel.findOne({ telegramId: String(telegramId) });
@@ -67,6 +97,21 @@ class MongoDB {
             return true;
         } catch (error) {
             log.error(`Error while updating user's list`);
+            return false;
+        }
+    }
+
+    async setRequestedStatus(telegramId: number, isRequested: boolean): Promise<boolean> {
+        try {
+            const user = await UserModel.findOne({ telegramId: String(telegramId) });
+            if (!user) return false;
+
+            user.requested = isRequested;
+
+            await UserModel.updateOne({ telegramId: String(telegramId) }, user);
+            return true;
+        } catch (error) {
+            log.error('Error while updating requested status');
             return false;
         }
     }
