@@ -26,7 +26,7 @@ bot.command('start', async (ctx) => {
         await mongo.saveUser(ctx.message.from.id, ctx.message.from.username ??= '', ctx.message.from.first_name);
     }
 
-    log.info(`User @${ctx.message.from.username}:${ctx.message.from.id} started the bot`);
+    log.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] started the bot`);
 
     const conversation = await mongo.getConversation(ctx.message.from.id);
     if (!conversation) {
@@ -113,7 +113,7 @@ bot.hears(/\/manage@(\d+)/, async (ctx) => {
 bot.command('new', async (ctx) => {
     await mongo.updateConversation(ctx.message.from.id, []);
     await ctx.replyWithHTML('<b>New chat created!</b>');
-    log.info(`User @${ctx.message.from.username}:${ctx.message.from.id} created new chat context`);
+    log.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] created new chat context`);
 });
 
 bot.command('id', async (ctx) => {
@@ -139,13 +139,13 @@ bot.on(message('voice'), async (ctx) => {
             Markup.button.callback("Request", "request_access")
         ]));
     } else if (user.list !== mongo.list.white) {
-        log.info(`User @${ctx.message.from.username}:${ctx.message.from.id} request rejected. User not whitelisted`);
+        log.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] request rejected. User not whitelisted`);
         return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_access")
         ]));
     }
 
-    log.info(`User @${ctx.message.from.username}:${ctx.message.from.id} request created from voice message`);
+    log.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] request created from voice message`);
 
     try {
         const message = await ctx.reply(code('Already processing your request, wait a bit'));
@@ -177,7 +177,7 @@ bot.on(message('voice'), async (ctx) => {
             ctx.reply('No response from ChatGPT. Try again later or use /new to create new conversation.');
         }
     } catch (error) {
-        log.error(`Error with creating request. User: @${ctx.message.from.username}:${ctx.message.from.id}\n${error}`);
+        log.error(`Error with creating request. User: @${ctx.message.from.username} [${ctx.message.from.id}]\n${error}`);
         ctx.reply('There was an error in your query. Please try again later');
     }
 });
@@ -201,13 +201,13 @@ bot.on(message('text'), async (ctx) => {
             Markup.button.callback("Request", "request_access")
         ]));
     } else if (user.list !== mongo.list.white) {
-        log.info(`User @${ctx.message.from.username}:${ctx.message.from.id} request rejected. User not whitelisted`);
+        log.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] request rejected. User not whitelisted`);
         return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins', Markup.inlineKeyboard([
             Markup.button.callback("Request", "request_access")
         ]));
     }
 
-    log.info(`User @${ctx.message.from.username}:${ctx.message.from.id} request created from text message`);
+    log.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] request created from text message`);
 
     try {
         const message = await ctx.reply(code('Already processing your request, wait a bit'));
@@ -227,7 +227,7 @@ bot.on(message('text'), async (ctx) => {
             ctx.reply('No response from ChatGPT. Try again later or use /new to create new conversation.');
         }
     } catch (error) {
-        log.error(`Error with creating request. User: @${ctx.message.from.username}:${ctx.message.from.id}\n${error}`);
+        log.error(`Error with creating request. User: @${ctx.message.from.username} [${ctx.message.from.id}]\n${error}`);
         ctx.reply('There was an error in your query. Please try again later');
     }
 });
@@ -239,7 +239,7 @@ bot.action('request_access', async (ctx) => {
 
     const userList = (await mongo.getUser(ctx.from.id))?.list;
     if (userList === mongo.list.rejected) {
-        log.info(`User's @${ctx.from.username}:${ctx.from.id} request was auto-rejected`);
+        log.info(`User's @${ctx.from.username} [${ctx.from.id}] request was auto-rejected`);
         return;
     }
     
