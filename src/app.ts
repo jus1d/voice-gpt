@@ -12,10 +12,12 @@ import mongoose from 'mongoose';
 import { log } from './logger';
 import { Md5 } from 'ts-md5';
 import config from 'config';
+import fs from 'fs';
 
 const bot = new Telegraf(config.get('telegram_token'));
 const TYPE: string = config.get('type');
 const SEND_CHANGES = true;
+const packageFile = JSON.parse(fs.readFileSync('package.json').toString());
 
 bot.command('start', async (ctx) => {
     const user = await mongo.getUser(ctx.message.from.id);
@@ -461,12 +463,12 @@ bot.action('blacklist', async (ctx) => {
     try {
         
         bot.launch();
-        log.start(TYPE);
+        log.start(TYPE, packageFile.version);
 
         await mongoose.connect(config.get('mongo_uri'));
         log.info('Connection to MongoDB established');
 
-        if (TYPE === 'prod') bot.telegram.sendMessage(config.get('admin_tg_id'), `<code>VoiceGPT:${TYPE} just started</code>`, { parse_mode: 'HTML' });
+        if (TYPE === 'prod') bot.telegram.sendMessage(config.get('admin_tg_id'), `<code>VoiceGPT:${TYPE}-v${packageFile.version} just started</code>`, { parse_mode: 'HTML' });
 
         process.once('SIGINT', () => {
             bot.stop('SIGINT');

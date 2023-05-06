@@ -5,6 +5,7 @@ import fs from 'fs';
 const start_symbol = '❯';
 
 const reset = "\x1b[0m";
+const underscore = "\x1b[4m";
 const dim = "\x1b[2m";
 const red = "\x1b[31m";
 const cyan = "\x1b[36m";
@@ -43,16 +44,8 @@ class Logger {
         if (toFile) this.toFile(`[${this.getFullDate()}] [  ERROR  ] ${message}`);
     }
 
-    start(type: string) {
-        let name = 'VoiceGPT';
-
-        if (type === 'prod') {
-            name += ':production';
-        } else if (type === 'dev') {
-            name += ':dev';
-        }
-
-        this.info(`${name} just started`);
+    start(type: string, version: string) {
+        this.info(`${underscore}${cyan}VoiceGPT:${type}${reset}${dim} v${version}${reset} just started`, false);
     }
 
     toFile(message: string) {
