@@ -81,6 +81,9 @@ bot.command('whitelist', async (ctx) => {
 });
 
 bot.command('users', async (ctx) => {
+    const isAdmin = await mongo.isAdmin(ctx.from.id);
+    if (!isAdmin) return;
+
     const users: Array<IUser> = await mongo.getAllUsers();
     let messageTextWithHTML = `<b>Total users:</b> ${users.length}\n\n`;
 
@@ -92,6 +95,9 @@ bot.command('users', async (ctx) => {
 
 bot.hears(/\/manage@(\d+)/, async (ctx) => {
     const telegramId = Number(ctx.message.text.split('@')[1]);
+    
+    const isAdmin = await mongo.isAdmin(ctx.from.id);
+    if (!isAdmin) return;
 
     const user: IUser | null = await mongo.getUser(telegramId);
     if (!user) {
