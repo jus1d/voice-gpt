@@ -256,6 +256,7 @@ bot.action('whitelist', async (ctx) => {
     ctx.editMessageText('<code>Processing...</code>', {
         parse_mode: 'HTML'
     });
+    
     if (!ctx.from) return;
 
     const isAdmin = await mongo.isAdmin(ctx.from.id);
@@ -278,6 +279,7 @@ bot.action('limited', async (ctx) => {
     ctx.editMessageText('<code>Processing...</code>', {
         parse_mode: 'HTML'
     });
+
     if (!ctx.from) return;
 
     const isAdmin = await mongo.isAdmin(ctx.from.id);
@@ -300,6 +302,7 @@ bot.action('reject', async (ctx) => {
     ctx.editMessageText('<code>Processing...</code>', {
         parse_mode: 'HTML'
     });
+
     if (!ctx.from) return;
 
     const isAdmin = await mongo.isAdmin(ctx.from.id);
@@ -322,6 +325,7 @@ bot.action('none', async (ctx) => {
     ctx.editMessageText('<code>Processing...</code>', {
         parse_mode: 'HTML'
     });
+
     if (!ctx.from) return;
 
     const isAdmin = await mongo.isAdmin(ctx.from.id);
@@ -344,6 +348,7 @@ bot.action('blacklist', async (ctx) => {
     ctx.editMessageText('<code>Processing...</code>', {
         parse_mode: 'HTML'
     });
+
     if (!ctx.from) return;
 
     const isAdmin = await mongo.isAdmin(ctx.from.id);
