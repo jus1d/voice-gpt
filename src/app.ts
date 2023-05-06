@@ -257,6 +257,7 @@ bot.action('request_access', async (ctx) => {
             ]
         }
     });
+    await mongo.setRequestedStatus(ctx.from.id, true);
 });
 
 bot.action('whitelist', async (ctx) => {
@@ -291,10 +292,11 @@ bot.action('whitelist', async (ctx) => {
             ]
         }
     });
-    if (SEND_CHANGES) {
+    if (user.requested) {
         await ctx.telegram.sendMessage(userId, 'You have been whitelisted', {
             parse_mode: 'HTML'
         });
+        await mongo.setRequestedStatus(userId, false);
     }
     log.info(`User @${username} [${userId}] was whitelisted`);
 });
@@ -331,10 +333,11 @@ bot.action('limited', async (ctx) => {
             ]
         }
     });
-    if (SEND_CHANGES) {
+    if (user.requested) {
         await ctx.telegram.sendMessage(userId, 'You have been added to limited list', {
             parse_mode: 'HTML'
         });
+        await mongo.setRequestedStatus(userId, false);
     }
     log.info(`User @${username} [${userId}] was added to limited list`);
 });
@@ -371,10 +374,11 @@ bot.action('reject', async (ctx) => {
             ]
         }
     });
-    if (SEND_CHANGES) {
+    if (user.requested) {
         await ctx.telegram.sendMessage(userId, 'Your access to VoiceGPT was rejected', {
             parse_mode: 'HTML'
         });
+        await mongo.setRequestedStatus(userId, false);
     }
     log.info(`User @${username} [${userId}] was added to rejected list`);
 });
@@ -411,10 +415,11 @@ bot.action('none', async (ctx) => {
             ]
         }
     });
-    if (SEND_CHANGES) {
+    if (user.requested) {
         await ctx.telegram.sendMessage(userId, 'You have been removed from any list', {
             parse_mode: 'HTML'
         });
+        await mongo.setRequestedStatus(userId, false);
     }
     log.info(`User @${username} [${userId}] was removed from any list`);
 });
@@ -451,10 +456,11 @@ bot.action('blacklist', async (ctx) => {
             ]
         }
     });
-    if (SEND_CHANGES) {
+    if (user.requested) {
         await ctx.telegram.sendMessage(userId, 'You have been blacklisted', {
             parse_mode: 'HTML'
         });
+        await mongo.setRequestedStatus(userId, false);
     }
     log.info(`User @${username} [${userId}] was blacklisted`);
 });

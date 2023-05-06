@@ -71,6 +71,21 @@ class MongoDB {
         }
     }
 
+    async setRequestedStatus(telegramId: number, isRequested: boolean): Promise<boolean> {
+        try {
+            const user = await UserModel.findOne({ telegramId: String(telegramId) });
+            if (!user) return false;
+
+            user.requested = isRequested;
+
+            await UserModel.updateOne({ telegramId: String(telegramId) }, user);
+            return true;
+        } catch (error) {
+            log.error('Error while updating requested status');
+            return false;
+        }
+    }
+
     async initConversation(telegramId: number): Promise<boolean> {
         try {
             await this.saveConversation(telegramId, []);
