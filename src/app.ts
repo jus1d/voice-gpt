@@ -9,6 +9,7 @@ import { voiceToText } from './voice';
 import { Message } from 'typegram';
 import { openAI } from './openai';
 import mongoose from 'mongoose';
+import { utils } from './utils';
 import { log } from './logger';
 import { Md5 } from 'ts-md5';
 import config from 'config';
@@ -101,17 +102,11 @@ bot.hears(/\/manage@(\d+)/, async (ctx) => {
 
     const user: IUser | null = await mongo.getUser(telegramId);
     if (!user) {
-        await ctx.replyWithHTML(`No user found with ID: <code>${telegramId}</code>`);
+        await ctx.replyWithHTML(`<b>No user found with ID: <code>${telegramId}</code></b>`);
         return;
     }
 
-    let messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n ` + 
-        `<b>Listed:</b> <code>${user.list}</code>\n ` + 
-        `<b>Total requests:</b> <code>${user.requests}</code>`;
-
-    if (user.list === mongo.list.limited) {
-        messageTextWithHTML += `\n<b>Free requests: </b> <code>${user.freeRequests}</code>`;
-    }
+    const messageTextWithHTML = await utils.getUserStatsText(telegramId);
 
     let markup;
 
@@ -295,9 +290,7 @@ bot.action('whitelist', async (ctx) => {
 
     const user: IUser | null = await mongo.getUser(userId);
     if (!user) return;
-    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n` + 
-        `<b>Listed:</b> <code>${user.list}</code>\n` + 
-        `<b>Total requests:</b> <code>${user.requests}</code>`;
+    const messageTextWithHTML = await utils.getUserStatsText(userId);
 
     await ctx.editMessageText(messageTextWithHTML, {
         parse_mode: 'HTML', 
@@ -337,13 +330,8 @@ bot.action('limited', async (ctx) => {
     
     const user: IUser | null = await mongo.getUser(userId);
     if (!user) return;
-    let messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n` + 
-        `<b>Listed:</b> <code>${user.list}</code>\n` + 
-        `<b>Total requests:</b> <code>${user.requests}</code>`;
-    
-    if (user.list === mongo.list.limited) {
-        messageTextWithHTML += `\n<b>Free requests: </b> <code>${user.freeRequests}</code>`;
-    }
+
+    const messageTextWithHTML = await utils.getUserStatsText(userId);
 
     await ctx.editMessageText(messageTextWithHTML, {
         parse_mode: 'HTML', 
@@ -384,9 +372,8 @@ bot.action('reject', async (ctx) => {
     
     const user: IUser | null = await mongo.getUser(userId);
     if (!user) return;
-    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n` + 
-        `<b>Listed:</b> <code>${user.list}</code>\n` + 
-        `<b>Total requests:</b> <code>${user.requests}</code>`;
+
+    const messageTextWithHTML = await utils.getUserStatsText(userId);
 
     await ctx.editMessageText(messageTextWithHTML, {
         parse_mode: 'HTML', 
@@ -426,9 +413,9 @@ bot.action('none', async (ctx) => {
     
     const user: IUser | null = await mongo.getUser(userId);
     if (!user) return;
-    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n` + 
-        `<b>Listed:</b> <code>${user.list}</code>\n` + 
-        `<b>Total requests:</b> <code>${user.requests}</code>`;
+
+    const messageTextWithHTML = await utils.getUserStatsText(userId);
+
     await ctx.editMessageText(messageTextWithHTML, {
         parse_mode: 'HTML', 
         reply_markup: {
@@ -467,9 +454,9 @@ bot.action('blacklist', async (ctx) => {
     
     const user: IUser | null = await mongo.getUser(userId);
     if (!user) return;
-    const messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n` + 
-        `<b>Listed:</b> <code>${user.list}</code>\n` + 
-        `<b>Total requests:</b> <code>${user.requests}</code>`;
+    
+    const messageTextWithHTML = await utils.getUserStatsText(userId);
+
     await ctx.editMessageText(messageTextWithHTML, {
         parse_mode: 'HTML', 
         reply_markup: {
@@ -509,13 +496,7 @@ bot.action('reset_free_requests', async (ctx) => {
     const user: IUser | null = await mongo.getUser(userId);
     if (!user) return;
 
-    let messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n` + 
-        `<b>Listed:</b> <code>${user.list}</code>\n` + 
-        `<b>Total requests:</b> <code>${user.requests}</code>`;
-    
-    if (user.list === mongo.list.limited) {
-        messageTextWithHTML += `\n<b>Free requests: </b> <code>${user.freeRequests}</code>`;
-    }
+    const messageTextWithHTML = await utils.getUserStatsText(userId);
 
     await ctx.editMessageText(messageTextWithHTML, {
         parse_mode: 'HTML', 
