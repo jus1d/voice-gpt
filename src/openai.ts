@@ -1,7 +1,7 @@
 import { IMessage } from "./database/models/conversation.model";
 import { Configuration, OpenAIApi } from "openai";
-import { log } from "./logger";
 import { removeFile } from "./voice";
+import { log } from "./logger";
 import config from 'config';
 import fs from 'fs';
 
