@@ -3,3 +3,9 @@ build:
 
 run: 
 	docker compose up -d 
+
+stop:
+	docker stop voice-gpt
+
+remove:
+	docker rm voice-gpt -f
