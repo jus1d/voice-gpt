@@ -15,20 +15,3 @@ jobs:
           npm install @typescript-eslint/eslint-plugin@latest --save-dev
       - name: Lint TS files
         run: eslint ./src/
-  test-deploy:
-    name: Test deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Build and run on remote server
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd ${{ secrets.PROJECT_DIR }};
-            docker rm voice-gpt -f;
-            ssh -T git@github.com
-            git pull;
-            make build;
-            make run;
