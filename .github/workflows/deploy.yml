@@ -20,6 +20,10 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
+      - name: Setup SSH keys
+        run: |
+          ssh-agent -a /tmp/ssh_agent.sock > /dev/null
+          ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY_DO }}"
       - name: Build and run on remote server
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -27,8 +31,6 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-            ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
             cd ${{ secrets.PROJECT_DIR }};
             docker rm voice-gpt -f;
             git pull;
