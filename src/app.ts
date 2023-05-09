@@ -260,14 +260,14 @@ bot.action('request_access', async (ctx) => {
         return;
     }
     
-    log.info(`User @${ctx.from.username}:${ctx.from.id} requested a whitelist slot`);
+    log.info(`User @${ctx.from.username} [${ctx.from.id}] requested a whitelist slot`);
 
     ctx.telegram.sendMessage(config.get('admin_tg_id'), `<b>User @${ctx.from.username} [<code>${ctx.from.id}</code>] requested a whitelist slot</b>`, {
         parse_mode: 'HTML',
         reply_markup: {
             inline_keyboard: [
                 [
-                    { text: 'Approve', callback_data: 'whitelist'},
+                    { text: 'Whitelist', callback_data: 'whitelist'},
                     { text: 'Limited', callback_data: 'limited'},
                     { text: 'Reject', callback_data: 'none'},
                 ]
