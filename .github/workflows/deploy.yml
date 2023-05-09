@@ -13,17 +13,13 @@ jobs:
         run: |
           npm install eslint --global;
           npm install @typescript-eslint/eslint-plugin@latest --save-dev
-      - name: Lint JS files
+      - name: Lint TS files
         run: eslint ./src/
   deploy:
     needs: lint
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Setup SSH keys
-        run: |
-          eval `ssh-agent -s`
-          ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY_DO }}"
       - name: Build and run on remote server
         uses: appleboy/ssh-action@v0.1.10
         with:
