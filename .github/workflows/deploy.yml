@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Setup SSH keys
         run: |
-          ssh-agent -a /tmp/ssh_agent.sock > /dev/null
+          eval `ssh-agent -s`
           ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY_DO }}"
       - name: Build and run on remote server
         uses: appleboy/ssh-action@v0.1.10
