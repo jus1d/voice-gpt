@@ -29,6 +29,6 @@ jobs:
           script: |
             cd ${{ secrets.PROJECT_DIR }};
             docker rm voice-gpt -f;
-            git pull;
+            git pull origin master;
             make build;
             make run;
