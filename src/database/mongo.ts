@@ -20,7 +20,7 @@ class MongoDB {
         try {
             await new UserModel({
                 telegramId,
-                username,
+                username: username || '',
                 fullname,
                 role,
             }).save();
@@ -132,7 +132,7 @@ class MongoDB {
             await new ConversationModel({
                 messages, 
                 telegramId: String(telegramId),
-                username: user?.username
+                username: user?.username || ''
             }).save();
             return true;
         } catch (error) {
