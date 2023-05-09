@@ -529,7 +529,11 @@ bot.action('reset_free_requests', async (ctx) => {
         await mongoose.connect(config.get('mongo_uri'));
         log.info('Connection to MongoDB established');
 
-        if (TYPE === 'prod') bot.telegram.sendMessage(config.get('admin_tg_id'), `<code>VoiceGPT:${TYPE} v${packageFile.version} just started</code>`, { parse_mode: 'HTML' });
+        if (TYPE === 'dev') {
+            bot.telegram.sendMessage(config.get('admin_tg_id'), 
+                `<b><code>VoiceGPT:${TYPE} v${packageFile.version} just started</code></b>`, 
+                { parse_mode: 'HTML' });
+        }
 
         process.once('SIGINT', () => {
             bot.stop('SIGINT');
