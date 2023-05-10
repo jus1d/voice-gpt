@@ -57,9 +57,9 @@ class Utilities {
     }
 
     getManageButtons(list: string) {
-        let firstButtonRow = [];
-        let secondButtonRow = [];
-        let thirdButtonRow = [];
+        const firstButtonRow = [];
+        const secondButtonRow = [];
+        const thirdButtonRow = [];
 
         if (list !== mongo.list.white) {
             firstButtonRow.push({ text: 'Whitelist', callback_data: 'whitelist' });
