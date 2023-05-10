@@ -39,42 +39,8 @@ bot.command('whitelist', async (ctx) => {
     try {
         const isAdmin = await mongo.isAdmin(ctx.message.from.id);
         if (!isAdmin) return;
-
-        let whiteCounterUsers = 0;
-            let limitedCounterUsers = 0;
-            let whitelistedUsers = '';
-            let limitedUsers = '';
-            let whitelistStr = '';
-            const whitelist = await mongo.getWhitelistedUsers();
-
-            if (!whitelist) {
-                await ctx.reply('Error while getting whitelisted users');
-                log.error(`Error while getting whitelisted users: No response from database`);
-                return;
-            }
         
-            for (let i = 0; i < whitelist.length; i++) {
-                if (whitelist[i].list === mongo.list.white) {
-                    whitelistedUsers += `@${whitelist[i].username} - ${whitelist[i].requests} requests. /manage@${whitelist[i].telegramId}\n`;
-                    whiteCounterUsers++;
-                } else if (whitelist[i].list === mongo.list.limited) {
-                    limitedUsers += `@${whitelist[i].username} - ${whitelist[i].requests} requests. /manage@${whitelist[i].telegramId}\n`;
-                    limitedCounterUsers++;
-                }
-            }
-        
-            if (whiteCounterUsers !== 0) {
-                whitelistStr += `<b>Whitelisted users:</b> ${whiteCounterUsers}\n\n${whitelistedUsers}\n`;
-            }
-            if (limitedCounterUsers !== 0) {
-                whitelistStr += `<b>Limited users:</b> ${limitedCounterUsers}\n\n${limitedUsers}`;
-            }
-            if (whiteCounterUsers === 0 && limitedCounterUsers === 0) {
-                whitelistStr = '<b>No whitelisted users yet</b>'
-            }
-        
-            await ctx.replyWithHTML(whitelistStr);
-
+        await ctx.replyWithHTML(await utils.getWhitelistText());
     } catch (error) {
         await ctx.reply('Error while getting whitelisted users');
         log.error(`Error while getting whitelisted users\n${error}`);
@@ -82,16 +48,15 @@ bot.command('whitelist', async (ctx) => {
 });
 
 bot.command('users', async (ctx) => {
-    const isAdmin = await mongo.isAdmin(ctx.from.id);
-    if (!isAdmin) return;
-
-    const users: Array<IUser> = await mongo.getAllUsers();
-    let messageTextWithHTML = `<b>Total users:</b> ${users.length}\n\n`;
-
-    for (let i = 0; i < users.length; i++) {
-        messageTextWithHTML += `@${users[i].username} - ${users[i].requests} requests. /manage@${users[i].telegramId}\n`
+    try {
+        const isAdmin = await mongo.isAdmin(ctx.from.id);
+        if (!isAdmin) return;
+    
+        await ctx.replyWithHTML(await utils.getUsersText());
+    } catch (error) {
+        await ctx.reply('Error while getting users');
+        log.error(`Error while getting users\n${error}`);
     }
-    await ctx.replyWithHTML(messageTextWithHTML);
 });
 
 bot.hears(/\/manage@(\d+)/, async (ctx) => {
@@ -108,21 +73,11 @@ bot.hears(/\/manage@(\d+)/, async (ctx) => {
 
     const messageTextWithHTML = await utils.getUserStatsText(telegramId);
 
-    let markup;
-
-    if (user.list === mongo.list.limited) {
-        markup = Markup.inlineKeyboard([
-            [ Markup.button.callback("Whitelist", "whitelist"), Markup.button.callback("Limited", "limited"), Markup.button.callback("Reset", "reset_free_requests") ],
-            [ Markup.button.callback("None", "none"), Markup.button.callback("Reject", "reject"), Markup.button.callback("Blacklist", "blacklist") ]
-        ]);
-    } else {
-        markup = Markup.inlineKeyboard([
-            [ Markup.button.callback("Whitelist", "whitelist"), Markup.button.callback("Limited", "limited") ],
-            [ Markup.button.callback("None", "none"), Markup.button.callback("Reject", "reject"), Markup.button.callback("Blacklist", "blacklist") ]
-        ]);
-    }
-
-    await ctx.replyWithHTML(messageTextWithHTML, markup);
+    await ctx.replyWithHTML(messageTextWithHTML, {
+        reply_markup: {
+            inline_keyboard: utils.getManageButtons(user.list)
+        }
+    });
 });
 
 bot.command('new', async (ctx) => {
@@ -255,7 +210,7 @@ bot.action('request_access', async (ctx) => {
     if (!ctx.from) return;
 
     const userList = (await mongo.getUser(ctx.from.id))?.list;
-    if (userList === mongo.list.rejected) {
+    if (userList === mongo.list.black) {
         log.info(`User's @${ctx.from.username} [${ctx.from.id}] request was auto-rejected`);
         return;
     }
@@ -295,17 +250,7 @@ bot.action('whitelist', async (ctx) => {
     await ctx.editMessageText(messageTextWithHTML, {
         parse_mode: 'HTML', 
         reply_markup: {
-            inline_keyboard: [
-                [
-                    // { text: 'Whitelist', callback_data: 'whitelist'},
-                    { text: 'Limited', callback_data: 'limited'},
-                ],
-                [
-                    { text: 'None', callback_data: 'none'},
-                    { text: 'Reject', callback_data: 'reject'},
-                    { text: 'Blacklist', callback_data: 'blacklist'},
-                ]
-            ]
+            inline_keyboard: utils.getManageButtons(user.list)
         }
     });
     if (user.requested) {
@@ -336,18 +281,7 @@ bot.action('limited', async (ctx) => {
     await ctx.editMessageText(messageTextWithHTML, {
         parse_mode: 'HTML', 
         reply_markup: {
-            inline_keyboard: [
-                [
-                    { text: 'Whitelist', callback_data: 'whitelist'},
-                    // { text: 'Limited', callback_data: 'limited'},
-                    { text: 'Reset' , callback_data: 'reset_free_requests' }
-                ],
-                [
-                    { text: 'None', callback_data: 'none'},
-                    { text: 'Reject', callback_data: 'reject'},
-                    { text: 'Blacklist', callback_data: 'blacklist'},
-                ]
-            ]
+            inline_keyboard: utils.getManageButtons(user.list)
         }
     });
     if (user.requested) {
@@ -357,47 +291,6 @@ bot.action('limited', async (ctx) => {
         await mongo.setRequestedStatus(userId, false);
     }
     log.info(`User @${username} [${userId}] was added to limited list`);
-});
-
-bot.action('reject', async (ctx) => {
-    if (!ctx.from) return;
-
-    const isAdmin = await mongo.isAdmin(ctx.from.id);
-    if (!isAdmin) return;
-
-    const userId = Number((ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[2].replace('[', '').replace(']', ''));
-    const username = (ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[1].replace('@', '');
-
-    await mongo.setUserList(userId, mongo.list.rejected);
-    
-    const user: IUser | null = await mongo.getUser(userId);
-    if (!user) return;
-
-    const messageTextWithHTML = await utils.getUserStatsText(userId);
-
-    await ctx.editMessageText(messageTextWithHTML, {
-        parse_mode: 'HTML', 
-        reply_markup: {
-            inline_keyboard: [
-                [
-                    { text: 'Whitelist', callback_data: 'whitelist'},
-                    { text: 'Limited', callback_data: 'limited'},
-                ],
-                [
-                    { text: 'None', callback_data: 'none'},
-                    // { text: 'Reject', callback_data: 'reject'},
-                    { text: 'Blacklist', callback_data: 'blacklist'},
-                ]
-            ]
-        }
-    });
-    if (user.requested) {
-        await ctx.telegram.sendMessage(userId, 'Your access to VoiceGPT was rejected', {
-            parse_mode: 'HTML'
-        });
-        await mongo.setRequestedStatus(userId, false);
-    }
-    log.info(`User @${username} [${userId}] was added to rejected list`);
 });
 
 bot.action('none', async (ctx) => {
@@ -419,17 +312,7 @@ bot.action('none', async (ctx) => {
     await ctx.editMessageText(messageTextWithHTML, {
         parse_mode: 'HTML', 
         reply_markup: {
-            inline_keyboard: [
-                [
-                    { text: 'Whitelist', callback_data: 'whitelist'},
-                    { text: 'Limited', callback_data: 'limited'},
-                ],
-                [
-                    // { text: 'None', callback_data: 'none'},
-                    { text: 'Reject', callback_data: 'reject'},
-                    { text: 'Blacklist', callback_data: 'blacklist'},
-                ]
-            ]
+            inline_keyboard: utils.getManageButtons(user.list)
         }
     });
     if (user.requested) {
@@ -460,17 +343,7 @@ bot.action('blacklist', async (ctx) => {
     await ctx.editMessageText(messageTextWithHTML, {
         parse_mode: 'HTML', 
         reply_markup: {
-            inline_keyboard: [
-                [
-                    { text: 'Whitelist', callback_data: 'whitelist'},
-                    { text: 'Limited', callback_data: 'limited'},
-                ],
-                [
-                    { text: 'None', callback_data: 'none'},
-                    { text: 'Reject', callback_data: 'reject'},
-                    // { text: 'Blacklist', callback_data: 'blacklist'},
-                ]
-            ]
+            inline_keyboard: utils.getManageButtons(user.list)
         }
     });
     if (user.requested) {
@@ -518,6 +391,36 @@ bot.action('reset_free_requests', async (ctx) => {
         parse_mode: 'HTML'
     });
     log.info(`User @${username} [${userId}] was added to limited list`);
+});
+
+bot.action('back_to_users', async (ctx) => {
+    if (!ctx.from) return;
+
+    const isAdmin = await mongo.isAdmin(ctx.from.id);
+    if (!isAdmin) return;
+
+    await ctx.editMessageText(await utils.getUsersText(), {
+        parse_mode: 'HTML'
+    });
+});
+
+bot.action('update_stats', async (ctx) => {
+    if (!ctx.from) return;
+
+    const isAdmin = await mongo.isAdmin(ctx.from.id);
+    if (!isAdmin) return;
+
+    const userId = Number((ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[2].replace('[', '').replace(']', ''));
+
+    const user: IUser | null = await mongo.getUser(userId);
+    if (!user) return;
+
+    await ctx.editMessageText(await utils.getUserStatsText(userId), {
+        parse_mode: 'HTML', 
+        reply_markup: {
+            inline_keyboard: utils.getManageButtons(user.list)
+        }
+    });
 });
 
 (async () => {
