@@ -374,17 +374,7 @@ bot.action('reset_free_requests', async (ctx) => {
     await ctx.editMessageText(messageTextWithHTML, {
         parse_mode: 'HTML', 
         reply_markup: {
-            inline_keyboard: [
-                [
-                    { text: 'Whitelist', callback_data: 'whitelist'},
-                    { text: 'Reset' , callback_data: 'reset_free_requests' }
-                ],
-                [
-                    { text: 'None', callback_data: 'none'},
-                    { text: 'Reject', callback_data: 'reject'},
-                    { text: 'Blacklist', callback_data: 'blacklist'},
-                ]
-            ]
+            inline_keyboard: utils.getManageButtons(user.list)
         }
     });
     await ctx.telegram.sendMessage(userId, 'You received 10 free requests', {
@@ -415,12 +405,23 @@ bot.action('update_stats', async (ctx) => {
     const user: IUser | null = await mongo.getUser(userId);
     if (!user) return;
 
-    await ctx.editMessageText(await utils.getUserStatsText(userId), {
-        parse_mode: 'HTML', 
-        reply_markup: {
-            inline_keyboard: utils.getManageButtons(user.list)
-        }
-    });
+    const messageTextWithHTML = await utils.getUserStatsText(userId);
+
+    try {
+        await ctx.editMessageText(messageTextWithHTML, {
+            parse_mode: 'HTML', 
+            reply_markup: {
+                inline_keyboard: utils.getManageButtons(user.list)
+            }
+        });
+    } catch (error) {
+        await ctx.editMessageText(messageTextWithHTML + '\n\n<code>Updated</code>', {
+            parse_mode: 'HTML', 
+            reply_markup: {
+                inline_keyboard: utils.getManageButtons(user.list)
+            }
+        });
+    }
 });
 
 (async () => {
