@@ -2,8 +2,8 @@ import dateFormat from 'dateformat';
 import config from 'config';
 import fs from 'fs';
 
-const start_symbol = '❯';
 
+const start_symbol = '❯';
 const reset = "\x1b[0m";
 const underscore = "\x1b[4m";
 const dim = "\x1b[2m";

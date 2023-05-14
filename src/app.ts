@@ -22,11 +22,31 @@ const packageFile = JSON.parse(fs.readFileSync('package.json').toString());
 bot.command('start', async (ctx) => {
     const user = await mongo.getUser(ctx.message.from.id);
 
+    let startMessage = '';
     if (!user) {
         await mongo.saveUser(ctx.message.from.id, 
             ctx.message.from.username ??= '', 
             ctx.message.from.first_name);
+            
+        startMessage = `<b>Hi!</b> You've been granted <b>10</b> free requests\n` +
+            `<b>Premium</b> plan will costs <b>8$</b> per month and include unlimited requests\n\n` +
+            `👇 Here you can send me your questions in text or voice format, and I will answer them`;
+    } else {
+        if (user.list === mongo.list.limited) {
+            startMessage = `<b>Hey,</b> I remember you, you have ${user.freeRequests} free requests\n\n` +
+            `👇 You can waste them below`
+        } else if (user.list === mongo.list.black) {
+            startMessage = `<b>Hey,</b> I remember you, too bad, but you are blacklisted\n\n` +
+            `If you think it is a <b>mistake</b> - contact me at @jus1d`
+        } else if (user.list === mongo.list.none) {
+            startMessage = `<b>Hey,</b> I remember you, but you aren't added to any list yet\n\n` +
+            `You can contact admins at @jus1d`
+        } else {
+            startMessage = `<b>Hey,</b> I remember you, you are whitelisted and have unlimited requests\n\n` +
+            `👇 You can ask me anything below`
+        }
     }
+    await ctx.replyWithHTML(startMessage);
 
     log.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] started the bot`);
 
@@ -34,7 +54,6 @@ bot.command('start', async (ctx) => {
     if (!conversation) {
         await mongo.initConversation(ctx.message.from.id);
     }
-    await ctx.reply(`Hi! You've been granted 10 free requests. If you want unlimited plan - you can contact me at @jus1d, it will costs 8$ per month. \nHere you can send your questions, and bot will reply to them!\n\nbtw: Voice messages supports too`);
 });
 
 bot.command('whitelist', async (ctx) => {
@@ -102,7 +121,8 @@ bot.command('about', async (ctx) => {
 bot.on(message('voice'), async (ctx) => {
     const user = await mongo.getUser(ctx.message.from.id);
     if (!user) {
-        return await ctx.reply('Please use /start command to start the bot');
+        return await ctx.reply(`<b>Hmm...</b> I don't remember you\n\n` + 
+            `Please use /start command to start the bot`);
     }
 
     let conversation: IConversation | null  = await mongo.getConversation(ctx.message.from.id);
@@ -154,11 +174,11 @@ bot.on(message('voice'), async (ctx) => {
             ctx.reply(gptResponse.content);
         } else {
             ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
-            ctx.reply('No response from ChatGPT. Try again later or use /new to create new conversation.');
+            ctx.reply('🚨 No response from ChatGPT. Try again later or use /new to create new conversation.');
         }
     } catch (error) {
         log.error(`Error with creating request. User: @${ctx.message.from.username} [${ctx.message.from.id}]\n${error}`);
-        ctx.reply('There was an error in your query. Please try again later');
+        ctx.reply('🚨 There was an error in your query. Please try again later');
     }
 });
 
@@ -182,9 +202,11 @@ bot.on(message('text'), async (ctx) => {
         ]));
     } else if (user.list !== mongo.list.white) {
         log.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] request rejected. User not whitelisted`);
-        return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins', Markup.inlineKeyboard([
-            Markup.button.callback("Request", "request_access")
-        ]));
+        return ctx.reply(`You are not whitelisted yet. Sorry!\n\n` + 
+            `👇 Click below to send whitelist request to admins`, 
+            Markup.inlineKeyboard([
+                Markup.button.callback("Request", "request_access")
+            ]));
     }
 
     log.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] request created from text message`);
@@ -205,11 +227,11 @@ bot.on(message('text'), async (ctx) => {
             ctx.reply(gptResponse.content);
         } else {
             ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
-            ctx.reply('No response from ChatGPT. Try again later or use /new to create new conversation.');
+            ctx.reply('🚨 No response from ChatGPT. Try again later or use /new to create new conversation.');
         }
     } catch (error) {
         log.error(`Error with creating request. User: @${ctx.message.from.username} [${ctx.message.from.id}]\n${error}`);
-        ctx.reply('There was an error in your query. Please try again later');
+        ctx.reply('🚨 There was an error in your query. Please try again later');
     }
 });
 
@@ -220,8 +242,7 @@ bot.action('request_access', async (ctx) => {
 
     const userList = (await mongo.getUser(ctx.from.id))?.list;
     if (userList === mongo.list.black) {
-        log.info(`User's @${ctx.from.username} [${ctx.from.id}] request was auto-rejected`);
-        return;
+        return log.info(`User's @${ctx.from.username} [${ctx.from.id}] request was auto-rejected`);
     }
     
     log.info(`User @${ctx.from.username} [${ctx.from.id}] requested a whitelist slot`);
