@@ -27,6 +27,7 @@ bot.command('start', async (ctx) => {
         await mongo.saveUser(ctx.message.from.id, 
             ctx.message.from.username ??= '', 
             ctx.message.from.first_name);
+            
         startMessage = `<b>Hi!</b> You've been granted <b>10</b> free requests\n` +
             `<b>Premium</b> plan will costs <b>8$</b> per month and include unlimited requests\n\n` +
             `👇 Here you can send me your questions in text or voice format, and I will answer them`;
@@ -241,8 +242,7 @@ bot.action('request_access', async (ctx) => {
 
     const userList = (await mongo.getUser(ctx.from.id))?.list;
     if (userList === mongo.list.black) {
-        log.info(`User's @${ctx.from.username} [${ctx.from.id}] request was auto-rejected`);
-        return;
+        return log.info(`User's @${ctx.from.username} [${ctx.from.id}] request was auto-rejected`);
     }
     
     log.info(`User @${ctx.from.username} [${ctx.from.id}] requested a whitelist slot`);
