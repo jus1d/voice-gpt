@@ -173,7 +173,7 @@ bot.on(message('voice'), async (ctx) => {
             ctx.reply(gptResponse.content);
         } else {
             ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
-            ctx.reply('No response from ChatGPT. Try again later or use /new to create new conversation.');
+            ctx.reply('🚨 No response from ChatGPT. Try again later or use /new to create new conversation.');
         }
     } catch (error) {
         log.error(`Error with creating request. User: @${ctx.message.from.username} [${ctx.message.from.id}]\n${error}`);
@@ -201,9 +201,11 @@ bot.on(message('text'), async (ctx) => {
         ]));
     } else if (user.list !== mongo.list.white) {
         log.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] request rejected. User not whitelisted`);
-        return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins', Markup.inlineKeyboard([
-            Markup.button.callback("Request", "request_access")
-        ]));
+        return ctx.reply(`You are not whitelisted yet. Sorry!\n\n` + 
+            `👇 Click below to send whitelist request to admins`, 
+            Markup.inlineKeyboard([
+                Markup.button.callback("Request", "request_access")
+            ]));
     }
 
     log.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] request created from text message`);
@@ -224,7 +226,7 @@ bot.on(message('text'), async (ctx) => {
             ctx.reply(gptResponse.content);
         } else {
             ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
-            ctx.reply('No response from ChatGPT. Try again later or use /new to create new conversation.');
+            ctx.reply('🚨 No response from ChatGPT. Try again later or use /new to create new conversation.');
         }
     } catch (error) {
         log.error(`Error with creating request. User: @${ctx.message.from.username} [${ctx.message.from.id}]\n${error}`);
