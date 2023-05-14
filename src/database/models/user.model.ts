@@ -12,13 +12,13 @@ export interface IUser {
 }
 
 const userSchema = new Schema<IUser>({
-    telegramId: { type: String, required: true },
-    username: { type: String, required: true },
+    telegramId: { type: String, required: true, unique: true },
+    username: { type: String, required: true, unique: true },
     fullname: { type: String, required: true },
     role: { type: String, default: 'user' },
-    list: { type: String, default: 'none' },
+    list: { type: String, default: 'limited' },
     requests: { type: Number, default: 0 },
-    freeRequests: { type: Number, default: 0 },
+    freeRequests: { type: Number, default: 10 },
     requested: { type: Boolean, default: false }
 });
 

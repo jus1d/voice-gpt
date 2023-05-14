@@ -23,7 +23,9 @@ bot.command('start', async (ctx) => {
     const user = await mongo.getUser(ctx.message.from.id);
 
     if (!user) {
-        await mongo.saveUser(ctx.message.from.id, ctx.message.from.username ??= '', ctx.message.from.first_name);
+        await mongo.saveUser(ctx.message.from.id, 
+            ctx.message.from.username ??= '', 
+            ctx.message.from.first_name);
     }
 
     log.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] started the bot`);
@@ -32,7 +34,7 @@ bot.command('start', async (ctx) => {
     if (!conversation) {
         await mongo.initConversation(ctx.message.from.id);
     }
-    await ctx.reply('Hi! You can send me your questions, and i will reply to them!\n\nbtw: Voice messages supports too');
+    await ctx.reply(`Hi! You've been granted 10 free requests. If you want unlimited plan - you can contact me at @jus1d, it will costs 8$ per month. \nHere you can send your questions, and bot will reply to them!\n\nbtw: Voice messages supports too`);
 });
 
 bot.command('whitelist', async (ctx) => {
@@ -88,6 +90,13 @@ bot.command('new', async (ctx) => {
 
 bot.command('id', async (ctx) => {
     ctx.replyWithHTML(`<b>Your ID:</b> <code>${ctx.message.from.id}</code>`);
+});
+
+bot.command('about', async (ctx) => {
+    ctx.replyWithHTML(`<b>About VoiceGPT:\n\n</b>` + 
+        `<b>Version:</b> ${packageFile.version}\n` + 
+        `<b>Developer, admin:</b> @jus1d\n` + 
+        `<b>Contact email:</b> mejus1d@gmail.com`);
 });
 
 bot.on(message('voice'), async (ctx) => {
