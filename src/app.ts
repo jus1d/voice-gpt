@@ -22,11 +22,30 @@ const packageFile = JSON.parse(fs.readFileSync('package.json').toString());
 bot.command('start', async (ctx) => {
     const user = await mongo.getUser(ctx.message.from.id);
 
+    let startMessage = '';
     if (!user) {
         await mongo.saveUser(ctx.message.from.id, 
             ctx.message.from.username ??= '', 
             ctx.message.from.first_name);
+        startMessage = `<b>Hi!</b> You've been granted <b>10</b> free requests\n` +
+            `<b>Premium</b> plan will costs <b>8$</b> per month and include unlimited requests\n\n` +
+            `👇 Here you can send me your questions in text or voice format, and I will answer them`;
+    } else {
+        if (user.list === mongo.list.limited) {
+            startMessage = `<b>Hey,</b> I remember you, you have ${user.freeRequests} free requests\n\n` +
+            `👇 You can waste them below`
+        } else if (user.list === mongo.list.black) {
+            startMessage = `<b>Hey,</b> I remember you, too bad, but you are blacklisted\n\n` +
+            `If you think it is a <b>mistake</b> - contact me at @jus1d`
+        } else if (user.list === mongo.list.none) {
+            startMessage = `<b>Hey,</b> I remember you, but you aren't added to any list yet\n\n` +
+            `You can contact admins at @jus1d`
+        } else {
+            startMessage = `<b>Hey,</b> I remember you, you are whitelisted and have unlimited requests\n\n` +
+            `👇 You can ask me anything below`
+        }
     }
+    await ctx.replyWithHTML(startMessage);
 
     log.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] started the bot`);
 
@@ -34,7 +53,6 @@ bot.command('start', async (ctx) => {
     if (!conversation) {
         await mongo.initConversation(ctx.message.from.id);
     }
-    await ctx.reply(`Hi! You've been granted 10 free requests. If you want unlimited plan - you can contact me at @jus1d, it will costs 8$ per month. \nHere you can send your questions, and bot will reply to them!\n\nbtw: Voice messages supports too`);
 });
 
 bot.command('whitelist', async (ctx) => {
