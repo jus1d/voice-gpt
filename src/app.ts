@@ -120,7 +120,8 @@ bot.command('about', async (ctx) => {
 bot.on(message('voice'), async (ctx) => {
     const user = await mongo.getUser(ctx.message.from.id);
     if (!user) {
-        return await ctx.reply('Please use /start command to start the bot');
+        return await ctx.reply(`<b>Hmm...</b> I don't remember you\n\n` + 
+            `Please use /start command to start the bot`);
     }
 
     let conversation: IConversation | null  = await mongo.getConversation(ctx.message.from.id);
@@ -176,7 +177,7 @@ bot.on(message('voice'), async (ctx) => {
         }
     } catch (error) {
         log.error(`Error with creating request. User: @${ctx.message.from.username} [${ctx.message.from.id}]\n${error}`);
-        ctx.reply('There was an error in your query. Please try again later');
+        ctx.reply('🚨 There was an error in your query. Please try again later');
     }
 });
 
@@ -227,7 +228,7 @@ bot.on(message('text'), async (ctx) => {
         }
     } catch (error) {
         log.error(`Error with creating request. User: @${ctx.message.from.username} [${ctx.message.from.id}]\n${error}`);
-        ctx.reply('There was an error in your query. Please try again later');
+        ctx.reply('🚨 There was an error in your query. Please try again later');
     }
 });
 
