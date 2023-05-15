@@ -103,7 +103,7 @@ bot.hears(/\/manage@(\d+)/, async (ctx) => {
 
 bot.command('new', async (ctx) => {
     await mongo.updateConversation(ctx.message.from.id, []);
-    await ctx.replyWithHTML('<b>New chat created!</b>');
+    await ctx.replyWithHTML('<b>New chat context created!</b>');
     log.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] created new chat context`);
 });
 
