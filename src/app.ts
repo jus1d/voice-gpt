@@ -127,7 +127,7 @@ bot.command('conversation', async (ctx) =>  {
     console.log(conversation);
     
     for (let i = 0; i < conversation?.messages.length; i++) {
-        let message = conversation.messages[i];
+        const message = conversation.messages[i];
 
         if (message.role === 'user') {
             conversationMessage += `<b>- ${message.content}</b>\n\n`
