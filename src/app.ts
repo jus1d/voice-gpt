@@ -118,6 +118,34 @@ bot.command('about', async (ctx) => {
         `<b>Contact email:</b> mejus1d@gmail.com`);
 });
 
+bot.command('conversation', async (ctx) =>  {
+    let conversationMessage = ``;
+    const clearConversationMessage = `<b>Your conversation is clear</b>`;
+
+    const conversation = await mongo.getConversation(ctx.message.from.id);
+    if (!conversation) return ctx.replyWithHTML(clearConversationMessage);
+    console.log(conversation);
+    
+    for (let i = 0; i < conversation?.messages.length; i++) {
+        const message = conversation.messages[i];
+
+        if (message.role === 'user') {
+            conversationMessage += `<b>- ${message.content}</b>\n\n`
+        } else {
+            conversationMessage += `- ${message.content}\n\n`;
+        }
+    }
+
+    if (conversationMessage === '') {
+        conversationMessage = clearConversationMessage;
+    }
+    else {
+        conversationMessage = '<b>Your conversation:\n\n</b>' + conversationMessage;
+    }
+
+    await ctx.replyWithHTML(conversationMessage);
+});
+
 bot.on(message('voice'), async (ctx) => {
     const user = await mongo.getUser(ctx.message.from.id);
     if (!user) {
