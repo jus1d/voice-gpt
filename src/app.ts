@@ -103,7 +103,7 @@ bot.hears(/\/manage@(\d+)/, async (ctx) => {
 
 bot.command('new', async (ctx) => {
     await mongo.updateConversation(ctx.message.from.id, []);
-    await ctx.replyWithHTML('<b>New chat created!</b>');
+    await ctx.replyWithHTML('<b>New chat context created!</b>');
     log.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] created new chat context`);
 });
 
@@ -144,6 +144,73 @@ bot.command('conversation', async (ctx) =>  {
     }
 
     await ctx.replyWithHTML(conversationMessage);
+});
+
+bot.hears(/\/conversation@(\d+)/, async (ctx) => {
+    const telegramId = Number(ctx.message.text.split('@')[1]);
+    
+    const isAdmin = await mongo.isAdmin(ctx.from.id);
+    if (!isAdmin) return;
+
+    const user: IUser | null = await mongo.getUser(telegramId);
+    if (!user) return await ctx.replyWithHTML(`<b>No user found with ID: <code>${telegramId}</code></b>`);
+
+    const conversation = await mongo.getConversation(telegramId);
+    if (!conversation || conversation.messages.length === 0) return await ctx.replyWithHTML(`<b>User's @${user.username} [<code>${user.telegramId}</code>] is clear</b>`);
+
+    let conversationMessage = '';
+
+    for (let i = 0; i < conversation.messages.length; i++) {
+        const message = conversation.messages[i];
+
+        if (message.role === 'user') {
+            conversationMessage += `<b>- ${message.content}</b>\n\n`;
+        } else {
+            conversationMessage += `- ${message.content}\n\n`;
+        }
+    }
+
+    conversationMessage = `<b>User's @${user.username} [<code>${user.telegramId}</code>] conversation:</b>\n\n${conversationMessage}`
+
+    ctx.replyWithHTML(conversationMessage);
+});
+
+bot.action('get_conversation', async (ctx) => {
+    if (!ctx.from) return;
+
+    const isAdmin = await mongo.isAdmin(ctx.from.id);
+    if (!isAdmin) return;
+
+    const userId = Number((ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[2].replace('[', '').replace(']', ''));
+    const username = (ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[1].replace('@', '');
+
+    const user = await mongo.getUser(userId);
+    if (!user) return ctx.replyWithHTML(`<b>No user found...</b>`);
+
+    const conversation = await mongo.getConversation(userId);
+    if (!conversation || conversation.messages.length === 0) return ctx.replyWithHTML(`<b>User's @${user.username} [<code>${user.telegramId}</code>] is clear</b>`);
+
+    let conversationMessage = '';
+
+    for (let i = 0; i < conversation.messages.length; i++) {
+        const message = conversation.messages[i];
+
+        if (message.role === 'user') {
+            conversationMessage += `<b>- ${message.content}</b>\n\n`;
+        } else {
+            conversationMessage += `- ${message.content}\n\n`;
+        }
+    }
+
+    conversationMessage = `<b>User's @${user.username} [<code>${user.telegramId}</code>] conversation:</b>\n\n${conversationMessage}`
+
+    ctx.replyWithHTML(conversationMessage, {
+        reply_markup: {
+            inline_keyboard: [
+                [ { text: '« Back to user', callback_data: 'update_stats' } ]
+            ]
+        }
+    });
 });
 
 bot.on(message('voice'), async (ctx) => {

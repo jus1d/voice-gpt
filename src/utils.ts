@@ -60,6 +60,7 @@ class Utilities {
         const firstButtonRow = [];
         const secondButtonRow = [];
         const thirdButtonRow = [];
+        const fourthButtonRow = [];
 
         if (list !== mongo.list.white) {
             firstButtonRow.push({ text: 'Whitelist', callback_data: 'whitelist' });
@@ -75,9 +76,10 @@ class Utilities {
         if (list !== mongo.list.black) {
             secondButtonRow.push({ text: 'Blacklist', callback_data: 'blacklist' });
         }
-        thirdButtonRow.push({ text: '« Back to users', callback_data: 'back_to_users' }, { text: 'Update', callback_data: 'update_stats' });
+        thirdButtonRow.push({ text: 'See conversation', callback_data: 'get_conversation'});
+        fourthButtonRow.push({ text: '« Back to users', callback_data: 'back_to_users' }, { text: 'Update', callback_data: 'update_stats' });
 
-        return [ firstButtonRow, secondButtonRow, thirdButtonRow ];
+        return [ firstButtonRow, secondButtonRow, thirdButtonRow, fourthButtonRow];
     }
 }
 
