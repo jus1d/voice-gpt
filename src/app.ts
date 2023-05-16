@@ -202,7 +202,10 @@ bot.action('get_conversation', async (ctx) => {
     }
 
     conversationMessage = `<b>User's @${user.username} [<code>${user.telegramId}</code>] conversation:</b>\n\n${conversationMessage}`
-
+    if (conversationMessage.length > 4096) {
+        conversationMessage = `<b>User's @${user.username} [<code>${user.telegramId}</code>] conversation is too long. This will be fixed in upcomig updates</b>`
+    }
+    
     ctx.replyWithHTML(conversationMessage, {
         reply_markup: {
             inline_keyboard: [
