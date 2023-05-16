@@ -124,7 +124,6 @@ bot.command('conversation', async (ctx) =>  {
 
     const conversation = await mongo.getConversation(ctx.message.from.id);
     if (!conversation) return ctx.replyWithHTML(clearConversationMessage);
-    console.log(conversation);
     
     for (let i = 0; i < conversation?.messages.length; i++) {
         const message = conversation.messages[i];
