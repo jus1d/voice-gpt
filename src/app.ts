@@ -204,15 +204,26 @@ bot.action('get_conversation', async (ctx) => {
     conversationMessage = `<b>User's @${user.username} [<code>${user.telegramId}</code>] conversation:</b>\n\n${conversationMessage}`
     if (conversationMessage.length > 4096) {
         conversationMessage = `<b>User's @${user.username} [<code>${user.telegramId}</code>] conversation is too long. This will be fixed in upcomig updates</b>`
+        ctx.editMessageText(conversationMessage, {
+            parse_mode: 'HTML',
+            reply_markup: {
+                inline_keyboard: [
+                    [ { text: 'Next page »', callback_data: 'plug' } ],
+                    [ { text: '« Back to user', callback_data: 'update_stats' } ]
+                ]
+            }
+        });
+    } else {
+        ctx.editMessageText(conversationMessage, {
+            parse_mode: 'HTML',
+            reply_markup: {
+                inline_keyboard: [
+                    [ { text: '« Back to user', callback_data: 'update_stats' } ]
+                ]
+            }
+        });
     }
-    
-    ctx.replyWithHTML(conversationMessage, {
-        reply_markup: {
-            inline_keyboard: [
-                [ { text: '« Back to user', callback_data: 'update_stats' } ]
-            ]
-        }
-    });
+
 });
 
 bot.on(message('voice'), async (ctx) => {
@@ -549,6 +560,12 @@ bot.action('update_stats', async (ctx) => {
             }
         });
     }
+});
+
+bot.action('plug', async (ctx) => {
+    ctx.editMessageText(`<b>Functionality will be available in one of the next updates</b>`, {
+        parse_mode: 'HTML'
+    });
 });
 
 (async () => {
