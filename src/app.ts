@@ -194,6 +194,8 @@ bot.action('get_conversation', async (ctx) => {
     for (let i = 0; i < conversation.messages.length; i++) {
         const message = conversation.messages[i];
 
+        if (conversationMessage.length + message.content.length > 4096) break;  
+
         if (message.role === 'user') {
             conversationMessage += `<b>- ${message.content}</b>\n\n`;
         } else {
