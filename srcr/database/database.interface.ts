@@ -3,8 +3,8 @@ import { IUser } from "../../src/database/models/user.model";
 
 export interface IDatabase {
     init(): Promise<void>;
-    saveUser(telegramId: number, username: string, fullname: string, role: string): Promise<boolean>;
-    getUser(): Promise<IUser>;
+    saveUser(telegramId: number, username: string, fullname: string): Promise<boolean>;
+    getUser(telegramId: number): Promise<IUser | null>;
     incrementRequestsCounter(): Promise<boolean>;
     decreaseFreeRequests(): Promise<boolean>;
     setFreeRequests(): Promise<boolean>;

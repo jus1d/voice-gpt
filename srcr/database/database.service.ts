@@ -17,17 +17,19 @@ export class DatabaseService implements IDatabase {
         limited: 'limited',
         none: 'none'
     }
+
     async init(): Promise<void> {
         await mongoose.connect(config.get('mongo_uri'));
+        log.info('Connection to MongoDB established');
     }
 
-    async saveUser(telegramId: number, username: string, fullname: string, role = this.roles.user): Promise<boolean> {
+    async saveUser(telegramId: number, username: string, fullname: string): Promise<boolean> {
         try {
             await new UserModel({
                 telegramId,
                 username: username || '',
                 fullname,
-                role,
+                role: 'user'
             }).save();
             return true;
         } catch (error) {
@@ -36,8 +38,14 @@ export class DatabaseService implements IDatabase {
         }
     }
 
-    async getUser(): Promise<IUser> {
-        throw new Error("Method not implemented.");
+    async getUser(telegramId: number): Promise<IUser | null> {
+        try {
+            const user: IUser | null = await UserModel.findOne({ telegramId: String(telegramId) });
+            return user;
+        } catch (error) {
+            log.error(`Error with getting user`);
+            return null;
+        }
     }
 
     async incrementRequestsCounter(): Promise<boolean> {

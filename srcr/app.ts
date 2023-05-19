@@ -20,12 +20,13 @@ class Bot {
     async init() {
         await this.databaseService.init();
         this.commands = [
-            new StartCommand(this.bot)
+            new StartCommand(this.bot, this.databaseService)
         ];
         for (const command of this.commands) {
             command.handle();
         }
         this.bot.launch();
+        console.log('started');
     }
 }
 
