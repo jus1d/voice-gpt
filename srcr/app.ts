@@ -8,28 +8,39 @@ import { StartCommand } from "./events/start.command";
 import { LoggerService } from "./logger/logger.service";
 import { OpenAI } from "./openai/openai.service";
 import { VoiceService } from "./voice/voice.service";
+import { TextMessage } from "./events/text.message";
+import { IOpenAI } from "./openai/openai.interface";
+import { ILogger } from "./logger/logger.interface";
+import fs from 'fs';
 
 class Bot {
     bot: Telegraf<Context>;
     events: Event[] = [];
 
+    
     constructor(
         private readonly configService: IConfigService,
-        private readonly databaseService: IDatabase
+        private readonly databaseService: IDatabase,
+        private readonly openaiService: IOpenAI,
+        private readonly loggerService: ILogger
     ) {
         this.bot = new Telegraf<Context>(this.configService.get('telegram_token'));
     }
 
     async init() {
+        const TYPE: string = this.configService.get('type');
+        const packageFile = JSON.parse(fs.readFileSync('package.json').toString());
+
         await this.databaseService.init();
         this.events = [
-            new StartCommand(this.bot, this.databaseService)
+            new StartCommand(this.bot, this.databaseService),
+            new TextMessage(this.bot, this.databaseService, this.openaiService, this.loggerService)
         ];
         for (const event of this.events) {
             event.handle();
         }
         this.bot.launch();
-        console.log('started');
+        this.loggerService.start(TYPE, packageFile.version);
     }
 }
 
@@ -38,6 +49,6 @@ const loggerService = new LoggerService();
 const voiceService = new VoiceService(loggerService);
 const openaiService = new OpenAI(configService.get('openai_token'), voiceService, loggerService);
 const database = new DatabaseService(configService, loggerService);
-const bot = new Bot(configService, database);
+const bot = new Bot(configService, database, openaiService, loggerService);
 
 bot.init();

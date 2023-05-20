@@ -21,7 +21,7 @@ export class OpenAI implements IOpenAI {
         this.openai = new OpenAIApi(configuration);
     }
 
-    async chat(messages: IMessage[]): Promise<string> {
+    async chat(messages: IMessage[]): Promise<{ role: string, content: string } | null> {
         try {
             const response = await this.openai.createChatCompletion({
                 model: 'gpt-3.5-turbo',
@@ -31,12 +31,12 @@ export class OpenAI implements IOpenAI {
             return response.data.choices[0].message;
         } catch (error) {
             this.loggerService.error(`Error with getting response from ChatGPT\n${error}`, true);
-            return '';
+            return null;
         }
     }
 
     async transcript(mp3FileName: string): Promise<string> {
-        try{
+        try {
             const response = await this.openai.createTranscription(
                 fs.createReadStream(`./voices/${mp3FileName}.mp3`),
                 'whisper-1'
