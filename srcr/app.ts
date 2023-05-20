@@ -1,14 +1,14 @@
 import { Telegraf, Context } from "telegraf";
 import { ConfigService } from "./config/config.service";
 import { DatabaseService } from "./database/database.service";
-import { Command } from "./commands/command.class";
+import { Event } from "./events/event.class";
 import { IConfigService } from "./config/config.interface";
 import { IDatabase } from "./database/database.interface";
-import { StartCommand } from "./commands/start.command";
+import { StartCommand } from "./events/start.command";
 
 class Bot {
     bot: Telegraf<Context>;
-    commands: Command[] = [];
+    events: Event[] = [];
 
     constructor(
         private readonly configService: IConfigService,
@@ -19,11 +19,11 @@ class Bot {
 
     async init() {
         await this.databaseService.init();
-        this.commands = [
+        this.events = [
             new StartCommand(this.bot, this.databaseService)
         ];
-        for (const command of this.commands) {
-            command.handle();
+        for (const event of this.events) {
+            event.handle();
         }
         this.bot.launch();
         console.log('started');
