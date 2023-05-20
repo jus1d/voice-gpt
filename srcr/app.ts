@@ -12,6 +12,8 @@ import { TextMessage } from "./events/text.message";
 import { IOpenAI } from "./openai/openai.interface";
 import { ILogger } from "./logger/logger.interface";
 import fs from 'fs';
+import { IVoiceService } from "./voice/voice.interface";
+import { VoiceMessage } from "./events/voice.message";
 
 class Bot {
     bot: Telegraf<Context>;
@@ -22,7 +24,8 @@ class Bot {
         private readonly configService: IConfigService,
         private readonly databaseService: IDatabase,
         private readonly openaiService: IOpenAI,
-        private readonly loggerService: ILogger
+        private readonly loggerService: ILogger,
+        private readonly voiceService: IVoiceService
     ) {
         this.bot = new Telegraf<Context>(this.configService.get('telegram_token'));
     }
@@ -34,7 +37,8 @@ class Bot {
         await this.databaseService.init();
         this.events = [
             new StartCommand(this.bot, this.databaseService),
-            new TextMessage(this.bot, this.databaseService, this.openaiService, this.loggerService)
+            new TextMessage(this.bot, this.databaseService, this.openaiService, this.loggerService),
+            new VoiceMessage(this.bot, this.databaseService, this.openaiService, this.loggerService, this.voiceService)
         ];
         for (const event of this.events) {
             event.handle();
@@ -49,6 +53,6 @@ const loggerService = new LoggerService();
 const voiceService = new VoiceService(loggerService);
 const openaiService = new OpenAI(configService.get('openai_token'), voiceService, loggerService);
 const database = new DatabaseService(configService, loggerService);
-const bot = new Bot(configService, database, openaiService, loggerService);
+const bot = new Bot(configService, database, openaiService, loggerService, voiceService);
 
 bot.init();

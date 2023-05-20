@@ -34,18 +34,22 @@ export class VoiceService implements IVoiceService {
 
         response.data.pipe(fs.createWriteStream(path));
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve: any, reject) => {
+            response.data.on('end', () => {
+                resolve(path);
+            });
             response.data.on('error', () => {
                 reject();
             });
         });
     }
     async convertOggToMp3(name: string): Promise<void> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve: any, reject) => {
             ffmpeg()
                 .input(`./voices/${name}.ogg`)
                 .output(`./voices/${name}.mp3`)
                 .on('end', () => {
+                    resolve(name);
                     this.removeFile(`./voices/${name}.ogg`);
                 })
                 .on('error', (error) => {

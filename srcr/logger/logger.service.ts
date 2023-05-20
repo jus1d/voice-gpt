@@ -13,7 +13,7 @@ const yellow = "\x1b[33m";
 const magenta = "\x1b[35m";
 
 export class LoggerService implements ILogger {
-    init(): void {
+    constructor() {
         try {
             if (!fs.existsSync('./logs')) {
                 fs.mkdirSync('./logs', );

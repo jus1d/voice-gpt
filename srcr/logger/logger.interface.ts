@@ -1,5 +1,4 @@
 export interface ILogger {
-    init(): void;
     getFullDate(): string;
     info(message: string, toFile: boolean): void;
     warn(message: string, toFile: boolean): void;
