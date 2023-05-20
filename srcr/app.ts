@@ -36,7 +36,7 @@ class Bot {
 
         await this.databaseService.init();
         this.events = [
-            new StartCommand(this.bot, this.databaseService),
+            new StartCommand(this.bot, this.databaseService, this.loggerService),
             new TextMessage(this.bot, this.databaseService, this.openaiService, this.loggerService),
             new VoiceMessage(this.bot, this.databaseService, this.openaiService, this.loggerService, this.voiceService)
         ];
