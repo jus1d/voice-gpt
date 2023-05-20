@@ -6,6 +6,8 @@ import { IConfigService } from "./config/config.interface";
 import { IDatabase } from "./database/database.interface";
 import { StartCommand } from "./events/start.command";
 import { LoggerService } from "./logger/logger.service";
+import { OpenAI } from "./openai/openai.service";
+import { VoiceService } from "./voice/voice.service";
 
 class Bot {
     bot: Telegraf<Context>;
@@ -31,9 +33,11 @@ class Bot {
     }
 }
 
-const config = new ConfigService();
-const logger = new LoggerService();
-const database = new DatabaseService(config, logger);
-const bot = new Bot(config, database);
+const configService = new ConfigService();
+const loggerService = new LoggerService();
+const voiceService = new VoiceService(loggerService);
+const openaiService = new OpenAI(configService.get('openai_token'), voiceService, loggerService);
+const database = new DatabaseService(configService, loggerService);
+const bot = new Bot(configService, database);
 
 bot.init();
