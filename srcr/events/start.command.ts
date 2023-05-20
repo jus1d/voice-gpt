@@ -10,6 +10,8 @@ export class StartCommand extends Event {
     handle(): void {
         this.bot.start(async (ctx) => {
             const user = await this.databaseService.getUser(ctx.message.from.id);
+
+            console.log(user);
             
             ctx.replyWithHTML('<b>Hi</b>');
         });

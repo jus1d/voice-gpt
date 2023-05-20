@@ -3,6 +3,8 @@ import { IMessage } from "./models/conversation.model";
 import { IUser } from "./models/user.model";
 
 export interface IDatabase {
+    list: Object;
+    roles: Object;
     init(): Promise<void>;
     saveUser(telegramId: number, username: string, fullname: string): Promise<boolean>;
     getUser(telegramId: number): Promise<IUser | null>;

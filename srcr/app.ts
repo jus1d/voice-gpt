@@ -5,6 +5,7 @@ import { Event } from "./events/event.class";
 import { IConfigService } from "./config/config.interface";
 import { IDatabase } from "./database/database.interface";
 import { StartCommand } from "./events/start.command";
+import { LoggerService } from "./logger/logger.service";
 
 class Bot {
     bot: Telegraf<Context>;
@@ -31,7 +32,8 @@ class Bot {
 }
 
 const config = new ConfigService();
-const database = new DatabaseService();
+const logger = new LoggerService();
+const database = new DatabaseService(config, logger);
 const bot = new Bot(config, database);
 
 bot.init();
