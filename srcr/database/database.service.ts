@@ -1,94 +1,52 @@
-import { ConversationModel, IConversation, IMessage } from "../../src/database/models/conversation.model";
-import { UserModel, IUser } from "../../src/database/models/user.model";
+import { ConversationModel, IConversation, IMessage } from "./models/conversation.model";
+import { UserModel, IUser } from "./models/user.model";
 import { IDatabase } from "./database.interface";
 import mongoose from 'mongoose';
-import config from 'config';
-import { log } from "../../src/logger";
 
 export class DatabaseService implements IDatabase {
-    roles = {
-        admin: 'admin',
-        user: 'user'
-    }
-
-    list = {
-        white: 'white',
-        black: 'black',
-        limited: 'limited',
-        none: 'none'
-    }
-
-    async init(): Promise<void> {
-        await mongoose.connect(config.get('mongo_uri'));
-        log.info('Connection to MongoDB established');
-    }
-
-    async saveUser(telegramId: number, username: string, fullname: string): Promise<boolean> {
-        try {
-            await new UserModel({
-                telegramId,
-                username: username || '',
-                fullname,
-                role: 'user'
-            }).save();
-            return true;
-        } catch (error) {
-            log.error(`Error while creating new user in database`);
-            return false;
-        }
-    }
-
-    async getUser(telegramId: number): Promise<IUser | null> {
-        try {
-            const user: IUser | null = await UserModel.findOne({ telegramId: String(telegramId) });
-            return user;
-        } catch (error) {
-            log.error(`Error with getting user`);
-            return null;
-        }
-    }
-
-    async incrementRequestsCounter(): Promise<boolean> {
+    init(): Promise<void> {
         throw new Error("Method not implemented.");
     }
-
-    async decreaseFreeRequests(): Promise<boolean> {
+    saveUser(telegramId: number, username: string, fullname: string): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
-
-    async setFreeRequests(): Promise<boolean> {
+    getUser(telegramId: number): Promise<IUser | null> {
         throw new Error("Method not implemented.");
     }
-
-    async setUserList(): Promise<boolean> {
+    incrementRequestsCounter(telegramId: number): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
-
-    async setRequestedStatus(): Promise<boolean> {
+    decreaseFreeRequests(telegramId: number): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
-
-    async initConversation(): Promise<boolean> {
+    setFreeRequests(telegramId: number, amount: number): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
-
-    async saveConversation(): Promise<boolean> {
+    setUserList(telegramId: number, list: string): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
-
-    async updateConversation(): Promise<boolean> {
+    setRequestedStatus(telegramId: number, isRequested: boolean): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
-
-    async getConversation(): Promise<IConversation | null> {
+    initConversation(telegramId: number): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
-
-    async getAllUsers(): Promise<IUser[]> {
+    saveConversation(telegramId: number, messages: IMessage[]): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
-
-    async isAdmin(): Promise<boolean> {
+    updateConversation(telegramId: number, messages: IMessage[]): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
+    getConversation(telegramId: number): Promise<IConversation | null> {
+        throw new Error("Method not implemented.");
+    }
+    getWhitelistedUsers(): Promise<IUser[]> {
+        throw new Error("Method not implemented.");
+    }
+    getAllUsers(): Promise<IUser[]> {
+        throw new Error("Method not implemented.");
+    }
+    isAdmin(telegramId: number): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
 }

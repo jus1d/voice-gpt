@@ -1,19 +1,21 @@
-import { IConversation } from "../../src/database/models/conversation.model";
-import { IUser } from "../../src/database/models/user.model";
+import { IConversation } from "./models/conversation.model";
+import { IMessage } from "./models/conversation.model";
+import { IUser } from "./models/user.model";
 
 export interface IDatabase {
     init(): Promise<void>;
     saveUser(telegramId: number, username: string, fullname: string): Promise<boolean>;
     getUser(telegramId: number): Promise<IUser | null>;
-    incrementRequestsCounter(): Promise<boolean>;
-    decreaseFreeRequests(): Promise<boolean>;
-    setFreeRequests(): Promise<boolean>;
-    setUserList(): Promise<boolean>;
-    setRequestedStatus(): Promise<boolean>;
-    initConversation(): Promise<boolean>;
-    saveConversation(): Promise<boolean>;
-    updateConversation(): Promise<boolean>;
-    getConversation(): Promise<IConversation | null>;
-    getAllUsers(): Promise<IUser[]>;
-    isAdmin(): Promise<boolean>;
+    incrementRequestsCounter(telegramId: number): Promise<boolean>;
+    decreaseFreeRequests(telegramId: number): Promise<boolean>;
+    setFreeRequests(telegramId: number, amount: number): Promise<boolean>;
+    setUserList(telegramId: number, list: string): Promise<boolean>;
+    setRequestedStatus(telegramId: number, isRequested: boolean): Promise<boolean>;
+    initConversation(telegramId: number): Promise<boolean>;
+    saveConversation(telegramId: number, messages: Array<IMessage>): Promise<boolean>;
+    updateConversation(telegramId: number, messages: Array<IMessage>): Promise<boolean>;
+    getConversation(telegramId: number): Promise<IConversation | null>;
+    getWhitelistedUsers(): Promise<IUser[]>;
+    getAllUsers(): Promise<IUser[]>
+    isAdmin(telegramId: number): Promise<boolean>;
 }
