@@ -1,13 +1,13 @@
-import { IDatabase } from "../database/database.interface";
-import { Telegraf, Context, Markup } from 'telegraf';
-import { message } from 'telegraf/filters';
-import { Event } from "./event.class";
-import { IOpenAI } from "../openai/openai.interface";
-import { ILogger } from "../logger/logger.interface";
 import { IConversation } from "../database/models/conversation.model";
 import { ChatCompletionRequestMessageRoleEnum } from 'openai';
-import { code } from 'telegraf/format';
+import { IDatabase } from "../database/database.interface";
 import { IVoiceService } from "../voice/voice.interface";
+import { Telegraf, Context, Markup } from 'telegraf';
+import { IOpenAI } from "../openai/openai.interface";
+import { ILogger } from "../logger/logger.interface";
+import { message } from 'telegraf/filters';
+import { code } from 'telegraf/format';
+import { Event } from "./event.class";
 import { Md5 } from 'ts-md5';
 
 export class VoiceMessage extends Event {

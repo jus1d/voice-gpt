@@ -1,19 +1,19 @@
-import { Telegraf, Context } from "telegraf";
-import { ConfigService } from "./config/config.service";
 import { DatabaseService } from "./database/database.service";
-import { Event } from "./events/event.class";
 import { IConfigService } from "./config/config.interface";
 import { IDatabase } from "./database/database.interface";
-import { StartCommand } from "./events/start.command";
+import { ConfigService } from "./config/config.service";
 import { LoggerService } from "./logger/logger.service";
-import { OpenAI } from "./openai/openai.service";
+import { IVoiceService } from "./voice/voice.interface";
+import { StartCommand } from "./events/start.command";
+import { VoiceMessage } from "./events/voice.message";
 import { VoiceService } from "./voice/voice.service";
 import { TextMessage } from "./events/text.message";
 import { IOpenAI } from "./openai/openai.interface";
 import { ILogger } from "./logger/logger.interface";
+import { OpenAI } from "./openai/openai.service";
+import { Telegraf, Context } from "telegraf";
+import { Event } from "./events/event.class";
 import fs from 'fs';
-import { IVoiceService } from "./voice/voice.interface";
-import { VoiceMessage } from "./events/voice.message";
 
 class Bot {
     bot: Telegraf<Context>;
