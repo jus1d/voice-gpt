@@ -63,6 +63,11 @@ class Bot {
         }
         this.bot.launch();
         this.loggerService.start(TYPE, packageFile.version);
+        
+        if (TYPE === 'prod') this.bot.telegram.sendMessage(
+            this.configService.get('admin_tg_id'), 
+            `<b><code>VoiceGPT:${TYPE} v${packageFile.version} just started</code></b>`, 
+            { parse_mode: 'HTML' });
     }
 }
 
