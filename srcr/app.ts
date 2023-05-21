@@ -19,6 +19,8 @@ import { IdCommand } from "./events/id.command";
 import { Event } from "./events/event.class";
 import { Telegraf, Context } from "telegraf";
 import fs from 'fs';
+import { ManageCommand } from "./events/manage.command";
+import { UsersCommand } from "./events/users.command";
 
 class Bot {
     bot: Telegraf<Context>;
@@ -46,6 +48,8 @@ class Bot {
             new IdCommand(this.bot),
             new AboutCommand(this.bot),
             new NewCommand(this.bot, this.databaseService, this.loggerService),
+            new ManageCommand(this.bot, this.databaseService, this.utilsService),
+            new UsersCommand(this.bot, this.databaseService, this.loggerService, this.utilsService),
             new TextMessage(this.bot, this.databaseService, this.openaiService, this.loggerService),
             new VoiceMessage(this.bot, this.databaseService, this.openaiService, this.loggerService, this.voiceService),
         ];
