@@ -28,11 +28,11 @@ export class TextMessage extends Event {
 
             if (!conversation) return;
 
-            if (user.list === 'limited') {
+            if (user.list === this.databaseService.list.limited) {
                 if (user.freeRequests === 0) return ctx.reply('Your free requests are over\n\nClick below to send whitelist request to admins', Markup.inlineKeyboard([
                     Markup.button.callback("Request", "request_access")
                 ]));
-            } else if (user.list !== 'white') {
+            } else if (user.list !== this.databaseService.list.white) {
                 this.loggerService.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] request rejected. User not whitelisted`, true);
                 return ctx.reply(`You are not whitelisted yet. Sorry!\n\n` + 
                     `👇 Click below to send whitelist request to admins`, 
@@ -55,7 +55,7 @@ export class TextMessage extends Event {
                     conversation.messages.push({ role: ChatCompletionRequestMessageRoleEnum.Assistant, content: gptResponse.content });
                     await this.databaseService.updateConversation(ctx.message.from.id, conversation.messages);
                     await this.databaseService.incrementRequestsCounter(ctx.message.from.id);
-                    if (user.list === 'limited') await this.databaseService.decreaseFreeRequests(ctx.message.from.id);
+                    if (user.list === this.databaseService.list.limited) await this.databaseService.decreaseFreeRequests(ctx.message.from.id);
                         
                     ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
                     ctx.reply(gptResponse.content);

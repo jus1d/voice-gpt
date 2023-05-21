@@ -21,7 +21,7 @@ export class LimitedAction extends Event {
             const userId = Number((ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[2].replace('[', '').replace(']', ''));
             const username = (ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[1].replace('@', '');
 
-            await this.databaseService.setUserList(userId, 'limited');
+            await this.databaseService.setUserList(userId, this.databaseService.list.limited);
             
             const user: IUser | null = await this.databaseService.getUser(userId);
             if (!user) return;

@@ -2,9 +2,10 @@ import { IDatabase } from "../database/database.interface";
 import { IUser } from "../database/models/user.model";
 import { Context, Telegraf } from "telegraf";
 import { Event } from "./event.class";
+import { IOpenAI } from "../openai/openai.interface";
 
 export class ConversationCommand extends Event {
-    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase) {
+    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly openaiService: IOpenAI) {
         super(bot);
     }
 
@@ -19,10 +20,12 @@ export class ConversationCommand extends Event {
             for (let i = 0; i < conversation?.messages.length; i++) {
                 const message = conversation.messages[i];
 
-                if (message.role === 'user') {
+                if (message.role === this.openaiService.roles.user) {
                     conversationMessage += `<b>- ${message.content}</b>\n\n`
-                } else {
+                } else if (message.role === this.openaiService.roles.assistant) {
                     conversationMessage += `- ${message.content}\n\n`;
+                } else {
+                    conversationMessage += `- <b>${message.role}:</b> ${message.content}\n\n`;
                 }
             }
 
@@ -53,10 +56,12 @@ export class ConversationCommand extends Event {
             for (let i = 0; i < conversation.messages.length; i++) {
                 const message = conversation.messages[i];
 
-                if (message.role === 'user') {
-                    conversationMessage += `<b>- ${message.content}</b>\n\n`;
-                } else {
+                if (message.role === this.openaiService.roles.user) {
+                    conversationMessage += `<b>- ${message.content}</b>\n\n`
+                } else if (message.role === this.openaiService.roles.assistant) {
                     conversationMessage += `- ${message.content}\n\n`;
+                } else {
+                    conversationMessage += `- <b>${message.role}:</b> ${message.content}\n\n`;
                 }
             }
 

@@ -35,7 +35,7 @@ export class VoiceMessage extends Event {
                 if (user.freeRequests === 0) return ctx.reply('Your free requests are over\n\nClick below to send whitelist request to admins', Markup.inlineKeyboard([
                     Markup.button.callback("Request", "request_access")
                 ]));
-            } else if (user.list !== 'white') {
+            } else if (user.list !== this.databaseService.list.white) {
                 this.loggerService.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] request rejected. User not whitelisted`, true);
                 return ctx.reply('You are not whitelisted yet. Sorry!\n\nClick below to send whitelist request to admins', Markup.inlineKeyboard([
                     Markup.button.callback("Request", "request_access")

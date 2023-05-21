@@ -21,7 +21,7 @@ export class BlacklistAction extends Event {
             const userId = Number((ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[2].replace('[', '').replace(']', ''));
             const username = (ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[1].replace('@', '');
 
-            await this.databaseService.setUserList(userId, 'black');
+            await this.databaseService.setUserList(userId, this.databaseService.list.black);
             
             const user: IUser | null = await this.databaseService.getUser(userId);
             if (!user) return;
