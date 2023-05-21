@@ -56,7 +56,7 @@ export class UtilsService implements IUtils {
 
         return messageTextWithHTML;
     }
-    getManageButtons(list: string): [IButton[], IButton[], IButton[], IButton[]] {
+    getManageButtons(list: string): [ IButton[], IButton[], IButton[], IButton[] ] {
         const firstButtonRow = [];
         const secondButtonRow = [];
         const thirdButtonRow = [];
