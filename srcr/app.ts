@@ -1,10 +1,15 @@
+import { ConversationCommand } from "./events/conversation.command";
+import { ConversationAction } from "./events/conversation.action";
+import { WhitelistCommand } from "./events/whitelist.command";
 import { DatabaseService } from "./database/database.service";
 import { IConfigService } from "./config/config.interface";
 import { IDatabase } from "./database/database.interface";
 import { ConfigService } from "./config/config.service";
 import { LoggerService } from "./logger/logger.service";
+import { ManageCommand } from "./events/manage.command";
 import { IVoiceService } from "./voice/voice.interface";
 import { StartCommand } from "./events/start.command";
+import { UsersCommand } from "./events/users.command";
 import { VoiceMessage } from "./events/voice.message";
 import { AboutCommand } from "./events/about.command";
 import { VoiceService } from "./voice/voice.service";
@@ -19,11 +24,6 @@ import { IdCommand } from "./events/id.command";
 import { Event } from "./events/event.class";
 import { Telegraf, Context } from "telegraf";
 import fs from 'fs';
-import { ManageCommand } from "./events/manage.command";
-import { UsersCommand } from "./events/users.command";
-import { WhitelistCommand } from "./events/whitelist.command";
-import { ConversationAction } from "./events/conversation.action";
-import { ConversationCommand } from "./events/conversation.command";
 
 class Bot {
     bot: Telegraf<Context>;
