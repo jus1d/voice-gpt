@@ -1,16 +1,18 @@
-import { IDatabase } from "../database/database.interface";
-import { ILogger } from "../logger/logger.interface";
+import { IDatabase } from "../../database/database.interface";
+import { ILogger } from "../../logger/logger.interface";
 import { Telegraf, Context } from 'telegraf';
-import { Event } from "./event.class";
+import { Event } from "../event.class";
+import { IConfigService } from "../../config/config.interface";
+import { IUtils } from "../../utils/utils.interface";
 
 export class StartCommand extends Event {
-    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly loggerService: ILogger) {
+    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly loggerService: ILogger, private readonly configService: IConfigService, private readonly utilsService: IUtils) {
         super(bot);
     }
 
     handle(): void {
         this.bot.start(async (ctx) => {
-            const user = await this.databaseService.getUser(ctx.message.from.id);
+            let user = await this.databaseService.getUser(ctx.message.from.id);
 
             let startMessage = '';
             if (!user) {
@@ -36,14 +38,22 @@ export class StartCommand extends Event {
                     `👇 You can ask me anything below`
                 }
             }
+
+            user = await this.databaseService.getUser(ctx.message.from.id);
+            if (!user) return;
+
             await ctx.replyWithHTML(startMessage);
+            await ctx.telegram.sendMessage(this.configService.get('admin_tg_id'), `<b>User @${user?.username} [<code>${user?.telegramId}</code>] just started the bot\n\nListed: <code>${user.list}</code>\nTotal requests: <code>${user.requests}</code></b>`, {
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: this.utilsService.getManageButtons(user.list)
+                }
+            });
 
             this.loggerService.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] started the bot`, true);
 
             const conversation = await this.databaseService.getConversation(ctx.message.from.id);
-            if (!conversation) {
-                await this.databaseService.initConversation(ctx.message.from.id);
-            }
+            if (!conversation) await this.databaseService.initConversation(ctx.message.from.id);
         });
     }
 }

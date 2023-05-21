@@ -1,5 +1,5 @@
 import { Context, Telegraf } from "telegraf";
-import { Event } from "./event.class";
+import { Event } from "../event.class";
 import fs from 'fs';
 
 export class AboutCommand extends Event {

@@ -1,8 +1,8 @@
-import { IDatabase } from "../database/database.interface";
-import { ILogger } from "../logger/logger.interface";
-import { IUtils } from "../utils/utils.interface";
+import { IDatabase } from "../../database/database.interface";
+import { ILogger } from "../../logger/logger.interface";
+import { IUtils } from "../../utils/utils.interface";
 import { Context, Telegraf } from "telegraf";
-import { Event } from "./event.class";
+import { Event } from "../event.class";
 
 export class UsersCommand extends Event {
     constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly loggerService: ILogger, private readonly utilsService: IUtils) {

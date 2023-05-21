@@ -1,7 +1,7 @@
-import { IDatabase } from "../database/database.interface";
-import { IUtils } from "../utils/utils.interface";
+import { IDatabase } from "../../database/database.interface";
+import { IUtils } from "../../utils/utils.interface";
 import { Telegraf, Context } from "telegraf";
-import { Event } from "./event.class";
+import { Event } from "../event.class";
 
 export class BackToUsersAction extends Event {
     constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly utilsService: IUtils) {

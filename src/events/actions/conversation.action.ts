@@ -1,6 +1,6 @@
-import { IDatabase } from "../database/database.interface";
+import { IDatabase } from "../../database/database.interface";
 import { Context, Telegraf } from "telegraf";
-import { Event } from "./event.class";
+import { Event } from "../event.class";
 import { Message } from "typegram";
 
 export class ConversationAction extends Event {

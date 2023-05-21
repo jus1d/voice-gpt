@@ -1,35 +1,35 @@
-import { ResetFreeRequestsAction } from "./events/resetFreeRequests.action";
-import { ConversationCommand } from "./events/conversation.command";
-import { RequestAccessAction } from "./events/requestAccess.action";
-import { ConversationAction } from "./events/conversation.action";
-import { UpdateStatsAction } from "./events/updateStats.action";
-import { BackToUsersAction } from "./events/backToUsers.action";
-import { WhitelistCommand } from "./events/whitelist.command";
+import { ResetFreeRequestsAction } from "./events/actions/resetFreeRequests.action";
+import { ConversationCommand } from "./events/commands/conversation.command";
+import { RequestAccessAction } from "./events/actions/requestAccess.action";
+import { ConversationAction } from "./events/actions/conversation.action";
+import { UpdateStatsAction } from "./events/actions/updateStats.action";
+import { BackToUsersAction } from "./events/actions/backToUsers.action";
+import { WhitelistCommand } from "./events/commands/whitelist.command";
+import { WhitelistAction } from "./events/actions/whitelist.action";
+import { BlacklistAction } from "./events/actions/blacklist.action";
+import { ManageCommand } from "./events/commands/manage.command";
+import { LimitedAction } from "./events/actions/limited.action";
+import { StartCommand } from "./events/commands/start.command";
+import { UsersCommand } from "./events/commands/users.command";
+import { AboutCommand } from "./events/commands/about.command";
 import { DatabaseService } from "./database/database.service";
-import { WhitelistAction } from "./events/whitelist.action";
-import { BlacklistAction } from "./events/blacklist.action";
 import { IConfigService } from "./config/config.interface";
+import { NewCommand } from "./events/commands/new.command";
 import { IDatabase } from "./database/database.interface";
+import { NoneAction } from "./events/actions/none.action";
+import { PlugAction } from "./events/actions/plug.action";
+import { IdCommand } from "./events/commands/id.command";
 import { ConfigService } from "./config/config.service";
 import { LoggerService } from "./logger/logger.service";
-import { LimitedAction } from "./events/limited.action";
-import { ManageCommand } from "./events/manage.command";
 import { IVoiceService } from "./voice/voice.interface";
-import { StartCommand } from "./events/start.command";
-import { UsersCommand } from "./events/users.command";
 import { VoiceMessage } from "./events/voice.message";
-import { AboutCommand } from "./events/about.command";
 import { VoiceService } from "./voice/voice.service";
 import { UtilsService } from "./utils/utils.service";
 import { TextMessage } from "./events/text.message";
 import { IOpenAI } from "./openai/openai.interface";
 import { ILogger } from "./logger/logger.interface";
-import { NoneAction } from "./events/none.action";
-import { PlugAction } from "./events/plug.action";
-import { NewCommand } from "./events/new.command";
 import { OpenAI } from "./openai/openai.service";
 import { IUtils } from "./utils/utils.interface";
-import { IdCommand } from "./events/id.command";
 import { Event } from "./events/event.class";
 import { Telegraf, Context } from "telegraf";
 import fs from 'fs';
@@ -55,7 +55,7 @@ class Bot {
 
         await this.databaseService.init();
         this.events = [
-            new StartCommand(this.bot, this.databaseService, this.loggerService),
+            new StartCommand(this.bot, this.databaseService, this.loggerService, this.configService, this.utilsService),
             new IdCommand(this.bot),
             new AboutCommand(this.bot),
             new NewCommand(this.bot, this.databaseService, this.loggerService),
@@ -101,11 +101,11 @@ class Bot {
 
 const configService = new ConfigService();
 const loggerService = new LoggerService();
-const database = new DatabaseService(configService, loggerService);
-const utilsService = new UtilsService(database);
+const databaseService = new DatabaseService(configService, loggerService);
+const utilsService = new UtilsService(databaseService);
 const voiceService = new VoiceService(loggerService);
 const openaiService = new OpenAI(configService.get('openai_token'), voiceService, loggerService);
 
-const bot = new Bot(configService, database, openaiService, loggerService, voiceService, utilsService);
+const bot = new Bot(configService, databaseService, openaiService, loggerService, voiceService, utilsService);
 
 bot.init();
