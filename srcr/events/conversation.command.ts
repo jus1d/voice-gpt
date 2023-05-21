@@ -1,7 +1,7 @@
-import { Context, Telegraf } from "telegraf";
-import { Event } from "./event.class";
 import { IDatabase } from "../database/database.interface";
 import { IUser } from "../database/models/user.model";
+import { Context, Telegraf } from "telegraf";
+import { Event } from "./event.class";
 
 export class ConversationCommand extends Event {
     constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase) {

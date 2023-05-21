@@ -1,5 +1,5 @@
-import config from 'config';
 import { IConfigService } from './config.interface';
+import config from 'config';
 
 export class ConfigService implements IConfigService {
     get(key: string): string {

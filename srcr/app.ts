@@ -24,6 +24,15 @@ import { IdCommand } from "./events/id.command";
 import { Event } from "./events/event.class";
 import { Telegraf, Context } from "telegraf";
 import fs from 'fs';
+import { BackToUsersAction } from "./events/backToUsers.action";
+import { BlacklistAction } from "./events/blacklist.action";
+import { LimitedAction } from "./events/limited.action";
+import { NoneAction } from "./events/none.action";
+import { PlugAction } from "./events/plug.action";
+import { RequestAccess } from "./events/requestAccess.action";
+import { ResetFreeRequests } from "./events/resetFreeRequests.action";
+import { UpdateStatsAction } from "./events/updateStats.action";
+import { WhitelistAction } from "./events/whitelist.action";
 
 class Bot {
     bot: Telegraf<Context>;
@@ -53,8 +62,17 @@ class Bot {
             new ManageCommand(this.bot, this.databaseService, this.utilsService),
             new UsersCommand(this.bot, this.databaseService, this.loggerService, this.utilsService),
             new WhitelistCommand(this.bot, this.databaseService, this.loggerService, this.utilsService),
-            new ConversationAction(this.bot),
+            new ConversationAction(this.bot, this.databaseService),
             new ConversationCommand(this.bot, this.databaseService),
+            new BackToUsersAction(this.bot, this.databaseService, this.utilsService),
+            new BlacklistAction(this.bot, this.databaseService, this.loggerService, this.utilsService),
+            new LimitedAction(this.bot, this.databaseService, this.loggerService, this.utilsService),
+            new NoneAction(this.bot, this.databaseService, this.loggerService, this.utilsService),
+            new PlugAction(this.bot),
+            new RequestAccess(this.bot, this.databaseService, this.configService, this.loggerService),
+            new ResetFreeRequests(this.bot, this.databaseService, this.loggerService, this.utilsService),
+            new UpdateStatsAction(this.bot, this.databaseService, this.utilsService),
+            new WhitelistAction(this.bot, this.databaseService, this.loggerService, this.utilsService),
             new TextMessage(this.bot, this.databaseService, this.openaiService, this.loggerService),
             new VoiceMessage(this.bot, this.databaseService, this.openaiService, this.loggerService, this.voiceService),
         ];
