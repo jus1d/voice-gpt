@@ -1,49 +1,50 @@
-import { mongo } from './database/mongo';
-import { IUser } from './database/models/user.model';
+import { IDatabase } from "../database/database.interface";
+import { IUser } from "../database/models/user.model";
+import { IUtils, IButton } from "./utils.interface";
 
-class Utilities {
+export class UtilsService implements IUtils {
+    constructor(private readonly databaseService: IDatabase) {}
+
     async getUserStatsText(telegramId: number): Promise<string> {
-        const user = await mongo.getUser(telegramId);
+        const user = await this.databaseService.getUser(telegramId);
         if (!user) return `<b>No user with ID: <code>${telegramId}</code></b>`;
 
         let messageTextWithHTML = `<b>User @${user.username} [<code>${user.telegramId}</code>] stats:</b>\n\n` + 
             `<b>Listed:</b> <code>${user.list}</code>\n` + 
             `<b>Total requests:</b> <code>${user.requests}</code>`;
 
-        if (user.list === mongo.list.limited) {
+        if (user.list === 'limited') {
             messageTextWithHTML += `\n<b>Free requests: </b> <code>${user.freeRequests}</code>`;
         }
-        if (user.role === mongo.roles.admin) {
+        if (user.role === 'admin') {
             messageTextWithHTML += `\n\n<b>Role: </b> <code>${user.role}</code>`;
         }
 
         return messageTextWithHTML;
     }
-
     async getUsersText(): Promise<string> {
-        const users: Array<IUser> = await mongo.getAllUsers();
+        const users: Array<IUser> = await this.databaseService.getAllUsers();
         let messageTextWithHTML = `<b>Total users:</b> ${users.length}\n\n`;
         for (let i = 0; i < users.length; i++) {
             messageTextWithHTML += `@${users[i].username} - ${users[i].requests} requests. /manage@${users[i].telegramId}\n`
         }
         return messageTextWithHTML;
     }
-
     async getWhitelistText(): Promise<string> {
         let messageTextWithHTML = '';
         let whiteUsersCounter = 0;
         let limitedUsersCounter = 0;
         let whitelistedUsersStr = '';
         let limitedUsersStr = '';
-        const whitelist = await mongo.getWhitelistedUsers();
+        const whitelist = await this.databaseService.getWhitelistedUsers();
 
         if (!whitelist) return 'Error while getting whitelisted users';
 
         for (let i = 0; i < whitelist.length; i++) {
-            if (whitelist[i].list === mongo.list.white) {
+            if (whitelist[i].list === 'white') {
                 whitelistedUsersStr += `@${whitelist[i].username} - ${whitelist[i].requests} requests. /manage@${whitelist[i].telegramId}\n`;
                 whiteUsersCounter++;
-            } else if (whitelist[i].list === mongo.list.limited) {
+            } else if (whitelist[i].list === 'limited') {
                 limitedUsersStr += `@${whitelist[i].username} - ${whitelist[i].requests} requests. /manage@${whitelist[i].telegramId}\n`;
                 limitedUsersCounter++;
             }
@@ -55,25 +56,24 @@ class Utilities {
 
         return messageTextWithHTML;
     }
-
-    getManageButtons(list: string) {
+    getManageButtons(list: string): [ IButton[], IButton[], IButton[], IButton[] ] {
         const firstButtonRow = [];
         const secondButtonRow = [];
         const thirdButtonRow = [];
         const fourthButtonRow = [];
 
-        if (list !== mongo.list.white) {
+        if (list !== 'white') {
             firstButtonRow.push({ text: 'Whitelist', callback_data: 'whitelist' });
         }
-        if (list !== mongo.list.limited) {
+        if (list !== 'limited') {
             firstButtonRow.push({ text: 'Limited', callback_data: 'limited' });
         } else {
             firstButtonRow.push({ text: 'Reset', callback_data: 'reset_free_requests' });
         }
-        if (list !== mongo.list.none) {
+        if (list !== 'none') {
             secondButtonRow.push({ text: 'None', callback_data: 'none' });
         }
-        if (list !== mongo.list.black) {
+        if (list !== 'black') {
             secondButtonRow.push({ text: 'Blacklist', callback_data: 'blacklist' });
         }
         thirdButtonRow.push({ text: 'See conversation', callback_data: 'get_conversation'});
@@ -82,5 +82,3 @@ class Utilities {
         return [ firstButtonRow, secondButtonRow, thirdButtonRow, fourthButtonRow];
     }
 }
-
-export const utils = new Utilities();
