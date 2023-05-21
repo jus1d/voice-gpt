@@ -14,6 +14,9 @@ import { OpenAI } from "./openai/openai.service";
 import { Telegraf, Context } from "telegraf";
 import { Event } from "./events/event.class";
 import fs from 'fs';
+import { AboutCommand } from "./events/about.command";
+import { IdCommand } from "./events/id.command";
+import { NewCommand } from "./events/new.command";
 
 class Bot {
     bot: Telegraf<Context>;
@@ -37,8 +40,11 @@ class Bot {
         await this.databaseService.init();
         this.events = [
             new StartCommand(this.bot, this.databaseService, this.loggerService),
+            new IdCommand(this.bot),
+            new AboutCommand(this.bot),
+            new NewCommand(this.bot, this.databaseService, this.loggerService),
             new TextMessage(this.bot, this.databaseService, this.openaiService, this.loggerService),
-            new VoiceMessage(this.bot, this.databaseService, this.openaiService, this.loggerService, this.voiceService)
+            new VoiceMessage(this.bot, this.databaseService, this.openaiService, this.loggerService, this.voiceService),
         ];
         for (const event of this.events) {
             event.handle();
