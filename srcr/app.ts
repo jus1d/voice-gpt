@@ -29,7 +29,6 @@ class Bot {
     bot: Telegraf<Context>;
     events: Event[] = [];
 
-    
     constructor(
         private readonly configService: IConfigService,
         private readonly databaseService: IDatabase,
