@@ -1,13 +1,11 @@
 import { ConversationModel, IConversation, IMessage } from "./models/conversation.model";
 import { UserModel, IUser } from "./models/user.model";
-import { log } from "../logger";
+import { IDatabase } from "./database.interface";
+import mongoose from 'mongoose';
+import { IConfigService } from "../config/config.interface";
+import { ILogger } from "../logger/logger.interface";
 
-class MongoDB {
-    roles = {
-        admin: 'admin',
-        user: 'user'
-    }
-
+export class DatabaseService implements IDatabase {
     list = {
         white: 'white',
         black: 'black',
@@ -15,17 +13,29 @@ class MongoDB {
         none: 'none'
     }
 
-    async saveUser(telegramId: number, username: string, fullname: string, role = this.roles.user): Promise<boolean> {
+    roles = {
+        admin: 'admin',
+        user: 'user'
+    }
+
+    constructor(private readonly configService: IConfigService, private readonly loggerService: ILogger) { }
+
+    async init(): Promise<void> {
+        await mongoose.connect(this.configService.get('mongo_uri'));
+        this.loggerService.info('Connection to MongoDB established', true);
+    }
+
+    async saveUser(telegramId: number, username: string, fullname: string): Promise<boolean> {
         try {
             await new UserModel({
                 telegramId,
                 username: username || '',
                 fullname,
-                role,
+                role: 'user',
             }).save();
             return true;
         } catch (error) {
-            log.error(`Error while creating new user in database`);
+            this.loggerService.error(`Error while creating new user in database`, true);
             return false;
         }
     }
@@ -35,7 +45,7 @@ class MongoDB {
             const user: IUser | null = await UserModel.findOne({ telegramId: String(telegramId) });
             return user;
         } catch (error) {
-            log.error(`Error with getting user`);
+            this.loggerService.error(`Error with getting user`, true);
             return null;
         }
     }
@@ -50,7 +60,7 @@ class MongoDB {
             await UserModel.updateOne({ telegramId: String(telegramId) }, user);
             return true;
         } catch (error) {
-            log.error(`Error while updating request counter`);
+            this.loggerService.error(`Error while updating request counter`, true);
             return false;
         }
     }
@@ -66,12 +76,12 @@ class MongoDB {
             await UserModel.updateOne({ telegramId: String(telegramId) }, user);
             return true;
         } catch (error) {
-            log.error('Error while decreasing free requests counter');
+            this.loggerService.error('Error while decreasing free requests counter', true);
             return false;
         }
     }
 
-    async setFreeRequests(telegramId: number, amount = 10): Promise<boolean> {
+    async setFreeRequests(telegramId: number, amount: number): Promise<boolean> {
         try {
             const user = await UserModel.findOne({ telegramId: String(telegramId) });
             if (!user) return false;
@@ -80,11 +90,11 @@ class MongoDB {
             await UserModel.updateOne({ telegramId: String(telegramId) }, user);
             return true;
         } catch (error) {
-            log.error('Error while setting free requests');
+            this.loggerService.error('Error while setting free requests', true);
             return false;
         }
     }
-
+    
     async setUserList(telegramId: number, list: string): Promise<boolean> {
         try {
             const user = await UserModel.findOne({ telegramId: String(telegramId) });
@@ -95,7 +105,7 @@ class MongoDB {
             await UserModel.updateOne({ telegramId: String(telegramId) }, user);
             return true;
         } catch (error) {
-            log.error(`Error while updating user's list`);
+            this.loggerService.error(`Error while updating user's list`, true);
             return false;
         }
     }
@@ -110,7 +120,7 @@ class MongoDB {
             await UserModel.updateOne({ telegramId: String(telegramId) }, user);
             return true;
         } catch (error) {
-            log.error('Error while updating requested status');
+            this.loggerService.error('Error while updating requested status', true);
             return false;
         }
     }
@@ -120,12 +130,12 @@ class MongoDB {
             await this.saveConversation(telegramId, []);
             return true;
         } catch (error) {
-            log.error(`Error whilr creating new conversation`);
+            this.loggerService.error(`Error whilr creating new conversation`, true);
             return false;
         }
     }
 
-    async saveConversation(telegramId: number, messages: Array<IMessage>): Promise<boolean> {
+    async saveConversation(telegramId: number, messages: IMessage[]): Promise<boolean> {
         try {
             const user = await this.getUser(telegramId);
             await new ConversationModel({
@@ -135,12 +145,12 @@ class MongoDB {
             }).save();
             return true;
         } catch (error) {
-            log.error(`Error while saving conversation`);
+            this.loggerService.error(`Error while saving conversation`, true);
             return false;
         }
     }
 
-    async updateConversation(telegramId: number, messages: Array<IMessage>): Promise<boolean> {
+    async updateConversation(telegramId: number, messages: IMessage[]): Promise<boolean> {
         try {
             const conversation: IConversation | null = await this.getConversation(telegramId);
             if (!conversation) return false;
@@ -150,7 +160,7 @@ class MongoDB {
     
             return true;
         } catch (error) {
-            log.error(`Error while updating conversation`);
+            this.loggerService.error(`Error while updating conversation`, true);
             return false;
         }
     }
@@ -161,56 +171,45 @@ class MongoDB {
             if (!conversation) return null;
             return conversation;
         } catch (error) {
-            log.error(`Error while getting conversation`);
+            this.loggerService.error(`Error while getting conversation`, true);
             return null;
         }
     }
 
-    async getWhitelistedUsers() {
+    async getWhitelistedUsers(): Promise<IUser[]> {
         try {
-            const users = [];
+            const users: IUser[] = [];
             const whitelistedUsers =  await UserModel.find({ list: this.list.white });
             const limitedUsers =  await UserModel.find({ list: this.list.limited });
     
             for(let i = 0; i < whitelistedUsers.length; i++) {
-                users.push({ 
-                    telegramId: whitelistedUsers[i].telegramId,
-                    username: whitelistedUsers[i].username,
-                    list: whitelistedUsers[i].list,
-                    requests: whitelistedUsers[i].requests
-                 });
+                users.push(whitelistedUsers[i]);
             }
     
             for(let i = 0; i < limitedUsers.length; i++) {
-                users.push({ 
-                    telegramId: limitedUsers[i].telegramId,
-                    username: limitedUsers[i].username,
-                    list: limitedUsers[i].list,
-                    requests: limitedUsers[i].requests
-                 });
+                users.push(limitedUsers[i]);
             }
             return users;
         } catch (error) {
-            log.error(`Error while getting whitelist`);
-        }
-    }
-
-    async getAllUsers(): Promise<Array<IUser>> {
-        try {
-            const users: Array<IUser> = await UserModel.find({});
-            return users;
-        } catch (error) {
-            log.error('Error while getting all users');
+            this.loggerService.error(`Error while getting whitelist`, true);
             return [];
         }
     }
 
+    async getAllUsers(): Promise<IUser[]> {
+        try {
+            const users: Array<IUser> = await UserModel.find({});
+            return users;
+        } catch (error) {
+            this.loggerService.error('Error while getting all users', true);
+            return [];
+        }
+    }
+    
     async isAdmin(telegramId: number): Promise<boolean> {
         const user = await this.getUser(telegramId);
         if (!user) return false;
 
-        return user.role === mongo.roles.admin;
+        return user.role === this.roles.admin;
     }
 }
-
-export const mongo = new MongoDB();
