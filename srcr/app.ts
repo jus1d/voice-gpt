@@ -6,20 +6,19 @@ import { LoggerService } from "./logger/logger.service";
 import { IVoiceService } from "./voice/voice.interface";
 import { StartCommand } from "./events/start.command";
 import { VoiceMessage } from "./events/voice.message";
+import { AboutCommand } from "./events/about.command";
 import { VoiceService } from "./voice/voice.service";
+import { UtilsService } from "./utils/utils.service";
 import { TextMessage } from "./events/text.message";
 import { IOpenAI } from "./openai/openai.interface";
 import { ILogger } from "./logger/logger.interface";
-import { OpenAI } from "./openai/openai.service";
-import { Telegraf, Context } from "telegraf";
-import { Event } from "./events/event.class";
-import fs from 'fs';
-import { AboutCommand } from "./events/about.command";
-import { IdCommand } from "./events/id.command";
 import { NewCommand } from "./events/new.command";
-import { ConversationAction } from "./events/conversation.action";
-import { UtilsService } from "./utils/utils.service";
+import { OpenAI } from "./openai/openai.service";
 import { IUtils } from "./utils/utils.interface";
+import { IdCommand } from "./events/id.command";
+import { Event } from "./events/event.class";
+import { Telegraf, Context } from "telegraf";
+import fs from 'fs';
 
 class Bot {
     bot: Telegraf<Context>;
