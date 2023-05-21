@@ -19,7 +19,6 @@ export class VoiceService implements IVoiceService {
             this.loggerService.error('Error while creating ./voices directory', true);
         }
     }
-
     async removeFile(path: string): Promise<void> {
         try {
             await unlink(path);
@@ -27,7 +26,6 @@ export class VoiceService implements IVoiceService {
             console.log('Error with file remove');
         }
     }
-
     async downloadOggFile(downloadLink: string, name: string): Promise<void> {
         const response = await axios.get(downloadLink, { responseType: 'stream' });
         const path = `./voices/${name}.ogg`;

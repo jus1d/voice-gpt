@@ -24,7 +24,6 @@ export class DatabaseService implements IDatabase {
         await mongoose.connect(this.configService.get('mongo_uri'));
         this.loggerService.info('Connection to MongoDB established', true);
     }
-
     async saveUser(telegramId: number, username: string, fullname: string): Promise<boolean> {
         try {
             await new UserModel({
@@ -39,7 +38,6 @@ export class DatabaseService implements IDatabase {
             return false;
         }
     }
-
     async getUser(telegramId: number): Promise<IUser | null> {
         try {
             const user: IUser | null = await UserModel.findOne({ telegramId: String(telegramId) });
@@ -49,7 +47,6 @@ export class DatabaseService implements IDatabase {
             return null;
         }
     }
-
     async incrementRequestsCounter(telegramId: number): Promise<boolean> {
         try {
             const user: IUser | null = await UserModel.findOne({ telegramId: String(telegramId) });
@@ -64,7 +61,6 @@ export class DatabaseService implements IDatabase {
             return false;
         }
     }
-
     async decreaseFreeRequests(telegramId: number): Promise<boolean> {
         try {
             const user = await UserModel.findOne({ telegramId: String(telegramId) });
@@ -80,7 +76,6 @@ export class DatabaseService implements IDatabase {
             return false;
         }
     }
-
     async setFreeRequests(telegramId: number, amount: number): Promise<boolean> {
         try {
             const user = await UserModel.findOne({ telegramId: String(telegramId) });
@@ -94,7 +89,6 @@ export class DatabaseService implements IDatabase {
             return false;
         }
     }
-    
     async setUserList(telegramId: number, list: string): Promise<boolean> {
         try {
             const user = await UserModel.findOne({ telegramId: String(telegramId) });
@@ -109,7 +103,6 @@ export class DatabaseService implements IDatabase {
             return false;
         }
     }
-
     async setRequestedStatus(telegramId: number, isRequested: boolean): Promise<boolean> {
         try {
             const user = await UserModel.findOne({ telegramId: String(telegramId) });
@@ -124,7 +117,6 @@ export class DatabaseService implements IDatabase {
             return false;
         }
     }
-
     async initConversation(telegramId: number): Promise<boolean> {
         try {
             await this.saveConversation(telegramId, []);
@@ -134,7 +126,6 @@ export class DatabaseService implements IDatabase {
             return false;
         }
     }
-
     async saveConversation(telegramId: number, messages: IMessage[]): Promise<boolean> {
         try {
             const user = await this.getUser(telegramId);
@@ -149,7 +140,6 @@ export class DatabaseService implements IDatabase {
             return false;
         }
     }
-
     async updateConversation(telegramId: number, messages: IMessage[]): Promise<boolean> {
         try {
             const conversation: IConversation | null = await this.getConversation(telegramId);
@@ -164,7 +154,6 @@ export class DatabaseService implements IDatabase {
             return false;
         }
     }
-
     async getConversation(telegramId: number): Promise<IConversation | null> {
         try {
             const conversation: IConversation | null = await ConversationModel.findOne({ telegramId: String(telegramId) });
@@ -175,7 +164,6 @@ export class DatabaseService implements IDatabase {
             return null;
         }
     }
-
     async getWhitelistedUsers(): Promise<IUser[]> {
         try {
             const users: IUser[] = [];
@@ -195,7 +183,6 @@ export class DatabaseService implements IDatabase {
             return [];
         }
     }
-
     async getAllUsers(): Promise<IUser[]> {
         try {
             const users: Array<IUser> = await UserModel.find({});
@@ -205,7 +192,6 @@ export class DatabaseService implements IDatabase {
             return [];
         }
     }
-    
     async isAdmin(telegramId: number): Promise<boolean> {
         const user = await this.getUser(telegramId);
         if (!user) return false;

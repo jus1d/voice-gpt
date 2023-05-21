@@ -20,7 +20,6 @@ export class OpenAI implements IOpenAI {
         });
         this.openai = new OpenAIApi(configuration);
     }
-
     async chat(messages: IMessage[]): Promise<{ role: string, content: string } | null> {
         try {
             const response = await this.openai.createChatCompletion({
@@ -34,7 +33,6 @@ export class OpenAI implements IOpenAI {
             return null;
         }
     }
-
     async transcript(mp3FileName: string): Promise<string> {
         try {
             const response = await this.openai.createTranscription(
