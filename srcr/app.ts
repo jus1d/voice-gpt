@@ -21,6 +21,7 @@ import { Telegraf, Context } from "telegraf";
 import fs from 'fs';
 import { ManageCommand } from "./events/manage.command";
 import { UsersCommand } from "./events/users.command";
+import { WhitelistCommand } from "./events/whitelist.command";
 
 class Bot {
     bot: Telegraf<Context>;
@@ -50,6 +51,7 @@ class Bot {
             new NewCommand(this.bot, this.databaseService, this.loggerService),
             new ManageCommand(this.bot, this.databaseService, this.utilsService),
             new UsersCommand(this.bot, this.databaseService, this.loggerService, this.utilsService),
+            new WhitelistCommand(this.bot, this.databaseService, this.loggerService, this.utilsService),
             new TextMessage(this.bot, this.databaseService, this.openaiService, this.loggerService),
             new VoiceMessage(this.bot, this.databaseService, this.openaiService, this.loggerService, this.voiceService),
         ];
