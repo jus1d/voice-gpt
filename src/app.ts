@@ -101,11 +101,11 @@ class Bot {
 
 const configService = new ConfigService();
 const loggerService = new LoggerService();
-const database = new DatabaseService(configService, loggerService);
-const utilsService = new UtilsService(database);
+const databaseService = new DatabaseService(configService, loggerService);
+const utilsService = new UtilsService(databaseService);
 const voiceService = new VoiceService(loggerService);
 const openaiService = new OpenAI(configService.get('openai_token'), voiceService, loggerService);
 
-const bot = new Bot(configService, database, openaiService, loggerService, voiceService, utilsService);
+const bot = new Bot(configService, databaseService, openaiService, loggerService, voiceService, utilsService);
 
 bot.init();
