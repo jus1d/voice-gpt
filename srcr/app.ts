@@ -62,7 +62,7 @@ class Bot {
             new ManageCommand(this.bot, this.databaseService, this.utilsService),
             new UsersCommand(this.bot, this.databaseService, this.loggerService, this.utilsService),
             new WhitelistCommand(this.bot, this.databaseService, this.loggerService, this.utilsService),
-            new ConversationCommand(this.bot, this.databaseService),
+            new ConversationCommand(this.bot, this.databaseService, this.openaiService),
             new ConversationAction(this.bot, this.databaseService),
             new BackToUsersAction(this.bot, this.databaseService, this.utilsService),
             new BlacklistAction(this.bot, this.databaseService, this.loggerService, this.utilsService),
