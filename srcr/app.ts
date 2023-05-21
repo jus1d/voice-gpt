@@ -17,6 +17,9 @@ import fs from 'fs';
 import { AboutCommand } from "./events/about.command";
 import { IdCommand } from "./events/id.command";
 import { NewCommand } from "./events/new.command";
+import { ConversationAction } from "./events/conversation.action";
+import { UtilsService } from "./utils/utils.service";
+import { IUtils } from "./utils/utils.interface";
 
 class Bot {
     bot: Telegraf<Context>;
@@ -28,7 +31,8 @@ class Bot {
         private readonly databaseService: IDatabase,
         private readonly openaiService: IOpenAI,
         private readonly loggerService: ILogger,
-        private readonly voiceService: IVoiceService
+        private readonly voiceService: IVoiceService,
+        private readonly utilsService: IUtils
     ) {
         this.bot = new Telegraf<Context>(this.configService.get('telegram_token'));
     }
@@ -56,9 +60,11 @@ class Bot {
 
 const configService = new ConfigService();
 const loggerService = new LoggerService();
+const database = new DatabaseService(configService, loggerService);
+const utilsService = new UtilsService(database);
 const voiceService = new VoiceService(loggerService);
 const openaiService = new OpenAI(configService.get('openai_token'), voiceService, loggerService);
-const database = new DatabaseService(configService, loggerService);
-const bot = new Bot(configService, database, openaiService, loggerService, voiceService);
+
+const bot = new Bot(configService, database, openaiService, loggerService, voiceService, utilsService);
 
 bot.init();
