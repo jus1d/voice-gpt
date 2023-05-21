@@ -68,6 +68,16 @@ class Bot {
             this.configService.get('admin_tg_id'), 
             `<b><code>VoiceGPT:${TYPE} v${packageFile.version} just started</code></b>`, 
             { parse_mode: 'HTML' });
+
+        process.once('SIGINT', () => {
+            this.bot.stop('SIGINT');
+            this.loggerService.info('Bot stopped: SIGINT', false);
+        });
+
+        process.once('SIGTERM', () => {
+            this.bot.stop('SIGTERM');
+            this.loggerService.info('Bot stopped: SIGTERM', false);
+        });
     }
 }
 
