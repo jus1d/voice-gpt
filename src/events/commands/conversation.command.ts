@@ -1,8 +1,8 @@
-import { IDatabase } from "../database/database.interface";
-import { IUser } from "../database/models/user.model";
+import { IDatabase } from "../../database/database.interface";
+import { IUser } from "../../database/models/user.model";
 import { Context, Telegraf } from "telegraf";
-import { Event } from "./event.class";
-import { IOpenAI } from "../openai/openai.interface";
+import { Event } from "../event.class";
+import { IOpenAI } from "../../openai/openai.interface";
 
 export class ConversationCommand extends Event {
     constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly openaiService: IOpenAI) {

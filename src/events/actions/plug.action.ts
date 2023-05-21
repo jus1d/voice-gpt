@@ -1,5 +1,5 @@
 import { Telegraf, Context } from "telegraf";
-import { Event } from "./event.class";
+import { Event } from "../event.class";
 
 export class PlugAction extends Event {
     constructor(bot: Telegraf<Context>) {

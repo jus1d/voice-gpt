@@ -1,8 +1,8 @@
-import { IDatabase } from "../database/database.interface";
-import { IUser } from "../database/models/user.model";
-import { IUtils } from "../utils/utils.interface";
+import { IDatabase } from "../../database/database.interface";
+import { IUser } from "../../database/models/user.model";
+import { IUtils } from "../../utils/utils.interface";
 import { Context, Telegraf } from "telegraf";
-import { Event } from "./event.class";
+import { Event } from "../event.class";
 
 export class ManageCommand extends Event {
     constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly utilsService: IUtils) {
