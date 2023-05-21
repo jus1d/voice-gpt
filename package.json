@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=production ts-node ./src/app.ts",
-    "dev": "cross-env NODE_ENV=development ts-node ./srcr/app.ts",
+    "dev": "cross-env NODE_ENV=development ts-node ./src/app.ts",
     "lint": "eslint src/"
   },
   "repository": {

@@ -11,3 +11,6 @@ logs/
 # Config files for production and development versions
 config/default.json
 config/production.json
+
+# Ignore pre-refactor source code
+src-old/
