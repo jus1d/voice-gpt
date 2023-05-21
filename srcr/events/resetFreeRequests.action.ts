@@ -6,7 +6,7 @@ import { Telegraf, Context } from "telegraf";
 import { Event } from "./event.class";
 import { Message } from "typegram";
 
-export class ResetFreeRequests extends Event {
+export class ResetFreeRequestsAction extends Event {
     constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly loggerService: ILogger, private readonly utilsService: IUtils) {
         super(bot);
     }

@@ -4,7 +4,7 @@ import { ILogger } from "../logger/logger.interface";
 import { Telegraf, Context } from "telegraf";
 import { Event } from "./event.class";
 
-export class RequestAccess extends Event {
+export class RequestAccessAction extends Event {
     constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly configService: IConfigService, private readonly loggerService: ILogger) {
         super(bot);
     }
