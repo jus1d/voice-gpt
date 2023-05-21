@@ -16,7 +16,6 @@ export class ConversationAction extends Event {
             if (!isAdmin) return;
 
             const userId = Number((ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[2].replace('[', '').replace(']', ''));
-            const username = (ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[1].replace('@', '');
 
             const user = await this.databaseService.getUser(userId);
             if (!user) return ctx.replyWithHTML(`<b>No user found...</b>`);
