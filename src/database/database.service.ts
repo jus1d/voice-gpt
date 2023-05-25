@@ -29,7 +29,7 @@ export class DatabaseService implements IDatabase {
             await new UserModel({
                 telegramId,
                 username: username || '',
-                fullname,
+                fullname: fullname || username || '',
                 role: 'user',
             }).save();
             return true;
