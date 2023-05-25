@@ -29,7 +29,7 @@ export class DatabaseService implements IDatabase {
             await new UserModel({
                 telegramId,
                 username: username || '',
-                fullname,
+                fullname: fullname || username || '',
                 role: 'user',
             }).save();
             return true;
@@ -119,7 +119,10 @@ export class DatabaseService implements IDatabase {
     }
     async initConversation(telegramId: number): Promise<boolean> {
         try {
-            await this.saveConversation(telegramId, []);
+            const conversation = this.getConversation(telegramId);
+            if (!conversation) {
+                await this.saveConversation(telegramId, []);
+            }
             return true;
         } catch (error) {
             this.loggerService.error(`Error whilr creating new conversation`, true);
@@ -161,6 +164,19 @@ export class DatabaseService implements IDatabase {
             return conversation;
         } catch (error) {
             this.loggerService.error(`Error while getting conversation`, true);
+            return null;
+        }
+    }
+    async getOrInitConversation(telegramId: number): Promise<IConversation | null> {
+        try {
+            let conversation = await this.getConversation(telegramId);
+            if (!conversation) {
+                await this.saveConversation(telegramId, []);
+                conversation = await this.getConversation(telegramId);
+            }
+            return conversation;
+        } catch (error) {
+            this.loggerService.error('Error while getting/creating conversation', true);
             return null;
         }
     }

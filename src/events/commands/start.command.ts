@@ -14,16 +14,28 @@ export class StartCommand extends Event {
         this.bot.start(async (ctx) => {
             let user = await this.databaseService.getUser(ctx.message.from.id);
 
-            let startMessage = '';
             if (!user) {
                 await this.databaseService.saveUser(ctx.message.from.id, 
                     ctx.message.from.username ??= '', 
-                    ctx.message.from.first_name);
-                    
-                startMessage = `<b>Hi!</b> You've been granted <b>10</b> free requests\n` +
+                    ctx.message.from.first_name ??= ctx.message.from.username ??= '');
+
+                user = await this.databaseService.getUser(ctx.message.from.id);
+                if (!user) return;
+
+                await ctx.replyWithHTML(`<b>Hi!</b> You've been granted <b>10</b> free requests\n` +
                     `<b>Premium</b> plan will costs <b>8$</b> per month and include unlimited requests\n\n` +
-                    `👇 Here you can send me your questions in text or voice format, and I will answer them`;
+                    `👇 Here you can send me your questions in text or voice format, and I will answer them`);
+
+                await ctx.telegram.sendMessage(this.configService.get('admin_tg_id'), `<b>User @${user?.username} [<code>${user?.telegramId}</code>] just started the bot\n\nListed: <code>${user.list}</code>\nTotal requests: <code>${user.requests}</code></b>`, {
+                    parse_mode: 'HTML',
+                    reply_markup: {
+                        inline_keyboard: this.utilsService.getManageButtons(user.list)
+                    }
+                });
+
+                this.loggerService.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] started the bot`, true);
             } else {
+                let startMessage = '';
                 if (user.list === 'limited') {
                     startMessage = `<b>Hey,</b> I remember you, you have ${user.freeRequests} free requests\n\n` +
                     `👇 You can waste them below`
@@ -37,23 +49,14 @@ export class StartCommand extends Event {
                     startMessage = `<b>Hey,</b> I remember you, you are whitelisted and have unlimited requests\n\n` +
                     `👇 You can ask me anything below`
                 }
+
+                user = await this.databaseService.getUser(ctx.message.from.id);
+                if (!user) return;
+
+                await ctx.replyWithHTML(startMessage);
+                this.loggerService.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] restarted the bot`, true);
             }
-
-            user = await this.databaseService.getUser(ctx.message.from.id);
-            if (!user) return;
-
-            await ctx.replyWithHTML(startMessage);
-            await ctx.telegram.sendMessage(this.configService.get('admin_tg_id'), `<b>User @${user?.username} [<code>${user?.telegramId}</code>] just started the bot\n\nListed: <code>${user.list}</code>\nTotal requests: <code>${user.requests}</code></b>`, {
-                parse_mode: 'HTML',
-                reply_markup: {
-                    inline_keyboard: this.utilsService.getManageButtons(user.list)
-                }
-            });
-
-            this.loggerService.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] started the bot`, true);
-
-            const conversation = await this.databaseService.getConversation(ctx.message.from.id);
-            if (!conversation) await this.databaseService.initConversation(ctx.message.from.id);
+            this.databaseService.initConversation(ctx.message.from.id);
         });
     }
 }
