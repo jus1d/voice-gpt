@@ -167,6 +167,19 @@ export class DatabaseService implements IDatabase {
             return null;
         }
     }
+    async getOrInitConversation(telegramId: number): Promise<IConversation | null> {
+        try {
+            let conversation = await this.getConversation(telegramId);
+            if (!conversation) {
+                await this.saveConversation(telegramId, []);
+                conversation = await this.getConversation(telegramId);
+            }
+            return conversation;
+        } catch (error) {
+            this.loggerService.error('Error while getting/creating conversation', true);
+            return null;
+        }
+    }
     async getWhitelistedUsers(): Promise<IUser[]> {
         try {
             const users: IUser[] = [];

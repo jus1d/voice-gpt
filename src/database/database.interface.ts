@@ -29,6 +29,7 @@ export interface IDatabase {
     saveConversation(telegramId: number, messages: Array<IMessage>): Promise<boolean>;
     updateConversation(telegramId: number, messages: Array<IMessage>): Promise<boolean>;
     getConversation(telegramId: number): Promise<IConversation | null>;
+    getOrInitConversation(telegramId: number): Promise<IConversation | null>;
     getWhitelistedUsers(): Promise<IUser[]>;
     getAllUsers(): Promise<IUser[]>
     isAdmin(telegramId: number): Promise<boolean>;
