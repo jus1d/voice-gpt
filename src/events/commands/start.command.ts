@@ -14,7 +14,6 @@ export class StartCommand extends Event {
         this.bot.start(async (ctx) => {
             let user = await this.databaseService.getUser(ctx.message.from.id);
 
-            let startMessage = '';
             if (!user) {
                 await this.databaseService.saveUser(ctx.message.from.id, 
                     ctx.message.from.username ??= '', 
@@ -36,6 +35,7 @@ export class StartCommand extends Event {
 
                 this.loggerService.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] started the bot`, true);
             } else {
+                let startMessage = '';
                 if (user.list === 'limited') {
                     startMessage = `<b>Hey,</b> I remember you, you have ${user.freeRequests} free requests\n\n` +
                     `👇 You can waste them below`
