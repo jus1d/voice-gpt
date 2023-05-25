@@ -119,7 +119,10 @@ export class DatabaseService implements IDatabase {
     }
     async initConversation(telegramId: number): Promise<boolean> {
         try {
-            await this.saveConversation(telegramId, []);
+            const conversation = this.getConversation(telegramId);
+            if (!conversation) {
+                await this.saveConversation(telegramId, []);
+            }
             return true;
         } catch (error) {
             this.loggerService.error(`Error whilr creating new conversation`, true);
