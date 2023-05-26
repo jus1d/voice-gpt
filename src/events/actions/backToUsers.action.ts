@@ -10,13 +10,22 @@ export class BackToUsersAction extends Event {
 
     handle(): void {
         this.bot.action('back_to_users', async (ctx) => {
-            if (!ctx.from) return;
+            const users = await this.databaseService.getWhitelistedUsers();
+            const buttons = [];
 
-            const isAdmin = await this.databaseService.isAdmin(ctx.from.id);
-            if (!isAdmin) return;
+            for (const user of users) {
+                if (user.list === this.databaseService.list.limited) {
+                    buttons.push([{ text: `@${user.username} - ${user.requests} requests. List: ${user.list}`, callback_data: `manage:${user.telegramId}` }]);
+                } else {
+                    buttons.push([{ text: `@${user.username} - ${user.requests} requests. List: ${user.list}`, callback_data: `manage:${user.telegramId}` }]);
+                }
+            }
 
-            await ctx.editMessageText(await this.utilsService.getUsersText(), {
-                parse_mode: 'HTML'
+            await ctx.editMessageText('<b>All whitelisted users:</b>', {
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: buttons
+                }
             });
         });
     }

@@ -15,9 +15,23 @@ export class UsersCommand extends Event {
                 const isAdmin = await this.databaseService.isAdmin(ctx.from.id);
                 if (!isAdmin) return;
             
-                await ctx.replyWithHTML(await this.utilsService.getUsersText());
+                const users = await this.databaseService.getAllUsers();
+                const buttons = [];
+
+                for (const user of users) {
+                    buttons.push([{ text: `@${user.username} - ${user.requests} requests. List: ${user.list}`, callback_data: `manage:${user.telegramId}` }]);
+                }
+
+                ctx.replyWithHTML(`<b>Total ${users.length} users:</b>`, {
+                    parse_mode: 'HTML',
+                    reply_markup: {
+                        inline_keyboard: buttons
+                    }
+                });
             } catch (error) {
-                await ctx.reply('🚨 Error while getting users');
+                await ctx.reply('<b>🚨 Error while getting users</b>', {
+                    parse_mode: 'HTML'
+                });
                 this.loggerService.error(`Error while getting users\n${error}`, true);
             }
         });
