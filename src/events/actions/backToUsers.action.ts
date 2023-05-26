@@ -11,7 +11,7 @@ export class BackToUsersAction extends Event {
     handle(): void {
         this.bot.action('back_to_users', async (ctx) => {
             const users = await this.databaseService.getWhitelistedUsers();
-            let buttons = [];
+            const buttons = [];
 
             for (const user of users) {
                 if (user.list === this.databaseService.list.limited) {
