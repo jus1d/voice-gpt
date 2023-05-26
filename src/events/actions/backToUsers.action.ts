@@ -15,7 +15,7 @@ export class BackToUsersAction extends Event {
             const isAdmin = await this.databaseService.isAdmin(ctx.from.id);
             if (!isAdmin) return;
 
-            await ctx.editMessageText(await this.utilsService.getUsersText(), {
+            await ctx.editMessageText(await this.utilsService.getWhitelistText(), {
                 parse_mode: 'HTML'
             });
         });
