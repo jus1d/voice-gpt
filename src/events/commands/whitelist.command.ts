@@ -12,12 +12,26 @@ export class WhitelistCommand extends Event {
     handle(): void {
         this.bot.command('whitelist', async (ctx) => {
             try {
-                const isAdmin = await this.databaseService.isAdmin(ctx.message.from.id);
+                const isAdmin = await this.databaseService.isAdmin(ctx.from.id);
                 if (!isAdmin) return;
-                
-                await ctx.replyWithHTML(await this.utilsService.getWhitelistText());
+            
+                const users = await this.databaseService.getAllUsers();
+                const buttons = [];
+
+                for (const user of users) {
+                    buttons.push([{ text: `@${user.username} - ${user.requests} requests. List: ${user.list}`, callback_data: `manage:${user.telegramId}` }]);
+                }
+
+                ctx.replyWithHTML(`<b>Total ${users.length} whitelisted users:</b>`, {
+                    parse_mode: 'HTML',
+                    reply_markup: {
+                        inline_keyboard: buttons
+                    }
+                });
             } catch (error) {
-                await ctx.reply('Error while getting whitelisted users');
+                await ctx.reply('<b>🚨 Error while getting whitelisted users</b>', {
+                    parse_mode: 'HTML'
+                });
                 this.loggerService.error(`Error while getting whitelisted users\n${error}`, true);
             }
         });

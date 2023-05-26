@@ -12,6 +12,7 @@ import { LimitedAction } from "./events/actions/limited.action";
 import { StartCommand } from "./events/commands/start.command";
 import { UsersCommand } from "./events/commands/users.command";
 import { AboutCommand } from "./events/commands/about.command";
+import { ManageAction } from "./events/actions/manage.action";
 import { DatabaseService } from "./database/database.service";
 import { IConfigService } from "./config/config.interface";
 import { NewCommand } from "./events/commands/new.command";
@@ -73,6 +74,7 @@ class Bot {
             new ResetFreeRequestsAction(this.bot, this.databaseService, this.loggerService, this.utilsService),
             new UpdateStatsAction(this.bot, this.databaseService, this.utilsService),
             new WhitelistAction(this.bot, this.databaseService, this.loggerService, this.utilsService),
+            new ManageAction(this.bot, this.databaseService, this.utilsService),
             new TextMessage(this.bot, this.databaseService, this.openaiService, this.loggerService),
             new VoiceMessage(this.bot, this.databaseService, this.openaiService, this.loggerService, this.voiceService),
         ];
@@ -98,6 +100,8 @@ class Bot {
         });
     }
 }
+
+console.clear();
 
 const configService = new ConfigService();
 const loggerService = new LoggerService();
