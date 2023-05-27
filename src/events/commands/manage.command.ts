@@ -11,7 +11,7 @@ export class ManageCommand extends Event {
 
     handle(): void {
         this.bot.hears(/\/manage@(\d+)/, async (ctx) => {
-            const telegramId = Number(ctx.message.text.split('@')[1]);
+            const telegramId = ctx.message.text.split('@')[1];
     
             const isAdmin = await this.databaseService.isAdmin(ctx.from.id);
             if (!isAdmin) return;
