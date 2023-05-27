@@ -1,4 +1,3 @@
-import { ILogger } from "../logger/logger.interface";
 import { IVoiceService } from "./voice.interface";
 import installer from '@ffmpeg-installer/ffmpeg';
 import { unlink } from 'fs/promises';
@@ -8,7 +7,7 @@ import fs from 'fs';
 import signale from "signale";
 
 export class VoiceService implements IVoiceService {
-    constructor(private readonly loggerService: ILogger) {
+    constructor() {
         ffmpeg.setFfmpegPath(installer.path);
 
         try {

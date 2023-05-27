@@ -1,15 +1,13 @@
-import { IConversation } from "../database/models/conversation.model";
 import { ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { IDatabase } from "../database/database.interface";
 import { IOpenAI } from "../openai/openai.interface";
-import { ILogger } from "../logger/logger.interface";
 import { Telegraf, Context, Markup } from 'telegraf';
 import { message } from 'telegraf/filters';
 import { Event } from "./event.class";
 import signale from "signale";
 
 export class TextMessage extends Event {
-    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly openaiService: IOpenAI, private readonly loggerService: ILogger) {
+    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly openaiService: IOpenAI) {
         super(bot);
     }
 

@@ -4,14 +4,13 @@ import { IDatabase } from "../database/database.interface";
 import { IVoiceService } from "../voice/voice.interface";
 import { Telegraf, Context, Markup } from 'telegraf';
 import { IOpenAI } from "../openai/openai.interface";
-import { ILogger } from "../logger/logger.interface";
 import { message } from 'telegraf/filters';
 import { Event } from "./event.class";
 import { Md5 } from 'ts-md5';
 import signale from "signale";
 
 export class VoiceMessage extends Event {
-    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly openaiService: IOpenAI, private readonly loggerService: ILogger, private readonly voiceService: IVoiceService) {
+    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly openaiService: IOpenAI, private readonly voiceService: IVoiceService) {
         super(bot);
     }
 

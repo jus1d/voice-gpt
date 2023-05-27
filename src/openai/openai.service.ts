@@ -1,5 +1,4 @@
 import { IMessage } from "../../src/database/models/conversation.model";
-import { ILogger } from "../logger/logger.interface";
 import { Configuration, OpenAIApi } from "openai";
 import { IOpenAI } from "./openai.interface";
 import fs from 'fs';
@@ -15,7 +14,7 @@ export class OpenAI implements IOpenAI {
         system: 'system'
     }
 
-    constructor(apiKey: string, private readonly voiceService: IVoiceService, private readonly loggerService: ILogger) {
+    constructor(apiKey: string, private readonly voiceService: IVoiceService) {
         const configuration = new Configuration({
             apiKey,
         });

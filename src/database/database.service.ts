@@ -1,7 +1,6 @@
 import { ConversationModel, IConversation, IMessage } from "./models/conversation.model";
 import { IConfigService } from "../config/config.interface";
 import { UserModel, IUser } from "./models/user.model";
-import { ILogger } from "../logger/logger.interface";
 import { IDatabase } from "./database.interface";
 import mongoose from 'mongoose';
 import signale from "signale";
@@ -19,7 +18,7 @@ export class DatabaseService implements IDatabase {
         user: 'user'
     }
 
-    constructor(private readonly configService: IConfigService, private readonly loggerService: ILogger) { }
+    constructor(private readonly configService: IConfigService) { }
 
     async init(): Promise<void> {
         try {

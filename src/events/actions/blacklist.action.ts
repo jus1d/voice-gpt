@@ -1,13 +1,13 @@
 import { IDatabase } from "../../database/database.interface";
 import { IUser } from "../../database/models/user.model";
-import { ILogger } from "../../logger/logger.interface";
 import { IUtils } from "../../utils/utils.interface";
 import { Telegraf, Context } from "telegraf";
 import { Event } from "../event.class";
 import { Message } from 'typegram';
+import signale from "signale";
 
 export class BlacklistAction extends Event {
-    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly loggerService: ILogger, private readonly utilsService: IUtils) {
+    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly utilsService: IUtils) {
         super(bot);
     }
 
@@ -40,7 +40,7 @@ export class BlacklistAction extends Event {
                 });
                 await this.databaseService.setRequestedStatus(userId, false);
             }
-            this.loggerService.info(`User @${username} [${userId}] was blacklisted`, true);
+            signale.success(`User @${username} [${userId}] was blacklisted`);
         });
     }
 }

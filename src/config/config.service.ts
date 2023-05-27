@@ -1,5 +1,4 @@
 import { IConfigService } from './config.interface';
-import signale from 'signale';
 import config from 'config';
 
 export class ConfigService implements IConfigService {

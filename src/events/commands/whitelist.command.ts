@@ -1,11 +1,11 @@
 import { IDatabase } from "../../database/database.interface";
-import { ILogger } from "../../logger/logger.interface";
 import { IUtils } from "../../utils/utils.interface";
 import { Context, Telegraf } from "telegraf";
 import { Event } from "../event.class";
+import signale from "signale";
 
 export class WhitelistCommand extends Event {
-    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly loggerService: ILogger, private readonly utilsService: IUtils) {
+    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly utilsService: IUtils) {
         super(bot);
     }
 
@@ -32,7 +32,8 @@ export class WhitelistCommand extends Event {
                 await ctx.reply('<b>🚨 Error while getting whitelisted users</b>', {
                     parse_mode: 'HTML'
                 });
-                this.loggerService.error(`Error while getting whitelisted users\n${error}`, true);
+                signale.error('Error while getting whitelisted users');
+                signale.fatal(error);
             }
         });
     }

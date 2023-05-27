@@ -21,14 +21,12 @@ import { NoneAction } from "./events/actions/none.action";
 import { PlugAction } from "./events/actions/plug.action";
 import { IdCommand } from "./events/commands/id.command";
 import { ConfigService } from "./config/config.service";
-import { LoggerService } from "./logger/logger.service";
 import { IVoiceService } from "./voice/voice.interface";
 import { VoiceMessage } from "./events/voice.message";
 import { VoiceService } from "./voice/voice.service";
 import { UtilsService } from "./utils/utils.service";
 import { TextMessage } from "./events/text.message";
 import { IOpenAI } from "./openai/openai.interface";
-import { ILogger } from "./logger/logger.interface";
 import { OpenAI } from "./openai/openai.service";
 import { IUtils } from "./utils/utils.interface";
 import { Event } from "./events/event.class";
@@ -50,7 +48,6 @@ class Bot {
         private readonly configService: IConfigService,
         private readonly databaseService: IDatabase,
         private readonly openaiService: IOpenAI,
-        private readonly loggerService: ILogger,
         private readonly voiceService: IVoiceService,
         private readonly utilsService: IUtils
     ) {
@@ -63,27 +60,27 @@ class Bot {
 
         await this.databaseService.init();
         this.events = [
-            new StartCommand(this.bot, this.databaseService, this.loggerService, this.configService, this.utilsService),
+            new StartCommand(this.bot, this.databaseService, this.configService, this.utilsService),
             new IdCommand(this.bot),
             new AboutCommand(this.bot),
-            new NewCommand(this.bot, this.databaseService, this.loggerService),
+            new NewCommand(this.bot, this.databaseService,),
             new ManageCommand(this.bot, this.databaseService, this.utilsService),
-            new UsersCommand(this.bot, this.databaseService, this.loggerService, this.utilsService),
-            new WhitelistCommand(this.bot, this.databaseService, this.loggerService, this.utilsService),
+            new UsersCommand(this.bot, this.databaseService, this.utilsService),
+            new WhitelistCommand(this.bot, this.databaseService, this.utilsService),
             new ConversationCommand(this.bot, this.databaseService, this.openaiService),
             new ConversationAction(this.bot, this.databaseService),
             new BackToUsersAction(this.bot, this.databaseService, this.utilsService),
-            new BlacklistAction(this.bot, this.databaseService, this.loggerService, this.utilsService),
-            new LimitedAction(this.bot, this.databaseService, this.loggerService, this.utilsService),
-            new NoneAction(this.bot, this.databaseService, this.loggerService, this.utilsService),
+            new BlacklistAction(this.bot, this.databaseService, this.utilsService),
+            new LimitedAction(this.bot, this.databaseService, this.utilsService),
+            new NoneAction(this.bot, this.databaseService, this.utilsService),
             new PlugAction(this.bot),
-            new RequestAccessAction(this.bot, this.databaseService, this.configService, this.loggerService),
-            new ResetFreeRequestsAction(this.bot, this.databaseService, this.loggerService, this.utilsService),
+            new RequestAccessAction(this.bot, this.databaseService, this.configService),
+            new ResetFreeRequestsAction(this.bot, this.databaseService, this.utilsService),
             new UpdateStatsAction(this.bot, this.databaseService, this.utilsService),
-            new WhitelistAction(this.bot, this.databaseService, this.loggerService, this.utilsService),
+            new WhitelistAction(this.bot, this.databaseService, this.utilsService),
             new ManageAction(this.bot, this.databaseService, this.utilsService),
-            new TextMessage(this.bot, this.databaseService, this.openaiService, this.loggerService),
-            new VoiceMessage(this.bot, this.databaseService, this.openaiService, this.loggerService, this.voiceService),
+            new TextMessage(this.bot, this.databaseService, this.openaiService),
+            new VoiceMessage(this.bot, this.databaseService, this.openaiService, this.voiceService),
         ];
         for (const event of this.events) {
             event.handle();
@@ -119,12 +116,11 @@ class Bot {
 console.clear();
 
 const configService = new ConfigService();
-const loggerService = new LoggerService();
-const databaseService = new DatabaseService(configService, loggerService);
+const databaseService = new DatabaseService(configService);
 const utilsService = new UtilsService(databaseService);
-const voiceService = new VoiceService(loggerService);
-const openaiService = new OpenAI(configService.get('openai_token'), voiceService, loggerService);
+const voiceService = new VoiceService();
+const openaiService = new OpenAI(configService.get('openai_token'), voiceService);
 
-const bot = new Bot(configService, databaseService, openaiService, loggerService, voiceService, utilsService);
+const bot = new Bot(configService, databaseService, openaiService, voiceService, utilsService);
 
 bot.init();
