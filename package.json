@@ -1,7 +1,7 @@
 {
   "name": "voice-gpt",
   "version": "3.3.2",
-  "description": "VoiceGPT - telegram-based interface to interact with ChatGPT. You can communicate with GPT via text and voice messages",
+  "description": "VoiceGPT - telegram-based interface to interact with ChatGPT easier. You can communicate with GPT via text and voice messages",
   "main": "index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=production ts-node ./src/app.ts",

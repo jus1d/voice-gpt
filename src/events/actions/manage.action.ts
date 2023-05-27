@@ -16,14 +16,8 @@ export class ManageAction extends Event {
             const user = await this.databaseService.getUser(Number(userId));
             if (!user) return;
 
-            let messageTextWithHTML = 
-                `<b>User @${user?.username} [<code>${user?.telegramId}</code>] stats:</b>\n\n` + 
-                `<b>Listed:</b> <code>${user?.list}</code>\n` + 
-                `<b>Total requests:</b> <code>${user?.requests}</code>`;
-
-            if (user?.list === this.databaseService.list.limited) messageTextWithHTML += `\n<b>Free requests:</b> <code>${user?.freeRequests}</code>`;
-            if (user?.role === this.databaseService.roles.admin) messageTextWithHTML += `\n\n<b>Role:</b> <code>${user.role}</code>`;
-
+            const messageTextWithHTML = await this.utilsService.getUserStatsText(Number(user.telegramId));
+            
             ctx.editMessageText(messageTextWithHTML, {
                 parse_mode: 'HTML',
                 reply_markup: {

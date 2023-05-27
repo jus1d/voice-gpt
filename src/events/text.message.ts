@@ -17,10 +17,12 @@ export class TextMessage extends Event {
         this.bot.on(message('text'), async (ctx) => {
             const user = await this.databaseService.getUser(ctx.message.from.id);
             if (!user) {
-                return await ctx.reply('Please use /start command to start the bot');
+                return await ctx.reply('<b>Please use /start command to start the bot</b>', {
+                    parse_mode: 'HTML'
+                });
             }
 
-            let conversation: IConversation | null  = await this.databaseService.getConversation(ctx.message.from.id);
+            let conversation = await this.databaseService.getConversation(ctx.message.from.id);
             if (!conversation) {
                 await this.databaseService.initConversation(ctx.message.from.id);
             }
@@ -29,27 +31,38 @@ export class TextMessage extends Event {
             if (!conversation) return;
 
             if (user.list === this.databaseService.list.limited) {
-                if (user.freeRequests === 0) return ctx.reply('Your free requests are over\n\nClick below to send whitelist request to admins', Markup.inlineKeyboard([
-                    Markup.button.callback("Request", "request_access")
-                ]));
+                if (user.freeRequests === 0) return ctx.reply('<b>Your free requests are over</b>\n\nClick below to send whitelist request to admins', {
+                    parse_mode: 'HTML',
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: 'Request', callback_data: 'request_access' }]
+                        ]
+                    }
+                });
             } else if (user.list !== this.databaseService.list.white) {
                 this.loggerService.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] request rejected. User not whitelisted`, true);
-                return ctx.reply(`You are not whitelisted yet. Sorry!\n\n` + 
-                    `👇 Click below to send whitelist request to admins`, 
-                    Markup.inlineKeyboard([
-                        Markup.button.callback("Request", "request_access")
-                    ]));
+                return ctx.reply(`<b>You are not whitelisted yet. Sorry!</b>\n\n` + 
+                    `👇 Click below to send whitelist request to admins`, {
+                        parse_mode: 'HTML',
+                        reply_markup: {
+                            inline_keyboard: [
+                                [{ text: 'Request', callback_data: 'request_access' }]
+                            ]
+                        }
+                    });
             }
 
             this.loggerService.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] request created from text message`, true);
 
             try {
-                const message = await ctx.reply(code('Already processing your request, wait a bit'));
-                await ctx.telegram.sendChatAction(ctx.chat.id, 'typing');
+                const message = await ctx.reply('<code>Already processing your request, wait a bit</code>', { parse_mode: 'HTML'});
+                ctx.telegram.sendChatAction(ctx.chat.id, 'typing');
                     
                 conversation.messages.push({ role: ChatCompletionRequestMessageRoleEnum.User, content: ctx.message.text });
                 const gptResponse = await this.openaiService.chat(conversation.messages);
-                if (!gptResponse) return ctx.reply('🚨 No response from ChatGPT. Try again later or use /new to create new conversation.');
+                if (!gptResponse) return ctx.reply('<b>🚨 No response from ChatGPT.</b> Try again later or use /new to create new conversation.', { 
+                    parse_mode: 'HTML' 
+                });
 
                 if (gptResponse.content) {
                     conversation.messages.push({ role: ChatCompletionRequestMessageRoleEnum.Assistant, content: gptResponse.content });
@@ -61,11 +74,15 @@ export class TextMessage extends Event {
                     ctx.reply(gptResponse.content);
                 } else {
                     ctx.telegram.deleteMessage(ctx.message.from.id, message.message_id);
-                    ctx.reply('🚨 No response from ChatGPT. Try again later or use /new to create new conversation.');
+                    ctx.reply('<b>🚨 No response from ChatGPT.</b> Try again later or use /new to create new conversation.', { 
+                        parse_mode: 'HTML' 
+                    });
                 }
             } catch (error) {
                 this.loggerService.error(`Error with creating request. User: @${ctx.message.from.username} [${ctx.message.from.id}]\n${error}`, true);
-                ctx.reply('🚨 There was an error in your query. Please try again later');
+                ctx.reply('<b>🚨 There was an error in your query.</b> Please try again later', {
+                    parse_mode: 'HTML'
+                });
             }
         });
     }

@@ -11,7 +11,7 @@ export class AboutCommand extends Event {
 
     handle(): void {
         this.bot.command('about', async (ctx) => {
-            ctx.replyWithHTML(`<b>About VoiceGPT:\n\n</b>` + 
+            ctx.replyWithHTML(`<b>VoiceGPT - telegram-based interface to interact with ChatGPT easier</b>\n\n` + 
                 `<b>Version:</b> ${this.packageFile.version}\n` + 
                 `<b>Developer, admin:</b> @jus1d\n` + 
                 `<b>Contact email:</b> mejus1d@gmail.com`);
