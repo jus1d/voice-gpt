@@ -24,8 +24,9 @@ export class DatabaseService implements IDatabase {
         await mongoose.connect(this.configService.get('mongo_uri'));
         this.loggerService.info('Connection to MongoDB established', true);
     }
-    async saveUser(telegramId: number, username: string, fullname: string): Promise<boolean> {
+    async saveUser(telegramId: number | string, username: string, fullname: string): Promise<boolean> {
         try {
+            telegramId = String(telegramId);
             await new UserModel({
                 telegramId,
                 username: username || '',
@@ -38,18 +39,20 @@ export class DatabaseService implements IDatabase {
             return false;
         }
     }
-    async getUser(telegramId: number): Promise<IUser | null> {
+    async getUser(telegramId: number | string): Promise<IUser | null> {
         try {
-            const user: IUser | null = await UserModel.findOne({ telegramId: String(telegramId) });
+            telegramId = String(telegramId);
+            const user: IUser | null = await UserModel.findOne({ telegramId });
             return user;
         } catch (error) {
             this.loggerService.error(`Error with getting user`, true);
             return null;
         }
     }
-    async incrementRequestsCounter(telegramId: number): Promise<boolean> {
+    async incrementRequestsCounter(telegramId: number | string): Promise<boolean> {
         try {
-            const user: IUser | null = await UserModel.findOne({ telegramId: String(telegramId) });
+            telegramId = String(telegramId);
+            const user: IUser | null = await UserModel.findOne({ telegramId });
             if (!user) return false;
 
             user.requests = user.requests + 1;
@@ -61,64 +64,69 @@ export class DatabaseService implements IDatabase {
             return false;
         }
     }
-    async decreaseFreeRequests(telegramId: number): Promise<boolean> {
+    async decreaseFreeRequests(telegramId: number | string): Promise<boolean> {
         try {
-            const user = await UserModel.findOne({ telegramId: String(telegramId) });
+            telegramId = String(telegramId);
+            const user = await UserModel.findOne({ telegramId });
             if (!user) return false;
 
             if (user.freeRequests !== 0) {
                 user.freeRequests = user.freeRequests - 1;
             }
-            await UserModel.updateOne({ telegramId: String(telegramId) }, user);
+            await UserModel.updateOne({ telegramId }, user);
             return true;
         } catch (error) {
             this.loggerService.error('Error while decreasing free requests counter', true);
             return false;
         }
     }
-    async setFreeRequests(telegramId: number, amount: number): Promise<boolean> {
+    async setFreeRequests(telegramId: number | string, amount: number): Promise<boolean> {
         try {
-            const user = await UserModel.findOne({ telegramId: String(telegramId) });
+            telegramId = String(telegramId);
+            const user = await UserModel.findOne({ telegramId });
             if (!user) return false;
 
             user.freeRequests = amount;
-            await UserModel.updateOne({ telegramId: String(telegramId) }, user);
+            await UserModel.updateOne({ telegramId }, user);
             return true;
         } catch (error) {
             this.loggerService.error('Error while setting free requests', true);
             return false;
         }
     }
-    async setUserList(telegramId: number, list: string): Promise<boolean> {
+    async setUserList(telegramId: number | string, list: string): Promise<boolean> {
         try {
-            const user = await UserModel.findOne({ telegramId: String(telegramId) });
+            telegramId = String(telegramId);
+            const user = await UserModel.findOne({ telegramId });
             if (!user) return false;
             
             user.list = list;
             
-            await UserModel.updateOne({ telegramId: String(telegramId) }, user);
+            await UserModel.updateOne({ telegramId }, user);
             return true;
         } catch (error) {
             this.loggerService.error(`Error while updating user's list`, true);
             return false;
         }
     }
-    async setRequestedStatus(telegramId: number, isRequested: boolean): Promise<boolean> {
+    async setRequestedStatus(telegramId: number | string, isRequested: boolean): Promise<boolean> {
         try {
-            const user = await UserModel.findOne({ telegramId: String(telegramId) });
+            telegramId = String(telegramId);
+            const user = await UserModel.findOne({ telegramId });
             if (!user) return false;
 
             user.requested = isRequested;
 
-            await UserModel.updateOne({ telegramId: String(telegramId) }, user);
+            await UserModel.updateOne({ telegramId }, user);
             return true;
         } catch (error) {
             this.loggerService.error('Error while updating requested status', true);
             return false;
         }
     }
-    async initConversation(telegramId: number): Promise<boolean> {
+    async initConversation(telegramId: number | string): Promise<boolean> {
         try {
+            telegramId = String(telegramId);
             const conversation = this.getConversation(telegramId);
             if (!conversation) {
                 await this.saveConversation(telegramId, []);
@@ -129,12 +137,13 @@ export class DatabaseService implements IDatabase {
             return false;
         }
     }
-    async saveConversation(telegramId: number, messages: IMessage[]): Promise<boolean> {
+    async saveConversation(telegramId: number | string, messages: IMessage[]): Promise<boolean> {
         try {
+            telegramId = String(telegramId);
             const user = await this.getUser(telegramId);
             await new ConversationModel({
-                messages, 
-                telegramId: String(telegramId),
+                messages,
+                telegramId,
                 username: user?.username || ''
             }).save();
             return true;
@@ -143,13 +152,14 @@ export class DatabaseService implements IDatabase {
             return false;
         }
     }
-    async updateConversation(telegramId: number, messages: IMessage[]): Promise<boolean> {
+    async updateConversation(telegramId: number | string, messages: IMessage[]): Promise<boolean> {
         try {
+            telegramId = String(telegramId);
             const conversation: IConversation | null = await this.getConversation(telegramId);
             if (!conversation) return false;
             conversation.messages = messages;
 
-            await ConversationModel.updateOne({ telegramId: String(telegramId) }, conversation);
+            await ConversationModel.updateOne({ telegramId }, conversation);
     
             return true;
         } catch (error) {
@@ -157,9 +167,10 @@ export class DatabaseService implements IDatabase {
             return false;
         }
     }
-    async getConversation(telegramId: number): Promise<IConversation | null> {
+    async getConversation(telegramId: number | string): Promise<IConversation | null> {
         try {
-            const conversation: IConversation | null = await ConversationModel.findOne({ telegramId: String(telegramId) });
+            telegramId = String(telegramId);
+            const conversation: IConversation | null = await ConversationModel.findOne({ telegramId });
             if (!conversation) return null;
             return conversation;
         } catch (error) {
@@ -167,7 +178,7 @@ export class DatabaseService implements IDatabase {
             return null;
         }
     }
-    async getOrInitConversation(telegramId: number): Promise<IConversation | null> {
+    async getOrInitConversation(telegramId: number | string): Promise<IConversation | null> {
         try {
             let conversation = await this.getConversation(telegramId);
             if (!conversation) {
@@ -208,7 +219,7 @@ export class DatabaseService implements IDatabase {
             return [];
         }
     }
-    async isAdmin(telegramId: number): Promise<boolean> {
+    async isAdmin(telegramId: number | string): Promise<boolean> {
         const user = await this.getUser(telegramId);
         if (!user) return false;
 
