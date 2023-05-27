@@ -18,19 +18,19 @@ export interface IDatabase {
     list: IList;
     roles: IRoles;
     init(): Promise<void>;
-    saveUser(telegramId: number, username: string, fullname: string): Promise<boolean>;
-    getUser(telegramId: number): Promise<IUser | null>;
-    incrementRequestsCounter(telegramId: number): Promise<boolean>;
-    decreaseFreeRequests(telegramId: number): Promise<boolean>;
-    setFreeRequests(telegramId: number, amount: number): Promise<boolean>;
-    setUserList(telegramId: number, list: string): Promise<boolean>;
-    setRequestedStatus(telegramId: number, isRequested: boolean): Promise<boolean>;
-    initConversation(telegramId: number): Promise<boolean>;
-    saveConversation(telegramId: number, messages: Array<IMessage>): Promise<boolean>;
-    updateConversation(telegramId: number, messages: Array<IMessage>): Promise<boolean>;
-    getConversation(telegramId: number): Promise<IConversation | null>;
-    getOrInitConversation(telegramId: number): Promise<IConversation | null>;
+    saveUser(telegramId: number | string, username: string, fullname: string): Promise<boolean>;
+    getUser(telegramId: number | string): Promise<IUser | null>;
+    incrementRequestsCounter(telegramId: number | string): Promise<boolean>;
+    decreaseFreeRequests(telegramId: number | string): Promise<boolean>;
+    setFreeRequests(telegramId: number | string, amount: number): Promise<boolean>;
+    setUserList(telegramId: number | string, list: string): Promise<boolean>;
+    setRequestedStatus(telegramId: number | string, isRequested: boolean): Promise<boolean>;
+    initConversation(telegramId: number | string): Promise<boolean>;
+    saveConversation(telegramId: number | string, messages: Array<IMessage>): Promise<boolean>;
+    updateConversation(telegramId: number | string, messages: Array<IMessage>): Promise<boolean>;
+    getConversation(telegramId: number | string): Promise<IConversation | null>;
+    getOrInitConversation(telegramId: number | string): Promise<IConversation | null>;
     getWhitelistedUsers(): Promise<IUser[]>;
     getAllUsers(): Promise<IUser[]>
-    isAdmin(telegramId: number): Promise<boolean>;
+    isAdmin(telegramId: number | string): Promise<boolean>;
 }

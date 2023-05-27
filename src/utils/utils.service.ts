@@ -5,7 +5,7 @@ import { IUtils, IButton } from "./utils.interface";
 export class UtilsService implements IUtils {
     constructor(private readonly databaseService: IDatabase) {}
 
-    async getUserStatsText(telegramId: number): Promise<string> {
+    async getUserStatsText(telegramId: number | string): Promise<string> {
         const user = await this.databaseService.getUser(telegramId);
         if (!user) return `<b>No user with ID: <code>${telegramId}</code></b>`;
 
