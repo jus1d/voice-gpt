@@ -17,7 +17,7 @@ export class UpdateStatsAction extends Event {
             const isAdmin = await this.databaseService.isAdmin(ctx.from.id);
             if (!isAdmin) return;
 
-            const userId = Number((ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[2].replace('[', '').replace(']', ''));
+            const userId = (ctx.update.callback_query.message as Message.TextMessage).text.split(' ')[2].replace('[', '').replace(']', '');
 
             const user: IUser | null = await this.databaseService.getUser(userId);
             if (!user) return;

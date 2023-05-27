@@ -13,10 +13,10 @@ export class ManageAction extends Event {
             const callback = ctx.match.input;
             const userId = callback.split(':')[1];
 
-            const user = await this.databaseService.getUser(Number(userId));
+            const user = await this.databaseService.getUser(userId);
             if (!user) return;
 
-            const messageTextWithHTML = await this.utilsService.getUserStatsText(Number(user.telegramId));
+            const messageTextWithHTML = await this.utilsService.getUserStatsText(user.telegramId);
             
             ctx.editMessageText(messageTextWithHTML, {
                 parse_mode: 'HTML',
