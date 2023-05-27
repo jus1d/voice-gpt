@@ -1,9 +1,10 @@
 import { ConversationModel, IConversation, IMessage } from "./models/conversation.model";
+import { IConfigService } from "../config/config.interface";
 import { UserModel, IUser } from "./models/user.model";
+import { ILogger } from "../logger/logger.interface";
 import { IDatabase } from "./database.interface";
 import mongoose from 'mongoose';
-import { IConfigService } from "../config/config.interface";
-import { ILogger } from "../logger/logger.interface";
+import signale from "signale";
 
 export class DatabaseService implements IDatabase {
     list = {
@@ -21,8 +22,12 @@ export class DatabaseService implements IDatabase {
     constructor(private readonly configService: IConfigService, private readonly loggerService: ILogger) { }
 
     async init(): Promise<void> {
-        await mongoose.connect(this.configService.get('mongo_uri'));
-        this.loggerService.info('Connection to MongoDB established', true);
+        try {
+            await mongoose.connect(this.configService.get('mongo_uri'));
+            signale.info(`Connection to MongoDB established`);
+        } catch (error) {
+            signale.fatal(new Error('Error with connection to MongoDB'));
+        }
     }
     async saveUser(telegramId: number | string, username: string, fullname: string): Promise<boolean> {
         try {
@@ -33,9 +38,11 @@ export class DatabaseService implements IDatabase {
                 fullname: fullname || username || '',
                 role: 'user',
             }).save();
+            signale.success(`User @${username} [${telegramId}] saved to database`);
             return true;
         } catch (error) {
-            this.loggerService.error(`Error while creating new user in database`, true);
+            signale.error(`Error while creating new user in database. ID: ${telegramId}, username: @${username}`);
+            signale.fatal(error);
             return false;
         }
     }
@@ -45,7 +52,8 @@ export class DatabaseService implements IDatabase {
             const user: IUser | null = await UserModel.findOne({ telegramId });
             return user;
         } catch (error) {
-            this.loggerService.error(`Error with getting user`, true);
+            signale.error(`Error while getting user. ID: ${telegramId}`);
+            signale.fatal(error);
             return null;
         }
     }
@@ -60,7 +68,8 @@ export class DatabaseService implements IDatabase {
             await UserModel.updateOne({ telegramId: String(telegramId) }, user);
             return true;
         } catch (error) {
-            this.loggerService.error(`Error while updating request counter`, true);
+            signale.error(`Error while updating user's requests counter. ID: ${telegramId}`);
+            signale.fatal(error);
             return false;
         }
     }
@@ -76,7 +85,8 @@ export class DatabaseService implements IDatabase {
             await UserModel.updateOne({ telegramId }, user);
             return true;
         } catch (error) {
-            this.loggerService.error('Error while decreasing free requests counter', true);
+            signale.error(`Error while decreasing user's free requests counter. ID: ${telegramId}`);
+            signale.fatal(error);
             return false;
         }
     }
@@ -90,7 +100,8 @@ export class DatabaseService implements IDatabase {
             await UserModel.updateOne({ telegramId }, user);
             return true;
         } catch (error) {
-            this.loggerService.error('Error while setting free requests', true);
+            signale.error(`Error while granting free requests for user with ID: ${telegramId}`);
+            signale.fatal(error);
             return false;
         }
     }
@@ -105,7 +116,8 @@ export class DatabaseService implements IDatabase {
             await UserModel.updateOne({ telegramId }, user);
             return true;
         } catch (error) {
-            this.loggerService.error(`Error while updating user's list`, true);
+            signale.error(`Error while updating user's list. ID: ${telegramId}`);
+            signale.fatal(error);
             return false;
         }
     }
@@ -120,7 +132,8 @@ export class DatabaseService implements IDatabase {
             await UserModel.updateOne({ telegramId }, user);
             return true;
         } catch (error) {
-            this.loggerService.error('Error while updating requested status', true);
+            signale.error(`Error while updating requested status for user with ID: ${telegramId}`);
+            signale.fatal(error);
             return false;
         }
     }
@@ -131,9 +144,11 @@ export class DatabaseService implements IDatabase {
             if (!conversation) {
                 await this.saveConversation(telegramId, []);
             }
+            signale.success(`New conversation created for user with ID: ${telegramId}`);
             return true;
         } catch (error) {
-            this.loggerService.error(`Error whilr creating new conversation`, true);
+            signale.error(`Error while creating new conversation. ID: ${telegramId}`);
+            signale.fatal(error);
             return false;
         }
     }
@@ -148,7 +163,8 @@ export class DatabaseService implements IDatabase {
             }).save();
             return true;
         } catch (error) {
-            this.loggerService.error(`Error while saving conversation`, true);
+            signale.error(`Error while saving conversation. ID: ${telegramId}`);
+            signale.fatal(error);
             return false;
         }
     }
@@ -163,7 +179,8 @@ export class DatabaseService implements IDatabase {
     
             return true;
         } catch (error) {
-            this.loggerService.error(`Error while updating conversation`, true);
+            signale.error(`Error while updating conversation. ID: ${telegramId}`);
+            signale.fatal(error);
             return false;
         }
     }
@@ -174,7 +191,8 @@ export class DatabaseService implements IDatabase {
             if (!conversation) return null;
             return conversation;
         } catch (error) {
-            this.loggerService.error(`Error while getting conversation`, true);
+            signale.error(`Error with getting user's conversation. ID: ${telegramId}`);
+            signale.fatal(error);
             return null;
         }
     }
@@ -187,7 +205,8 @@ export class DatabaseService implements IDatabase {
             }
             return conversation;
         } catch (error) {
-            this.loggerService.error('Error while getting/creating conversation', true);
+            signale.error(`Error while getting/creating conversation. ID: ${telegramId}`);
+            signale.fatal(error);
             return null;
         }
     }
@@ -206,7 +225,8 @@ export class DatabaseService implements IDatabase {
             }
             return users;
         } catch (error) {
-            this.loggerService.error(`Error while getting whitelist`, true);
+            signale.error(`Error while getting whitelisted users`);
+            signale.fatal(error);
             return [];
         }
     }
@@ -215,7 +235,8 @@ export class DatabaseService implements IDatabase {
             const users: Array<IUser> = await UserModel.find({});
             return users;
         } catch (error) {
-            this.loggerService.error('Error while getting all users', true);
+            signale.error(`Error while getting all users`);
+            signale.fatal(error);
             return [];
         }
     }

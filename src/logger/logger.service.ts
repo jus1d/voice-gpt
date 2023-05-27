@@ -1,6 +1,7 @@
 import { ILogger } from "./logger.interface";
 import dateFormat from 'dateformat';
 import config from 'config';
+import signale from 'signale';
 import fs from 'fs';
 
 const start_symbol = '❯';

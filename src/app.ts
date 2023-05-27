@@ -33,7 +33,14 @@ import { OpenAI } from "./openai/openai.service";
 import { IUtils } from "./utils/utils.interface";
 import { Event } from "./events/event.class";
 import { Telegraf, Context } from "telegraf";
+import signale from "signale";
 import fs from 'fs';
+
+signale.config({
+    displayTimestamp: true,
+    displayDate: false,
+    displayFilename: false,
+});
 
 class Bot {
     bot: Telegraf<Context>;
@@ -82,7 +89,8 @@ class Bot {
             event.handle();
         }
         this.bot.launch();
-        this.loggerService.start(TYPE, packageFile.version);
+        signale.info(`VoiceGPT:${TYPE} v${packageFile.version} just started`);
+        // this.loggerService.start(TYPE, packageFile.version);
         
         if (TYPE === 'prod') {
             this.bot.telegram.sendMessage(
@@ -96,7 +104,8 @@ class Bot {
                 parse_mode: 'HTML'
             });
             this.bot.stop('SIGINT');
-            this.loggerService.info('Bot stopped: SIGINT', false);
+            signale.warn('Bot stopped: SIGINT');
+            //this.loggerService.info('Bot stopped: SIGINT', false);
         });
 
         process.once('SIGTERM', () => {
@@ -104,7 +113,8 @@ class Bot {
                 parse_mode: 'HTML'
             });
             this.bot.stop('SIGTERM');
-            this.loggerService.info('Bot stopped: SIGTERM', false);
+            signale.warn('Bot stopped: SIGTERM');
+            // this.loggerService.info('Bot stopped: SIGTERM', false);
         });
     }
 }
