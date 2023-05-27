@@ -90,7 +90,6 @@ class Bot {
         }
         this.bot.launch();
         signale.info(`VoiceGPT:${TYPE} v${packageFile.version} just started`);
-        // this.loggerService.start(TYPE, packageFile.version);
         
         if (TYPE === 'prod') {
             this.bot.telegram.sendMessage(
@@ -105,7 +104,6 @@ class Bot {
             });
             this.bot.stop('SIGINT');
             signale.warn('Bot stopped: SIGINT');
-            //this.loggerService.info('Bot stopped: SIGINT', false);
         });
 
         process.once('SIGTERM', () => {
@@ -114,7 +112,6 @@ class Bot {
             });
             this.bot.stop('SIGTERM');
             signale.warn('Bot stopped: SIGTERM');
-            // this.loggerService.info('Bot stopped: SIGTERM', false);
         });
     }
 }
