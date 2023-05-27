@@ -1,29 +1,31 @@
-import { ILogger } from "../logger/logger.interface";
 import { IVoiceService } from "./voice.interface";
 import installer from '@ffmpeg-installer/ffmpeg';
 import { unlink } from 'fs/promises';
 import ffmpeg from 'fluent-ffmpeg';
 import axios from "axios";
 import fs from 'fs';
+import signale from "signale";
 
 export class VoiceService implements IVoiceService {
-    constructor(private readonly loggerService: ILogger) {
+    constructor() {
         ffmpeg.setFfmpegPath(installer.path);
 
         try {
             if (!fs.existsSync('./voices')) {
                 fs.mkdirSync('./voices', );
-                this.loggerService.info('./voices directory created', true);
+                signale.success(`Voices (./voices) directory created`);
             }
         } catch (error) {
-            this.loggerService.error('Error while creating ./voices directory', true);
+            signale.error('Error with creating ./voices directory');
+            signale.fatal(error);
         }
     }
     async removeFile(path: string): Promise<void> {
         try {
             await unlink(path);
         } catch (error) {
-            console.log('Error with file remove');
+            signale.error(`Error with file remove: ${path}`);
+            signale.fatal(error);
         }
     }
     async downloadOggFile(downloadLink: string, name: string): Promise<void> {
@@ -51,7 +53,8 @@ export class VoiceService implements IVoiceService {
                     this.removeFile(`./voices/${name}.ogg`);
                 })
                 .on('error', (error) => {
-                    console.log(`Error with converting ${name}.ogg file to MP3 format: ${error.message}`);
+                    signale.error(`Error with converting ${name}.ogg file to MP3 format`);
+                    signale.fatal(error);
                     reject(error);
                 }).run();
         });

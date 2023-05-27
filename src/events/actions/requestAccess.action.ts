@@ -1,11 +1,11 @@
 import { IConfigService } from "../../config/config.interface";
 import { IDatabase } from "../../database/database.interface";
-import { ILogger } from "../../logger/logger.interface";
 import { Telegraf, Context } from "telegraf";
 import { Event } from "../event.class";
+import signale from "signale";
 
 export class RequestAccessAction extends Event {
-    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly configService: IConfigService, private readonly loggerService: ILogger) {
+    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly configService: IConfigService) {
         super(bot);
     }
 
@@ -17,10 +17,10 @@ export class RequestAccessAction extends Event {
 
             const userList = (await this.databaseService.getUser(ctx.from.id))?.list;
             if (userList === this.databaseService.list.black) {
-                return this.loggerService.info(`User's @${ctx.from.username} [${ctx.from.id}] request was auto-rejected`, true);
+                return signale.info(`User's @${ctx.from.username} [${ctx.from.id}] request was auto-rejected`);
             }
             
-            this.loggerService.info(`User @${ctx.from.username} [${ctx.from.id}] requested a whitelist slot`, true);
+            signale.info(`User @${ctx.from.username} [${ctx.from.id}] requested a whitelist slot`);
 
             ctx.telegram.sendMessage(this.configService.get('admin_tg_id'), `<b>User @${ctx.from.username} [<code>${ctx.from.id}</code>] requested a whitelist slot</b>`, {
                 parse_mode: 'HTML',

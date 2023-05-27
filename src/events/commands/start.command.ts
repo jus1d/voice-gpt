@@ -1,12 +1,12 @@
 import { IDatabase } from "../../database/database.interface";
-import { ILogger } from "../../logger/logger.interface";
 import { Telegraf, Context } from 'telegraf';
 import { Event } from "../event.class";
 import { IConfigService } from "../../config/config.interface";
 import { IUtils } from "../../utils/utils.interface";
+import signale from "signale";
 
 export class StartCommand extends Event {
-    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly loggerService: ILogger, private readonly configService: IConfigService, private readonly utilsService: IUtils) {
+    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly configService: IConfigService, private readonly utilsService: IUtils) {
         super(bot);
     }
 
@@ -33,7 +33,7 @@ export class StartCommand extends Event {
                     }
                 });
 
-                this.loggerService.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] started the bot`, true);
+                signale.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] started the bot`);
             } else {
                 let startMessage = '';
                 if (user.list === 'limited') {
@@ -54,7 +54,7 @@ export class StartCommand extends Event {
                 if (!user) return;
 
                 await ctx.replyWithHTML(startMessage);
-                this.loggerService.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] restarted the bot`, true);
+                signale.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] restarted the bot`);
             }
             this.databaseService.initConversation(ctx.message.from.id);
         });

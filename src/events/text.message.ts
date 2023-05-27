@@ -1,15 +1,13 @@
-import { IConversation } from "../database/models/conversation.model";
 import { ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { IDatabase } from "../database/database.interface";
 import { IOpenAI } from "../openai/openai.interface";
-import { ILogger } from "../logger/logger.interface";
-import { Telegraf, Context, Markup } from 'telegraf';
+import { Telegraf, Context } from 'telegraf';
 import { message } from 'telegraf/filters';
-import { code } from 'telegraf/format';
 import { Event } from "./event.class";
+import signale from "signale";
 
 export class TextMessage extends Event {
-    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly openaiService: IOpenAI, private readonly loggerService: ILogger) {
+    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly openaiService: IOpenAI) {
         super(bot);
     }
 
@@ -40,7 +38,7 @@ export class TextMessage extends Event {
                     }
                 });
             } else if (user.list !== this.databaseService.list.white) {
-                this.loggerService.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] request rejected. User not whitelisted`, true);
+                signale.info(`User's @${ctx.message.from.username} [${ctx.message.from.id}] request rejected. User not whitelisted`);
                 return ctx.reply(`<b>You are not whitelisted yet. Sorry!</b>\n\n` + 
                     `👇 Click below to send whitelist request to admins`, {
                         parse_mode: 'HTML',
@@ -52,7 +50,7 @@ export class TextMessage extends Event {
                     });
             }
 
-            this.loggerService.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] request created from text message`, true);
+            signale.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] created a request from text message`);
 
             try {
                 const message = await ctx.reply('<code>Already processing your request, wait a bit</code>', { parse_mode: 'HTML'});
@@ -79,7 +77,8 @@ export class TextMessage extends Event {
                     });
                 }
             } catch (error) {
-                this.loggerService.error(`Error with creating request. User: @${ctx.message.from.username} [${ctx.message.from.id}]\n${error}`, true);
+                signale.error(`Error with creating request. User: @${ctx.message.from.username} [${ctx.message.from.id}]\n${error}`);
+                signale.fatal(error);
                 ctx.reply('<b>🚨 There was an error in your query.</b> Please try again later', {
                     parse_mode: 'HTML'
                 });

@@ -1,13 +1,13 @@
 import { IDatabase } from "../../database/database.interface";
 import { IUser } from "../../database/models/user.model";
-import { ILogger } from "../../logger/logger.interface";
 import { IUtils } from "../../utils/utils.interface";
 import { Telegraf, Context } from "telegraf";
 import { Event } from "../event.class";
 import { Message } from "typegram";
+import signale from "signale";
 
 export class ResetFreeRequestsAction extends Event {
-    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly loggerService: ILogger, private readonly utilsService: IUtils) {
+    constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly utilsService: IUtils) {
         super(bot);
     }
 
@@ -28,16 +28,20 @@ export class ResetFreeRequestsAction extends Event {
 
             const messageTextWithHTML = await this.utilsService.getUserStatsText(userId);
 
-            await ctx.editMessageText(messageTextWithHTML, {
-                parse_mode: 'HTML', 
-                reply_markup: {
-                    inline_keyboard: this.utilsService.getManageButtons(user.list)
-                }
-            });
-            await ctx.telegram.sendMessage(userId, 'You received 10 free requests', {
-                parse_mode: 'HTML'
-            });
-            this.loggerService.info(`User @${username} [${userId}] was added to limited list`, true);
+            try {
+                await ctx.editMessageText(messageTextWithHTML, {
+                    parse_mode: 'HTML', 
+                    reply_markup: {
+                        inline_keyboard: this.utilsService.getManageButtons(user.list)
+                    }
+                });
+                await ctx.telegram.sendMessage(userId, 'You received 10 free requests', {
+                    parse_mode: 'HTML'
+                });
+                signale.success(`User @${username} [${userId}] was granted 10 free requests`);
+            } catch (error) {
+                signale.info(`User with ID: ${userId} already have 10 free requests`);
+            }
         });
     }
 }
