@@ -28,16 +28,20 @@ export class ResetFreeRequestsAction extends Event {
 
             const messageTextWithHTML = await this.utilsService.getUserStatsText(userId);
 
-            await ctx.editMessageText(messageTextWithHTML, {
-                parse_mode: 'HTML', 
-                reply_markup: {
-                    inline_keyboard: this.utilsService.getManageButtons(user.list)
-                }
-            });
-            await ctx.telegram.sendMessage(userId, 'You received 10 free requests', {
-                parse_mode: 'HTML'
-            });
-            signale.info(`User @${username} [${userId}] was added to limited list`);
+            try {
+                await ctx.editMessageText(messageTextWithHTML, {
+                    parse_mode: 'HTML', 
+                    reply_markup: {
+                        inline_keyboard: this.utilsService.getManageButtons(user.list)
+                    }
+                });
+                await ctx.telegram.sendMessage(userId, 'You received 10 free requests', {
+                    parse_mode: 'HTML'
+                });
+                signale.success(`User @${username} [${userId}] was granted 10 free requests`);
+            } catch (error) {
+                signale.info(`User with ID: ${userId} already have 10 free requests`);
+            }
         });
     }
 }

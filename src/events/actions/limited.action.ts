@@ -40,7 +40,7 @@ export class LimitedAction extends Event {
                 });
                 await this.databaseService.setRequestedStatus(userId, false);
             }
-            signale.info(`User @${username} [${userId}] was added to limited list`);
+            signale.success(`User @${username} [${userId}] was added to limited list`);
         });
     }
 }
