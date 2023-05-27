@@ -2,7 +2,7 @@ import { IConversation } from "../database/models/conversation.model";
 import { ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { IDatabase } from "../database/database.interface";
 import { IVoiceService } from "../voice/voice.interface";
-import { Telegraf, Context, Markup } from 'telegraf';
+import { Telegraf, Context } from 'telegraf';
 import { IOpenAI } from "../openai/openai.interface";
 import { message } from 'telegraf/filters';
 import { Event } from "./event.class";

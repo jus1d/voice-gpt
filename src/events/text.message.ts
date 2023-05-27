@@ -1,7 +1,7 @@
 import { ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { IDatabase } from "../database/database.interface";
 import { IOpenAI } from "../openai/openai.interface";
-import { Telegraf, Context, Markup } from 'telegraf';
+import { Telegraf, Context } from 'telegraf';
 import { message } from 'telegraf/filters';
 import { Event } from "./event.class";
 import signale from "signale";
