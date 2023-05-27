@@ -1,6 +1,6 @@
 {
   "name": "voice-gpt",
-  "version": "3.4.3",
+  "version": "3.5.1",
   "description": "VoiceGPT - telegram-based interface to interact with ChatGPT easier. You can communicate with GPT via text and voice messages",
   "main": "index.js",
   "scripts": {
