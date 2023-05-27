@@ -6,9 +6,9 @@ import { Telegraf, Context, Markup } from 'telegraf';
 import { IOpenAI } from "../openai/openai.interface";
 import { ILogger } from "../logger/logger.interface";
 import { message } from 'telegraf/filters';
-import { code } from 'telegraf/format';
 import { Event } from "./event.class";
 import { Md5 } from 'ts-md5';
+import signale from "signale";
 
 export class VoiceMessage extends Event {
     constructor(bot: Telegraf<Context>, private readonly databaseService: IDatabase, private readonly openaiService: IOpenAI, private readonly loggerService: ILogger, private readonly voiceService: IVoiceService) {
@@ -42,7 +42,7 @@ export class VoiceMessage extends Event {
                     }
                 });
             } else if (user.list !== this.databaseService.list.white) {
-                this.loggerService.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] request rejected. User not whitelisted`, true);
+                signale.info(`User's @${ctx.message.from.username} [${ctx.message.from.id}] request rejected. User not whitelisted`);
                 return ctx.reply(`<b>You are not whitelisted yet. Sorry!</b>\n\n` + 
                     `👇 Click below to send whitelist request to admins`, {
                     parse_mode: 'HTML',
@@ -54,7 +54,7 @@ export class VoiceMessage extends Event {
                 });
             }
 
-            this.loggerService.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] request created from voice message`, true);
+            signale.info(`User @${ctx.message.from.username} [${ctx.message.from.id}] created a request from voice message`);
 
             try {
                 const message = await ctx.reply('<code>Already processing your request, wait a bit</code>', {
@@ -93,7 +93,8 @@ export class VoiceMessage extends Event {
                     });
                 }
             } catch (error) {
-                this.loggerService.error(`Error with creating request. User: @${ctx.message.from.username} [${ctx.message.from.id}]\n${error}`, true);
+                signale.error(`Error with creating request. User: @${ctx.message.from.username} [${ctx.message.from.id}]\n${error}`);
+                signale.fatal(error);
                 ctx.reply('<b>🚨 There was an error in your query.</b> Please try again later', {
                     parse_mode: 'HTML'
                 });
