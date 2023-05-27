@@ -84,10 +84,12 @@ class Bot {
         this.bot.launch();
         this.loggerService.start(TYPE, packageFile.version);
         
-        if (TYPE === 'prod') this.bot.telegram.sendMessage(
-            this.configService.get('admin_tg_id'), 
-            `<b>🚨 VoiceGPT:${TYPE} v${packageFile.version} just started</b>`, 
-            { parse_mode: 'HTML' });
+        if (TYPE === 'prod') {
+            this.bot.telegram.sendMessage(
+                this.configService.get('admin_tg_id'), 
+                `<b>🚨 VoiceGPT:${TYPE} v${packageFile.version} just started</b>`, 
+                { parse_mode: 'HTML' });
+        }
 
         process.once('SIGINT', () => {
             this.bot.telegram.sendMessage(this.configService.get('admin_tg_id'), '<b>🚨 Bot stopped: SIGINT</b>', {
