@@ -4,6 +4,7 @@ import { Configuration, OpenAIApi } from "openai";
 import { IOpenAI } from "./openai.interface";
 import fs from 'fs';
 import { IVoiceService } from "../voice/voice.interface";
+import signale from "signale";
 
 export class OpenAI implements IOpenAI {
     openai: any;
@@ -29,7 +30,9 @@ export class OpenAI implements IOpenAI {
 
             return response.data.choices[0].message;
         } catch (error) {
-            this.loggerService.error(`Error with getting response from ChatGPT\n${error}`, true);
+            // this.loggerService.error(`Error with getting response from ChatGPT\n${error}`, true);
+            signale.error('Error with getting response from ChatGPT');
+            signale.fatal(error);
             return null;
         }
     }
@@ -42,7 +45,9 @@ export class OpenAI implements IOpenAI {
             this.voiceService.removeFile(`./voices/${mp3FileName}.mp3`);
             return response.data.text;
         } catch (error) {
-            this.loggerService.error(`Error with transcripting prompt from MP3 file\n${error}`, true);
+            // this.loggerService.error(`Error with transcripting prompt from MP3 file\n${error}`, true);
+            signale.error('Error with transcription prompt from MP3 file');
+            signale.fatal(error);
             return '';
         }
     }
