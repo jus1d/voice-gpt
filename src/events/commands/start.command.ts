@@ -16,8 +16,8 @@ export class StartCommand extends Event {
 
             if (!user) {
                 await this.databaseService.saveUser(ctx.message.from.id, 
-                    ctx.message.from.username ??= '', 
-                    ctx.message.from.first_name ??= ctx.message.from.username ??= '');
+                    ctx.message.from.username ??= 'none', 
+                    ctx.message.from.first_name ??= ctx.message.from.username ??= 'none');
 
                 user = await this.databaseService.getUser(ctx.message.from.id);
                 if (!user) return;
