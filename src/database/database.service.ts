@@ -33,8 +33,8 @@ export class DatabaseService implements IDatabase {
             telegramId = String(telegramId);
             await new UserModel({
                 telegramId,
-                username: username || '',
-                fullname: fullname || username || '',
+                username: username || 'none',
+                fullname: fullname || username || 'none',
                 role: 'user',
             }).save();
             signale.success(`User @${username} [${telegramId}] saved to database`);
