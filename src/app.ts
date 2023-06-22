@@ -87,11 +87,11 @@ class Bot {
         }
         this.bot.launch();
         signale.info(`VoiceGPT:${TYPE} v${packageFile.version} just started`);
-        
+
         if (TYPE === 'prod') {
             await this.bot.telegram.sendMessage(
-                this.configService.get('admin_tg_id'), 
-                `<b>🚨 VoiceGPT:${TYPE} v${packageFile.version} just started</b>`, 
+                this.configService.get('admin_tg_id'),
+                `<b>🚨 VoiceGPT:${TYPE} v${packageFile.version} just started</b>`,
                 { parse_mode: 'HTML' });
         }
 
