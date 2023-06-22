@@ -2,9 +2,9 @@ import { IVoiceService } from "./voice.interface";
 import installer from '@ffmpeg-installer/ffmpeg';
 import { unlink } from 'fs/promises';
 import ffmpeg from 'fluent-ffmpeg';
+import signale from "signale";
 import axios from "axios";
 import fs from 'fs';
-import signale from "signale";
 
 export class VoiceService implements IVoiceService {
     constructor() {
