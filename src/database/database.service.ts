@@ -1,7 +1,7 @@
-import { ConversationModel, IConversation, IMessage } from "./models/conversation.model";
-import { IConfigService } from "../config/config.interface";
-import { UserModel, IUser } from "./models/user.model";
-import { IDatabase } from "./database.interface";
+import {ConversationModel, IConversation, IMessage} from "./models/conversation.model";
+import {IConfigService} from "../config/config.interface";
+import {IUser, UserModel} from "./models/user.model";
+import {IDatabase} from "./database.interface";
 import mongoose from 'mongoose';
 import signale from "signale";
 
@@ -231,8 +231,7 @@ export class DatabaseService implements IDatabase {
     }
     async getAllUsers(): Promise<IUser[]> {
         try {
-            const users: Array<IUser> = await UserModel.find({});
-            return users;
+            return await UserModel.find({});
         } catch (error) {
             signale.error(`Error while getting all users`);
             signale.fatal(error);

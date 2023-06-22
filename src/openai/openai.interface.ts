@@ -1,4 +1,4 @@
-import { IMessage } from "../../src/database/models/conversation.model";
+import { IMessage } from "../database/models/conversation.model";
 
 export interface IOpenAI {
     roles: { user: string, assistant: string, system: string };

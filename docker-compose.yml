@@ -5,6 +5,6 @@ services:
     container_name: voice-gpt
     restart: always
     ports: 
-      - 3000:3000
+      - "3000:3000"
     volumes:
       - ./logs:/root/code/voice-gpt/logs

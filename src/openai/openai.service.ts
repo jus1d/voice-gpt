@@ -1,4 +1,4 @@
-import { IMessage } from "../../src/database/models/conversation.model";
+import { IMessage } from "../database/models/conversation.model";
 import { Configuration, OpenAIApi } from "openai";
 import { IOpenAI } from "./openai.interface";
 import fs from 'fs';
@@ -41,7 +41,7 @@ export class OpenAI implements IOpenAI {
                 fs.createReadStream(`./voices/${mp3FileName}.mp3`),
                 'whisper-1'
             );
-            this.voiceService.removeFile(`./voices/${mp3FileName}.mp3`);
+            await this.voiceService.removeFile(`./voices/${mp3FileName}.mp3`);
             return response.data.text;
         } catch (error) {
             // this.loggerService.error(`Error with transcripting prompt from MP3 file\n${error}`, true);

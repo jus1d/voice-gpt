@@ -1,3 +1,6 @@
+# Ignore IDE files
+.idea/
+
 # Dependencies files
 node_modules/
 
